@@ -1,0 +1,5 @@
+#SingleInstance FORCE
+
+`::
+	Click
+	return
