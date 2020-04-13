@@ -14,15 +14,15 @@ RandomBezier(Xf, Yf, O="") {
         X0 += XM, Y0 += YM
     If(RD)
         Xf += XM, Yf += YM
+	
     If(X0 < Xf)
-        sX := X0-OfL, bX := Xf+OfR
+        sX := X0 - OfL, bX := Xf + OfR
     Else
-        sX := Xf-OfL, bX := X0+OfR
-    
+        sX := Xf - OfL, bX := X0 + OfR
 	If(Y0 < Yf)
-        sY := Y0-OfT, bY := Yf+OfB
+        sY := Y0 - OfT, bY := Yf + OfB
     Else
-        sY := Yf-OfT, bY := Y0+OfB
+        sY := Yf - OfT, bY := Y0 + OfB
 	
     Loop, % (--N) - 1 {
         Random, X%A_Index%, %sX%, %bX%
@@ -51,3 +51,34 @@ RandomBezier(Xf, Yf, O="") {
     
 	Return N + 1
 }
+
+CalculateDistance(X1, Y1) {
+	MouseGetPos, X0, Y0
+	
+	XD := Abs(X1 - X0)
+	YD := Abs(Y1 - Y0)
+	
+	Return Sqrt(XD ** 2 + YD ** 2)
+}
+
+DecideSpeed(distance) {
+	Random, variation, 0.86, 1.24
+	
+	Return distance / 2 * variation
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

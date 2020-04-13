@@ -12,10 +12,9 @@ WatchCursor() {
 	MouseGetPos, X, Y
 	PixelGetColor pixelColor, %X%, %Y%, RGB
 	ToolTip, %X% %Y% %pixelColor%, X + 15, Y + 15
-	;ToolTip, %X% %Y%, X + 15, Y + 15
 }
 
 SetTimer, WatchCursor, 10
 Return
 
-+^X::ExitApp
++^C::ExitApp

@@ -7,6 +7,10 @@ SetWorkingDir %A_ScriptDir%
 CoordMode, Mouse, Screen
 CoordMode, Pixel, Screen
 
+Global itemC := 0x09640D
+Global itemX := 1604
+Global itemY := 877
+
 WatchCursor() {
 	MouseGetPos X, Y
 	PixelGetColor, FixedColor, %itemX%, %itemY%, RGB
@@ -28,26 +32,27 @@ WatchCursor() {
 	GuiControl, , T, %Match%
 }
 
-global itemX := 1604
-global itemY := 877
-global itemC := 0x09640D
-
 ;Gui, -Caption +ToolWindow
 ;Gui, Color, Red
 Gui, +AlwaysOnTop
-Gui, Show, w270 h110, GUI
+Gui, Show, w270 h140, Coords and Colors
 Gui, Add, Text, x10 y10, X: 
 Gui, Add, Text, x10 y25, Y: 
 Gui, Add, Text, x10 y40, Fixed color: 
 Gui, Add, Text, vMC x10 y55, Moving color: 
 Gui, Add, Text, vCC x10 y70, Clicked color: 
-Gui, Add, Text, x10 y85, Color match: 
+Gui, Add, Text, vCX x10 y85, Clicked X: 
+Gui, Add, Text, vCY x10 y100, Clicked Y: 
+Gui, Add, Text, x10 y115, Color match:
 Gui, Add, Text, vX x200 y10 w50, 0
 Gui, Add, Text, vY x200 y25 w50, 0
 Gui, Add, Text, vC1 x200 y40 w100, 0
 Gui, Add, Text, vC2 x200 y55 w100, 0
 Gui, Add, Text, vC3 x200 y70 w100, 0
-Gui, Add, Text, vT x200 y85 w100, False
+Gui, Add, Text, vC4 x200 y85 w100, 0
+Gui, Add, Text, vC5 x200 y100 w100, 0
+Gui, Add, Text, vT x200 y115 w100, False
+
 /*
 Loop {
 	MouseGetPos, X, Y, W
@@ -63,20 +68,18 @@ Loop {
 	Sleep, 100
 }
 */
-SetTimer, WatchCursor, 10
+
+SetTimer, WatchCursor, 25
 Return
+
+GuiClose:
+ExitApp
 
 ^LButton::
 	MouseGetPos MX, MY
 	PixelGetColor, ClickedColor, MX, MY, RGB
-	GuiControl, , C3, %ClickedColor%
-	;GuiControl, Color, %ClickedColor%
-	;GuiControl, , +c%ClickedColor%, msctls_progress32
+	GuiControl,, C3, %ClickedColor%
+    GuiControl,, C4, %MX%
+	GuiControl,, C5, %MY%
 	GuiControl, +c%ClickedColor%, CC
-    GuiControl,, CC, Clicked color:
 	Return
-
-+^X::ExitApp
-
-GuiClose:
-ExitApp

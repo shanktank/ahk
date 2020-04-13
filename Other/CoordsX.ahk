@@ -1,8 +1,8 @@
 #SingleInstance FORCE
+#EscapeChar \
 #Persistent
 #NoEnv
 #Warn
-#EscapeChar \
 
 SetWorkingDir %A_ScriptDir%
 CoordMode, Mouse, Screen
@@ -14,7 +14,6 @@ WatchCursor() {
 	MouseGetPos, X, Y
 	PixelGetColor PC, %X%, %Y%, RGB
 	ToolTip, %X% %Y% %PC%, X + 15, Y + 15
-	;ToolTip, %X% %Y%, X + 15, Y + 15
 }
 
 SetTimer, WatchCursor, 10
@@ -26,4 +25,4 @@ Return
 	FileAppend, %PixelColor% (%MX%\, %MY%)\n, coords.txt
 	Return
 
-+^X::ExitApp
++^C::ExitApp
