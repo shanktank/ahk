@@ -6,10 +6,18 @@
 #NoEnv
 #Warn
 
-SetWorkingDir %A_ScriptDir%
+SetWorkingDir, %A_ScriptDir%
+CoordMode, ToolTip, Screen
 CoordMode, Mouse, Screen
 CoordMode, Pixel, Screen
-SendMode Input
+SetTitleMatchMode, RegEx
+SendMode, Input
+
+#IfWinActive, ^(RuneLite|OpenOSRS)$
+
+; ================================================================================================================================================== ;
+; == Classes ======================================================================================================================================= ;
+; ================================================================================================================================================== ;
 
 Class Thing {
 	Static name := ""
@@ -48,7 +56,7 @@ Class Thing {
     }
 }
 
-Class Tile Extends Thing {
+Class Mark Extends Thing {
 	Static colour      := 0x0
 	Static playRoomXY  := [ ]
 	Static minOffsetXY := [ ]
@@ -77,21 +85,30 @@ Class Tile Extends Thing {
 	}
 	
 	checkClick() {
-		MouseGetPos, x, y
-		PixelGetColor, pixelColor, x, y, RGB
+		MouseGetPos, X, Y
+		PixelGetColor, pixelColor, X, Y, RGB
 		Return pixelColor == 0xFF0000
 	}
 				
 	findPixel() {
-		PixelSearch, x, y, 0, 25, 1350, 850, This.colour, 20, RGB, Fast
-		Return [ x, y ]
+		Loop, 5 {
+			PixelSearch, X, Y, 0, 25, 1350, 850, This.colour, 20, RGB, Fast
+			If(ErrorLevel := 0) {
+				Return [ X, Y ]
+			} Else {
+				Sleep, 100
+			}
+		}
+		
+		MsgBox % "Could not find pixel (" This.colour ")"
+		Reload
 	}
 	
 	generateCoords() {
-		xy := This.findPixel()
-		Random, x, xy[1] + This.playRoomXY[1], xy[1] + This.minOffsetXY[1]
-		Random, y, xy[2] + This.playRoomXY[2], xy[2] + This.minOffsetXY[2]
-		Return [ x, y ]
+		XY := This.findPixel()
+		Random, X, XY[1] + This.playRoomXY[1], XY[1] + This.minOffsetXY[1]
+		Random, Y, XY[2] + This.playRoomXY[2], XY[2] + This.minOffsetXY[2]
+		Return [ X, Y ]
 	}
 }
 
@@ -116,7 +133,6 @@ Class Spot Extends Thing {
 		Loop, %sleepNum% {
 			Sleep, sleepFor
 			If(This.checkColor()) {
-				;MsgBox % "Found the fucking pixel"
 				Return True
 			}
 		}
@@ -135,43 +151,37 @@ Class Area Extends Thing {
 	}
 	
 	generateCoords() {
-		Random, x, This.lowXY[1], This.highXY[1]
-		Random, y, This.lowXY[2], This.highXY[2]
-		Return [ x, y ]
+		Random, X, This.lowXY[1], This.highXY[1]
+		Random, Y, This.lowXY[2], This.highXY[2]
+		Return [ X, Y ]
 	}
 }
 
 Class Blast {
-	Static tiles := { }
+	Static marks := { }
 	Static spots := { }
 	Static areas := { }
 	
-	Static emptyInvSlot := 0x3E3529
-	
-	Static invSlot1 := [ 1420, 680 ]
-	Static invSlot2 := [ 1477, 692 ]
-	Static invSlot3 := [ 1540, 675 ]
-	
 	__New() {
-		This.tiles["blueTile"]   				:= New Tile("blueTile",   0x0000FF, [  25, 30 ], [  0, 0 ])
-		This.tiles["purpleTile"] 				:= New Tile("purpleTile", 0xFF00FF, [ -15, 20 ], [  0, 1 ])
-		This.tiles["greenTile"]  				:= New Tile("greenTile",  0x00FF00, [ -20, 25 ], [ -2, 2 ])
+		This.marks["blueMark"]   				:= New Mark("blueMark",   0x0000FF, [  25, 30 ], [  0, 0 ])
+		This.marks["purpleMark"] 				:= New Mark("purpleMark", 0xFF00FF, [ -15, 20 ], [  0, 1 ])
+		This.marks["greenMark"]  				:= New Mark("greenMark",  0x00FF00, [ -20, 25 ], [ -2, 2 ])
 		
 		This.spots["inventoryOpen"]				:= New Spot("inventoryOpen",          0x78281F, [ 1210, 1010 ])
-		This.spots["firstInvSlotEmpty"]			:= New Spot("firstInvSlotEmpty",      This.emptyInvSlot, This.invSlot1)
-		This.spots["firstInvSlotAddyBars"]		:= New Spot("firstInvSlotAddyBars",   0x2A352A, This.invSlot1)
-		This.spots["firstInvSlotGoldBars"]		:= New Spot("firstInvSlotGoldBars",   0x745E0D, This.invSlot1) ; ???
-		This.spots["firstInvSlotIceGloves"]		:= New Spot("firstInvSlotIceGloves",  0x6BABBC, This.invSlot1)
-		This.spots["firstInvSlotGoldGloves"]	:= New Spot("firstInvSlotGoldGloves", 0xBCAE6B, This.invSlot1)
-		This.spots["secondInvSlotEmpty"]		:= New Spot("secondInvSlotEmpty",     This.emptyInvSlot, This.invSlot2)
-		This.spots["stamPotEmpty"]				:= New Spot("stamPotEmpty",           0x6E6E70, This.invSlot2)
-		This.spots["secondInvSlotStam"]			:= New Spot("secondInvSlotStam",      0x977446, This.invSlot2) ; 3-dose color: 0x987446
-		This.spots["thirdInvSlotGoldBar"]		:= New Spot("thirdInvSlotGoldBar",    0xD8B01A, This.invSlot3)
-		This.spots["thirdInvSlotEmpty"]			:= New Spot("thirdInvSlotEmpty",      This.emptyInvSlot, This.invSlot3)
-		This.spots["takeAddyBars"]				:= New Spot("takeAddyBars",           0x405140, [  345, 935 ])
-		This.spots["takeGoldBars"]				:= New Spot("takeGoldBars",           0xB19015, [  345, 935 ])
-		This.spots["bankOpenCheck"]				:= New Spot("bankOpenCheck",          0x831F1D, [  800, 800 ])
-		This.spots["stamPotionBuff"]			:= New Spot("stamPotionBuff",         0xA37E4B, [ 1320, 108 ])
+		This.spots["stamPotionBuff"]			:= New Spot("stamPotionBuff",         0xA37E4B, [ 1320,  108 ])
+		This.spots["firstInvSlotEmpty"]			:= New Spot("firstInvSlotEmpty",      0x3E3529, [ 1420,  680 ])
+		This.spots["firstInvSlotAddyBars"]		:= New Spot("firstInvSlotAddyBars",   0x2A352A, [ 1420,  680 ])
+		This.spots["firstInvSlotGoldBars"]		:= New Spot("firstInvSlotGoldBars",   0x745E0D, [ 1420,  680 ])
+		This.spots["firstInvSlotIceGloves"]		:= New Spot("firstInvSlotIceGloves",  0x6BABBC, [ 1420,  680 ])
+		This.spots["firstInvSlotGoldGloves"]	:= New Spot("firstInvSlotGoldGloves", 0xBCAE6B, [ 1420,  680 ])
+		This.spots["secondInvSlotEmpty"]		:= New Spot("secondInvSlotEmpty",     0x3E3529, [ 1420,  680 ])
+		This.spots["secondInvSlotStam"]			:= New Spot("secondInvSlotStam",      0x977446, [ 1420,  680 ])
+		This.spots["secondInvSlotStamEmpty"]	:= New Spot("secondInvSlotStamEmpty", 0x6E6E70, [ 1420,  680 ])
+		This.spots["thirdInvSlotEmpty"]			:= New Spot("thirdInvSlotEmpty",      0x3E3529, [ 1540,  675 ])
+		This.spots["thirdInvSlotGoldBar"]		:= New Spot("thirdInvSlotGoldBar",    0xD8B01A, [ 1540,  675 ])
+		This.spots["collectAddyBars"]			:= New Spot("collectAddyBars",        0x405140, [  345,  935 ])
+		This.spots["collectGoldBars"]			:= New Spot("collectGoldBars",        0xB19015, [  345,  935 ])
+		This.spots["bankOpenCheck"]				:= New Spot("bankOpenCheck",          0x831F1D, [  800,  800 ])
 
 		This.areas["depositAllBounds"]			:= New Area("depositAllBounds",      [  902, 779 ], [  939, 815 ])
 		This.areas["withdrawAddyOreBounds"]		:= New Area("withdrawAddyOreBounds", [  561, 326 ], [  593, 356 ])
@@ -180,20 +190,24 @@ Class Blast {
 		This.areas["withdrawStamBounds"]		:= New Area("withdrawStamBounds",    [  757, 330 ], [  776, 357 ])
 		This.areas["equipGlovesBounds"]			:= New Area("equipGlovesBounds",     [ 1410, 664 ], [ 1435, 689 ])
 		This.areas["drinkStamBounds"]			:= New Area("drinkStamBounds",       [ 1463, 665 ], [ 1486, 691 ])
-		This.areas["thirdInvSlot"]				:= New Area("thirdInvSlot",          [ 1518, 664 ], [ 1548, 689 ])
+		This.areas["thirdInvSlotBounds"]		:= New Area("thirdInvSlotBounds",    [ 1518, 664 ], [ 1548, 689 ])
 	}
 }
 
+; ================================================================================================================================================== ;
+; == Functions ===================================================================================================================================== ;
+; ================================================================================================================================================== ;
+
 blastAddy() {
-	b.tiles["blueTile"].moveAndClick()
+	b.marks["blueMark"].moveAndClick()
 	b.spots["firstInvSlotEmpty"].waitForPixel()
 	
-	b.tiles["purpleTile"].moveAndClick()
-	b.spots["takeAddyBars"].waitForPixel()
+	b.marks["purpleMark"].moveAndClick()
+	b.spots["collectAddyBars"].waitForPixel()
 	Send, 1
 	b.spots["firstInvSlotAddyBars"].waitForPixel()
 	
-	b.tiles["greenTile"].moveAndClick()
+	b.marks["greenMark"].moveAndClick()
 	b.spots["bankOpenCheck"].waitForPixel()
 	Thing.moveAndClick(b.areas["depositAllBounds"].generateCoords())
 	Thing.moveAndClick(b.areas["withdrawAddyOreBounds"].generateCoords())
@@ -227,24 +241,18 @@ drinkStam() {
 
 putOres() {
 	equipGloves("gold")
-	b.tiles["blueTile"].moveAndClick()
+	b.marks["blueMark"].moveAndClick()
 	b.spots["thirdInvSlotEmpty"].waitForPixel()
-	;MsgBox % "Done in putOres"
 }
 
 takeBars() {
-	;MsgBox % "Starting takeBars"
-	;b.tiles["purpleTile"].moveAndClick(,, generateRandomSleep(3720, 3967))
-	b.tiles["purpleTile"].moveAndClick()
-	Sleep, generateRandomSleep(2500, 3000)
-	;MsgBox % "Done with moveandClick?"
+	b.marks["purpleMark"].moveAndClick()
+	Sleep, generateRandomSleep(1987, 2263)
 	
 	Loop, 5 {
-		If(b.spots["takeGoldBars"].waitForPixel(1000) == False) {
+		If(b.spots["collectGoldBars"].waitForPixel(1000) == False) {
 			equipGloves("ice")
-			;b.tiles["purpleTile"].moveAndClick(,, generateRandomSleep(717, 789))
-			;b.tiles["purpleTile"].moveAndClick(,, generateRandomSleep(250, 350))
-			b.tiles["purpleTile"].moveAndClick()
+			b.marks["purpleMark"].moveAndClick()
 			Sleep, generateRandomSleep(319, 445)
 			Continue
 		}
@@ -261,9 +269,8 @@ takeBars() {
 
 openBank() {
 	Loop, 3 {
-		b.tiles["greenTile"].moveAndClick()
+		b.marks["greenMark"].moveAndClick()
 		If(b.spots["bankOpenCheck"].waitForPixel(generateRandomSleep(4880, 5212))) {
-			;MsgBox % "Bank is open"
 			Return True
 		}
 	}
@@ -273,11 +280,10 @@ openBank() {
 }
 
 useBank() {
-	;MsgBox % "useBank"
-	Thing.moveAndClick(b.areas["thirdInvSlot"].generateCoords(),,, generateRandomSleep())
+	Thing.moveAndClick(b.areas["thirdInvSlotBounds"].generateCoords(),,, generateRandomSleep())
 	Thing.moveAndClick(b.areas["withdrawGoldOreBounds"].generateCoords(),,, generateRandomSleep())
 	
-	If(b.spots["stamPotEmpty"].checkColor()) {
+	If(b.spots["secondInvSlotStamEmpty"].checkColor()) {
 		Thing.moveAndClick(b.areas["drinkStamBounds"].generateCoords(),,, generateRandomSleep())
 		Thing.moveAndClick(b.areas["withdrawStamBounds"].generateCoords(),,, generateRandomSleep())
 	}
@@ -307,7 +313,15 @@ blastGold() {
 	}
 }
 
+; ================================================================================================================================================== ;
+; == Globals ======================================================================================================================================= ;
+; ================================================================================================================================================== ;
+
 Global b := New Blast()
+
+; ================================================================================================================================================== ;
+; == HotKeys ======================================================================================================================================= ;
+; ================================================================================================================================================== ;
 
 F1::
 	blastGold()
@@ -323,6 +337,10 @@ F4::
 	PixelSearch, XXX, YYY, 0, 25, 1350, 850, 0x00FF00, 25, RGB, Fast
 	ToolTip, Green, %XXX%, %YYY%
 	Return
+
+; ================================================================================================================================================== ;
+; == Controls ====================================================================================================================================== ;
+; ================================================================================================================================================== ;
 
 #If
 ^R::Reload
