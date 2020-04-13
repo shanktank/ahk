@@ -40,8 +40,9 @@ Class Thing {
         Sleep, sleepFor
 	}
 	
-	moveAndClick(clickCoords, optString := "", simpleMove := False, sleepFor := 200, numClicks := 1, rightClick := False) {
-		optString := "T"(DecideSpeed(CalculateDistance(clickCoords[1], clickCoords[2])))" OT38 OB40 OL40 OR39 P2-4"
+	moveAndClick(clickCoords, optString := "", simpleMove := False, sleepFor := 100, numClicks := 1, rightClick := False) {
+		speed := DecideSpeed(CalculateDistance(clickCoords[1], clickCoords[2]))
+		optString := "T"(speed)" OT38 OB40 OL40 OR39 P2-4"
 		This.moveMouse(clickCoords, optString, simpleMove)
 		This.doClick(sleepFor, numClicks, rightClick)
     }
@@ -59,18 +60,20 @@ Class Tile Extends Thing {
 		This.minOffsetXY := mxy
 	}
 	
-	moveAndClick(optString := "", simpleMove := False, sleepFor := 200, numClicks := 1, rightClick := False) {
+	moveAndClick(optString := "", simpleMove := False, sleepFor := 100, numClicks := 1, rightClick := False) {
 		While(This.checkClick() == False) {
-			doRandomSleep(243, 313)
+			If(A_Index > 25)
+				Return False
+			Sleep, generateRandomSleep(184, 319)
 			coords := This.generateCoords()
-			optString := "T"(DecideSpeed(CalculateDistance(coords[1], coords[2])))" OT38 OB40 OL40 OR39 P2-4"
+			speed := DecideSpeed(CalculateDistance(coords[1], coords[2]))
+			If(A_Index >= 2)
+				speed := speed / 2
+			optString := "T"(speed)" OT38 OB40 OL40 OR39 P2-4"
 			Base.moveMouse(coords, optString, simpleMove)
 			Base.doClick(sleepFor, numClicks, rightClick)
-			If(A_Index >= 25) {
-				Return False
-			}
-			Return True
 		}
+		Return True
 	}
 	
 	checkClick() {
@@ -80,7 +83,7 @@ Class Tile Extends Thing {
 	}
 				
 	findPixel() {
-		PixelSearch, x, y, 0, 25, 1350, 850, This.colour, 15, RGB, Fast
+		PixelSearch, x, y, 0, 25, 1350, 850, This.colour, 20, RGB, Fast
 		Return [ x, y ]
 	}
 	
@@ -104,16 +107,16 @@ Class Spot Extends Thing {
 	
 	checkColor() {
 		PixelGetColor, pixelColor, This.fixedXY[1], This.fixedXY[2], RGB
-		ToolTip % This.colour " == " pixelColor " : " (pixelColor == This.colour), 25, 50
 		Return pixelColor == This.colour
 	}
 	
 	waitForPixel(timeout := 10000) {
-		sleepFor := 250
+		sleepFor := 100
 		sleepNum := timeout / sleepFor
 		Loop, %sleepNum% {
 			Sleep, sleepFor
 			If(This.checkColor()) {
+				;MsgBox % "Found the fucking pixel"
 				Return True
 			}
 		}
@@ -199,26 +202,26 @@ blastAddy() {
 	Sleep, 375
 }
 
-doRandomSleep(lowerBound := 109, upperBound := 214) {
+generateRandomSleep(lowerBound := 109, upperBound := 214) {
 	Random, sleepFor, %lowerBound%, %upperBound%
-	Sleep, sleepFor
+	Return sleepFor
 }
 
 equipGloves(gloves) {
 	If(gloves == "gold") {
 		If(b.spots["firstInvSlotGoldGloves"].checkColor()) {
-			Thing.moveAndClick(b.areas["equipGlovesBounds"].generateCoords(),,, doRandomSleep())
+			Thing.moveAndClick(b.areas["equipGlovesBounds"].generateCoords(),,, generateRandomSleep())
 		}
 	} Else If(gloves == "ice") {
 		If(b.spots["firstInvSlotIceGloves"].checkColor()) {
-			Thing.moveAndClick(b.areas["equipGlovesBounds"].generateCoords(),,, doRandomSleep())
+			Thing.moveAndClick(b.areas["equipGlovesBounds"].generateCoords(),,, generateRandomSleep())
 		}
 	}
 }
 
-drinkStamPot() {
+drinkStam() {
 	If(b.spots["stamPotionBuff"].checkColor() == False) {
-		Thing.moveAndClick(b.areas["drinkStamBounds"].generateCoords(),,, doRandomSleep())
+		Thing.moveAndClick(b.areas["drinkStamBounds"].generateCoords(),,, generateRandomSleep())
 	}
 }
 
@@ -226,16 +229,23 @@ putOres() {
 	equipGloves("gold")
 	b.tiles["blueTile"].moveAndClick()
 	b.spots["thirdInvSlotEmpty"].waitForPixel()
-	equipGloves("gold")
+	;MsgBox % "Done in putOres"
 }
 
 takeBars() {
-	b.tiles["purpleTile"].moveAndClick(,, doRandomSleep(3720, 3967))
+	;MsgBox % "Starting takeBars"
+	;b.tiles["purpleTile"].moveAndClick(,, generateRandomSleep(3720, 3967))
+	b.tiles["purpleTile"].moveAndClick()
+	Sleep, generateRandomSleep(2500, 3000)
+	;MsgBox % "Done with moveandClick?"
 	
-	Loop, 10 {
-		If(b.spots["takeGoldBars"].waitForPixel(doRandomSleep(653, 704)) == False) {
+	Loop, 5 {
+		If(b.spots["takeGoldBars"].waitForPixel(1000) == False) {
 			equipGloves("ice")
-			b.tiles["purpleTile"].moveAndClick(,, doRandomSleep(717, 789))
+			;b.tiles["purpleTile"].moveAndClick(,, generateRandomSleep(717, 789))
+			;b.tiles["purpleTile"].moveAndClick(,, generateRandomSleep(250, 350))
+			b.tiles["purpleTile"].moveAndClick()
+			Sleep, generateRandomSleep(319, 445)
 			Continue
 		}
 		
@@ -252,7 +262,8 @@ takeBars() {
 openBank() {
 	Loop, 3 {
 		b.tiles["greenTile"].moveAndClick()
-		If(b.spots["bankOpenCheck"].waitForPixel(doRandomSleep(4880, 5212))) {
+		If(b.spots["bankOpenCheck"].waitForPixel(generateRandomSleep(4880, 5212))) {
+			;MsgBox % "Bank is open"
 			Return True
 		}
 	}
@@ -262,35 +273,38 @@ openBank() {
 }
 
 useBank() {
-	Thing.moveAndClick(b.areas["thirdInvSlot"].generateCoords(),,, doRandomSleep())
-	Thing.moveAndClick(b.areas["withdrawGoldOreBounds"].generateCoords(),,, doRandomSleep())
+	;MsgBox % "useBank"
+	Thing.moveAndClick(b.areas["thirdInvSlot"].generateCoords(),,, generateRandomSleep())
+	Thing.moveAndClick(b.areas["withdrawGoldOreBounds"].generateCoords(),,, generateRandomSleep())
 	
 	If(b.spots["stamPotEmpty"].checkColor()) {
-		Thing.moveAndClick(b.areas["drinkStamBounds"].generateCoords(),,, doRandomSleep())
-		Thing.moveAndClick(b.areas["withdrawStamBounds"].generateCoords(),,, doRandomSleep())
+		Thing.moveAndClick(b.areas["drinkStamBounds"].generateCoords(),,, generateRandomSleep())
+		Thing.moveAndClick(b.areas["withdrawStamBounds"].generateCoords(),,, generateRandomSleep())
 	}
 }
 
 closeBank() {
 	Send, {Esc}
-	doRandomSleep(362, 444)
+	Sleep, generateRandomSleep(362, 444)
 	
 	If(b.spots["inventoryOpen"].checkColor() == False) {
 		Send, {Esc}
-		doRandomSleep()
+		Sleep, generateRandomSleep()
 	}
 }
 
 blastGold() {
-	putOres()
-	
-	;drinkStamPot()
-	
-	takeBars()
-	
-	openBank()
-	useBank()
-	closeBank()
+	Loop {
+		drinkStam()
+		
+		putOres()
+		
+		takeBars()
+		
+		openBank()
+		useBank()
+		closeBank()
+	}
 }
 
 Global b := New Blast()
@@ -299,5 +313,17 @@ F1::
 	blastGold()
 	Return
 
+F4::
+	PixelSearch, XXX, YYY, 0, 25, 1350, 850, 0x0000FF, 25, RGB, Fast
+	ToolTip, Blue, %XXX%, %YYY%
+	Sleep, 1000
+	PixelSearch, XXX, YYY, 0, 25, 1350, 850, 0xFF00FF, 25, RGB, Fast
+	ToolTip, Purple, %XXX%, %YYY%
+	Sleep, 1000
+	PixelSearch, XXX, YYY, 0, 25, 1350, 850, 0x00FF00, 25, RGB, Fast
+	ToolTip, Green, %XXX%, %YYY%
+	Return
+
+#If
 ^R::Reload
 +^C::ExitApp

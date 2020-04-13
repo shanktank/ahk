@@ -66,19 +66,3 @@ DecideSpeed(distance) {
 	
 	Return distance / 2 * variation
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
