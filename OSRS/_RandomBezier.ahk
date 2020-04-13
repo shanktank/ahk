@@ -52,11 +52,11 @@ RandomBezier(Xf, Yf, O="") {
 	Return N + 1
 }
 
-CalculateDistance(X1, Y1) {
-	MouseGetPos, X0, Y0
+CalculateDistance(XY) {
+	MouseGetPos, X, Y
 	
-	XD := Abs(X1 - X0)
-	YD := Abs(Y1 - Y0)
+	XD := Abs(XY[1] - X)
+	YD := Abs(XY[2] - Y)
 	
 	Return Sqrt(XD ** 2 + YD ** 2)
 }
