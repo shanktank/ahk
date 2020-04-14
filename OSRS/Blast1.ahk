@@ -20,12 +20,6 @@ SendMode, Input
 ; ================================================================================================================================================== ;
 
 Class Thing {
-	Static name := ""
-	
-	__New(n) {
-		This.name := n
-	}
-	
 	moveMouse(newCoords, optString := "") {
 		RandomBezier(newCoords[1], newCoords[2], optString)
 	}
@@ -39,6 +33,15 @@ Class Thing {
 		If(sleepFor == 0)
 			sleepFor := generateSleepTime()
         Sleep, sleepFor
+		
+		Return This.checkClick()
+	}
+		
+	checkClick() {
+		MouseGetPos, X, Y
+		PixelGetColor, pixelColor, X, Y, RGB
+		
+		Return pixelColor == This.RED
 	}
 	
 	moveAndClick(clickCoords, optString := "", sleepFor := 0, numClicks := 1, attemptNo := 1) {
@@ -47,7 +50,7 @@ Class Thing {
 		
 		mouseSpeed := DecideSpeed(CalculateDistance(clickCoords))
 		If(attemptNo > 1)
-			mouseSpeed := mouseSpeed / 2
+			mouseSpeed := mouseSpeed / 3
 		optString := "T"(mouseSpeed)" OT38 OB40 OL40 OR39 P2-3"
 		
 		This.moveMouse(clickCoords, optString)
@@ -62,9 +65,7 @@ Class Mark Extends Thing {
 	
 	Static RED := 0xFF0000
 	
-	__New(n, c, pxy, mxy) {
-		Base.__New(n)
-		
+	__New(c, pxy, mxy) {
 		This.colour      := c
 		This.playRoomXY  := pxy
 		This.minOffsetXY := mxy
@@ -84,13 +85,6 @@ Class Mark Extends Thing {
 		}
 		
 		Return True
-	}
-	
-	checkClick() {
-		MouseGetPos, X, Y
-		PixelGetColor, pixelColor, X, Y, RGB
-		
-		Return pixelColor == This.RED
 	}
 				
 	findPixel() {
@@ -122,9 +116,7 @@ Class Spot Extends Thing {
 	Static colour  := 0x0
 	Static fixedXY := [ ]
 	
-	__New(n, c, fxy) {
-		Base.__New(n)
-		
+	__New(c, fxy) {
 		This.colour  := c
 		This.fixedXY := fxy
 	}
@@ -155,9 +147,7 @@ Class Area Extends Thing {
 	Static lowXY  := [ ]
 	Static highXY := [ ]
 	
-	__New(n, lxy, hxy) {
-		Base.__New(n)
-		
+	__New(lxy, hxy) {
 		This.lowXY  := lxy
 		This.highXY := hxy
 	}
@@ -176,38 +166,40 @@ Class Blast {
 	Static areas := { }
 	
 	__New() {
-		This.marks["blueMark"]   				:= New Mark("blueMark",   0x0000FF, [  25, 30 ], [  0, 0 ])
-		This.marks["purpleMark"] 				:= New Mark("purpleMark", 0xFF00FF, [ -15, 20 ], [  0, 1 ])
-		This.marks["greenMark"]  				:= New Mark("greenMark",  0x00FF00, [ -20, 25 ], [ -2, 2 ])
+		This.marks["blueMark"]   				:= New Mark(0x0000FF, [  25, 30 ], [  0, 0 ])
+		This.marks["purpleMark"] 				:= New Mark(0xFF00FF, [ -15, 20 ], [  0, 1 ])
+		This.marks["greenMark"]  				:= New Mark(0x00FF00, [ -20, 25 ], [ -2, 2 ])
 		
-		This.spots["inventoryOpen"]				:= New Spot("inventoryOpen",          0x78281F, [ 1210, 1010 ])
-		This.spots["stamPotionBuff1"]			:= New Spot("stamPotionBuff1",        0xA37E4B, [ 1320,  108 ])
-		This.spots["stamPotionBuff2"]			:= New Spot("stamPotionBuff2",        0xE4733D, [ 1430,  200 ])
-		This.spots["firstInvSlotEmpty"]			:= New Spot("firstInvSlotEmpty",      0x3E3529, [ 1420,  680 ])
-		This.spots["firstInvSlotAddyBars"]		:= New Spot("firstInvSlotAddyBars",   0x2A352A, [ 1420,  680 ])
-		This.spots["firstInvSlotGoldBars"]		:= New Spot("firstInvSlotGoldBars",   0x745E0D, [ 1420,  680 ])
-		This.spots["firstInvSlotIceGloves"]		:= New Spot("firstInvSlotIceGloves",  0x6BABBC, [ 1420,  680 ])
-		This.spots["firstInvSlotGoldGloves"]	:= New Spot("firstInvSlotGoldGloves", 0xBCAE6B, [ 1420,  680 ])
-		This.spots["secondInvSlotEmpty"]		:= New Spot("secondInvSlotEmpty",     0x3E3529, [ 1480,  680 ])
-		This.spots["secondInvSlotStam"]			:= New Spot("secondInvSlotStam",      0x977446, [ 1477,  692 ])
-		This.spots["secondInvSlotStamEmpty"]	:= New Spot("secondInvSlotStamEmpty", 0x6A6A6D, [ 1478,  692 ])
-		This.spots["thirdInvSlotEmpty"]			:= New Spot("thirdInvSlotEmpty",      0x3E3529, [ 1540,  675 ])
-		This.spots["thirdInvSlotGoldBar"]		:= New Spot("thirdInvSlotGoldBar",    0xD8B01A, [ 1540,  675 ])
-		This.spots["collectAddyBars"]			:= New Spot("collectAddyBars",        0x405140, [  345,  935 ])
-		This.spots["collectGoldBars"]			:= New Spot("collectGoldBars",        0xB19015, [  345,  935 ])
-		This.spots["bankOpenCheck1"]			:= New Spot("bankOpenCheck1",         0x831F1D, [  800,  800 ])
-		This.spots["bankOpenCheck2"]			:= New Spot("bankOpenCheck2",         0x52524D, [  800,  800 ])
-		This.spots["goldOresExhustedCheck"]		:= New Spot("goldOresExhustedCheck",  0x937A25, [  707,  343 ])
-
-		This.areas["depositAllBounds"]			:= New Area("depositAllBounds",      [  902, 779 ], [  939, 815 ])
-		This.areas["withdrawAddyOreBounds"]		:= New Area("withdrawAddyOreBounds", [  561, 326 ], [  593, 356 ])
-		This.areas["withdrawCoalBounds"]		:= New Area("withdrawCoalBounds",    [  625, 326 ], [  657, 357 ])
-		This.areas["withdrawGoldOreBounds"]		:= New Area("withdrawGoldOreBounds", [  689, 328 ], [  719, 360 ])
-		This.areas["withdrawStamBounds"]		:= New Area("withdrawStamBounds",    [  757, 330 ], [  776, 357 ])
-		This.areas["equipGlovesBounds"]			:= New Area("equipGlovesBounds",     [ 1410, 664 ], [ 1435, 689 ])
-		This.areas["drinkStamBounds"]			:= New Area("drinkStamBounds",       [ 1463, 665 ], [ 1486, 691 ])
-		This.areas["thirdInvSlotBounds"]		:= New Area("thirdInvSlotBounds",    [ 1518, 664 ], [ 1548, 689 ])
-		This.areas["purpleHoverBounds"]			:= New Area("purpleHoverBounds",     [  680, 630 ], [  860, 810 ])
+		This.spots["inventoryOpen"]				:= New Spot(0x78281F, [ 1210, 1010 ])
+		This.spots["stamPotionBuff1"]			:= New Spot(0xA37E4B, [ 1320,  108 ])
+		This.spots["stamPotionBuff2"]			:= New Spot(0xE4733D, [ 1430,  200 ])
+		This.spots["firstInvSlotEmpty"]			:= New Spot(0x3E3529, [ 1420,  680 ])
+		This.spots["firstInvSlotAddyBars"]		:= New Spot(0x2A352A, [ 1420,  680 ])
+		This.spots["firstInvSlotGoldBars"]		:= New Spot(0x745E0D, [ 1420,  680 ])
+		This.spots["firstInvSlotIceGloves"]		:= New Spot(0x6BABBC, [ 1420,  680 ])
+		This.spots["firstInvSlotGoldGloves"]	:= New Spot(0xBCAE6B, [ 1420,  680 ])
+		This.spots["secondInvSlotEmpty"]		:= New Spot(0x3E3529, [ 1480,  680 ])
+		This.spots["secondInvSlotStam"]			:= New Spot(0x977446, [ 1477,  692 ])
+		This.spots["secondInvSlotStamEmpty"]	:= New Spot(0x6A6A6D, [ 1478,  692 ])
+		This.spots["thirdInvSlotEmpty"]			:= New Spot(0x3E3529, [ 1540,  675 ])
+		This.spots["thirdInvSlotGoldBar"]		:= New Spot(0xD8B01A, [ 1540,  675 ])
+		This.spots["collectAddyBars"]			:= New Spot(0x405140, [  345,  935 ])
+		This.spots["collectGoldBars"]			:= New Spot(0xB19015, [  345,  935 ])
+		This.spots["bankOpenCheck1"]			:= New Spot(0x831F1D, [  800,  800 ])
+		This.spots["bankOpenCheck2"]			:= New Spot(0x52524D, [  800,  800 ])
+		This.spots["goldOresExhustedCheck"]		:= New Spot(0x937A25, [  707,  343 ])
+		This.spots["moltenBarsCheck"]			:= New Spot(0x0A0907, [  105,  905 ])
+		This.spots["noBarsCheck"]				:= New Spot(0x0B0A08, [  175,  905 ])
+		
+		This.areas["depositAllBounds"]			:= New Area([  902, 779 ], [  939, 815 ])
+		This.areas["withdrawAddyOreBounds"]		:= New Area([  561, 326 ], [  593, 356 ])
+		This.areas["withdrawCoalBounds"]		:= New Area([  625, 326 ], [  657, 357 ])
+		This.areas["withdrawGoldOreBounds"]		:= New Area([  689, 328 ], [  719, 360 ])
+		This.areas["withdrawStamBounds"]		:= New Area([  757, 330 ], [  776, 357 ])
+		This.areas["equipGlovesBounds"]			:= New Area([ 1410, 664 ], [ 1435, 689 ])
+		This.areas["drinkStamBounds"]			:= New Area([ 1463, 665 ], [ 1486, 691 ])
+		This.areas["thirdInvSlotBounds"]		:= New Area([ 1518, 664 ], [ 1548, 689 ])
+		This.areas["purpleHoverBounds"]			:= New Area([  680, 630 ], [  860, 810 ])
 	}
 }
 
@@ -221,7 +213,7 @@ generateSleepTime(lowerBound := 109, upperBound := 214) {
 	Return sleepFor
 }
 
-hoverThing(thing) {
+earlyMouseMove(thing) {
 	newCoords  := thing.generateCoords()
 	mouseSpeed := DecideSpeed(CalculateDistance(newCoords))
 	optString  := "T"(mouseSpeed)" OT38 OB40 OL40 OR39 P2-3"
@@ -243,42 +235,69 @@ equipGloves(gloves, alreadyThere := False) {
 	If(alreadyThere == False) {
 		Thing.moveAndClick(b.areas["equipGlovesBounds"].generateCoords(),, generateSleepTime())
 	} Else {
-		Thing.doClick(generateSleepTime())
+		If(Thing.doClick(generateSleepTime()) == False) {
+			Thing.moveAndClick(b.areas["equipGlovesBounds"].generateCoords(),, generateSleepTime())
+		}
 	}
+	
+	Sleep, generateSleepTime()
 }
 
 putOres() {
 	equipGloves("gold")
 	b.marks["blueMark"].moveAndClick()
 	Sleep, generateSleepTime(212, 419)
-	hoverThing(b.areas["purpleHoverBounds"])
+	earlyMouseMove(b.areas["purpleHoverBounds"])
 	
 	If(b.spots["thirdInvSlotEmpty"].waitForPixel() == False) {
 		MsgBox % "Either we're out of money or something fucked up"
-		Reload	
+		Reload
 	}
 }
 
 takeBars() {
 	b.marks["purpleMark"].moveAndClick()
-	hoverThing(b.areas["equipGlovesBounds"])
+	earlyMouseMove(b.areas["equipGlovesBounds"])
 	Sleep, generateSleepTime(1987, 2163)
 	
 	Loop, 5 {
-		If(b.spots["collectGoldBars"].waitForPixel(1000) == False) {
-			equipGloves("ice", True)
+		; Check if bars have not yet been smelted
+		If(b.spots["noBarsCheck"].checkPixelColor(250)) {
 			b.marks["purpleMark"].moveAndClick()
+			earlyMouseMove(b.areas["equipGlovesBounds"])
 			Sleep generateSleepTime(319, 445)
-		} Else {
+		}
+		; Check if the bars are molten and require Ice Gloves
+		If(b.spots["moltenBarsCheck"].checkPixelColor()) {
+			equipGloves("ice", (A_Index < 2))
+			b.marks["purpleMark"].moveAndClick()
+			If(b.spots["collectGoldBars"].waitForPixel(1000)) {
+				Send, 1
+				earlyMouseMove(b.marks["greenMark"])
+				b.spots["thirdInvSlotGoldBar"].waitForPixel()
+				Return True
+			}
+		}
+		; Check if the bars are cooled down before we even put on our gloves
+		If(b.spots["collectGoldBars"].waitForPixel(100)) {
 			Send, 1
-			hoverThing(b.marks["greenMark"])
+			earlyMouseMove(b.marks["greenMark"])
 			b.spots["thirdInvSlotGoldBar"].waitForPixel()
 			Return True
 		}
 	}
 	
-	MsgBox % "Unable to take bars"
-	Reload
+	;MsgBox % "Unable to take bars"
+	;Reload
+}
+
+takeBarsAux() {
+	If(b.spots["collectGoldBars"].waitForPixel(1000)) {
+		Send, 1
+		earlyMouseMove(b.marks["greenMark"])
+		b.spots["thirdInvSlotGoldBar"].waitForPixel()
+		Return True
+	}
 }
 
 openBank() {
@@ -330,7 +349,7 @@ closeBank() {
 
 blastGold() {
 	Loop {
-		drinkStam()
+		;drinkStam()
 		putOres()
 		takeBars()
 		openBank()
