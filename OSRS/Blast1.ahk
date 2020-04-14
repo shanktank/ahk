@@ -22,7 +22,7 @@ SendMode, Input
 Class Thing {
 	Static name := ""
 	
-	__New(n, w) {
+	__New(n) {
 		This.name := n
 	}
 	
@@ -30,19 +30,26 @@ Class Thing {
 		RandomBezier(newCoords[1], newCoords[2], optString)
 	}
 	
-	doClick(sleepFor := 100, numClicks := 1) {
+	doClick(sleepFor := 0, numClicks := 1) {
 		Loop, %numClicks% {
 			Sleep, generateSleepTime(52, 163)
 			Click
 		}
+		
+		If(sleepFor == 0)
+			sleepFor := generateSleepTime()
         Sleep, sleepFor
 	}
 	
-	moveAndClick(clickCoords, optString := "", sleepFor := 100, numClicks := 1, attemptNo := 1) {
+	moveAndClick(clickCoords, optString := "", sleepFor := 0, numClicks := 1, attemptNo := 1) {
+		If(sleepFor == 0)
+			sleepFor := generateSleepTime()
+		
 		mouseSpeed := DecideSpeed(CalculateDistance(clickCoords))
 		If(attemptNo > 1)
 			mouseSpeed := mouseSpeed / 2
 		optString := "T"(mouseSpeed)" OT38 OB40 OL40 OR39 P2-3"
+		
 		This.moveMouse(clickCoords, optString)
 		This.doClick(sleepFor, numClicks)
     }
@@ -57,24 +64,32 @@ Class Mark Extends Thing {
 	
 	__New(n, c, pxy, mxy) {
 		Base.__New(n)
+		
 		This.colour      := c
 		This.playRoomXY  := pxy
 		This.minOffsetXY := mxy
 	}
 	
-	moveAndClick(optString := "", sleepFor := 100, numClicks := 1) {
+	moveAndClick(optString := "", sleepFor := 0, numClicks := 1) {
 		While(This.checkClick() == False) {
-			Sleep, generateSleepTime(184, 319)
-			Base.moveAndClick(This.generateCoords(), optString, sleepFor, numClicks, A_Index)
-			If(A_Index > 10)
+			If(A_Index > 10) {
 				Return False
+			}
+		
+			Sleep, generateSleepTime(184, 319)
+			
+			If(sleepFor == 0)
+				sleepFor := generateSleepTime()
+			Base.moveAndClick(This.generateCoords(), optString, sleepFor, numClicks, A_Index)
 		}
+		
 		Return True
 	}
 	
 	checkClick() {
 		MouseGetPos, X, Y
 		PixelGetColor, pixelColor, X, Y, RGB
+		
 		Return pixelColor == This.RED
 	}
 				
@@ -95,8 +110,10 @@ Class Mark Extends Thing {
 	
 	generateCoords() {
 		XY := This.findPixel()
+		
 		Random, X, XY[1] + This.playRoomXY[1], XY[1] + This.minOffsetXY[1]
 		Random, Y, XY[2] + This.playRoomXY[2], XY[2] + This.minOffsetXY[2]
+		
 		Return [ X, Y ]
 	}
 }
@@ -107,24 +124,29 @@ Class Spot Extends Thing {
 	
 	__New(n, c, fxy) {
 		Base.__New(n)
+		
 		This.colour  := c
 		This.fixedXY := fxy
 	}
 	
 	checkPixelColor() {
 		PixelGetColor, pixelColor, This.fixedXY[1], This.fixedXY[2], RGB
+		
 		Return pixelColor == This.colour
 	}
 	
 	waitForPixel(timeout := 10000, hoverNext := 0) {
 		sleepFor := 100
 		sleepNum := timeout / sleepFor
+		
 		Loop, %sleepNum% {
 			Sleep, sleepFor
+			
 			If(This.checkPixelColor()) {
 				Return True
 			}
 		}
+		
 		Return False
 	}
 }
@@ -135,6 +157,7 @@ Class Area Extends Thing {
 	
 	__New(n, lxy, hxy) {
 		Base.__New(n)
+		
 		This.lowXY  := lxy
 		This.highXY := hxy
 	}
@@ -142,6 +165,7 @@ Class Area Extends Thing {
 	generateCoords() {
 		Random, X, This.lowXY[1], This.highXY[1]
 		Random, Y, This.lowXY[2], This.highXY[2]
+		
 		Return [ X, Y ]
 	}
 }
@@ -157,7 +181,8 @@ Class Blast {
 		This.marks["greenMark"]  				:= New Mark("greenMark",  0x00FF00, [ -20, 25 ], [ -2, 2 ])
 		
 		This.spots["inventoryOpen"]				:= New Spot("inventoryOpen",          0x78281F, [ 1210, 1010 ])
-		This.spots["stamPotionBuff"]			:= New Spot("stamPotionBuff",         0xA37E4B, [ 1320,  108 ])
+		This.spots["stamPotionBuff1"]			:= New Spot("stamPotionBuff1",        0xA37E4B, [ 1320,  108 ])
+		This.spots["stamPotionBuff2"]			:= New Spot("stamPotionBuff2",        0xE4733D, [ 1430,  200 ])
 		This.spots["firstInvSlotEmpty"]			:= New Spot("firstInvSlotEmpty",      0x3E3529, [ 1420,  680 ])
 		This.spots["firstInvSlotAddyBars"]		:= New Spot("firstInvSlotAddyBars",   0x2A352A, [ 1420,  680 ])
 		This.spots["firstInvSlotGoldBars"]		:= New Spot("firstInvSlotGoldBars",   0x745E0D, [ 1420,  680 ])
@@ -199,26 +224,26 @@ generateSleepTime(lowerBound := 109, upperBound := 214) {
 hoverThing(thing) {
 	newCoords  := thing.generateCoords()
 	mouseSpeed := DecideSpeed(CalculateDistance(newCoords))
-	optString  := "T"(mouseSpeed)(optStringSuffix)
+	optString  := "T"(mouseSpeed)" OT38 OB40 OL40 OR39 P2-3"
 	
 	thing.moveMouse(newCoords, optString)
 }
 
 drinkStam() {
-	If(b.spots["stamPotionBuff"].checkPixelColor() == False) {
+	If(b.spots["stamPotionBuff1"].checkPixelColor() == False && b.spots["stamPotionBuff2"].checkPixelColor() == False) {
 		Thing.moveAndClick(b.areas["drinkStamBounds"].generateCoords(),, generateSleepTime())
 	}
 }
 
-equipGloves(gloves) {
-	If(gloves == "gold") {
-		If(b.spots["firstInvSlotGoldGloves"].checkPixelColor()) {
-			Thing.moveAndClick(b.areas["equipGlovesBounds"].generateCoords(),, generateSleepTime())
-		}
-	} Else If(gloves == "ice") {
-		If(b.spots["firstInvSlotIceGloves"].checkPixelColor()) {
-			Thing.moveAndClick(b.areas["equipGlovesBounds"].generateCoords(),, generateSleepTime())
-		}
+equipGloves(gloves, alreadyThere := False) {
+	If((gloves == "gold" && !b.spots["firstInvSlotGoldGloves"].checkPixelColor()) Or (gloves == "ice" && !b.spots["firstInvSlotIceGloves"].checkPixelColor())) {
+		Return
+	}
+
+	If(alreadyThere == False) {
+		Thing.moveAndClick(b.areas["equipGlovesBounds"].generateCoords(),, generateSleepTime())
+	} Else {
+		Thing.doClick(generateSleepTime())
 	}
 }
 
@@ -227,6 +252,7 @@ putOres() {
 	b.marks["blueMark"].moveAndClick()
 	Sleep, generateSleepTime(212, 419)
 	hoverThing(b.areas["purpleHoverBounds"])
+	
 	If(b.spots["thirdInvSlotEmpty"].waitForPixel() == False) {
 		MsgBox % "Either we're out of money or something fucked up"
 		Reload	
@@ -236,13 +262,13 @@ putOres() {
 takeBars() {
 	b.marks["purpleMark"].moveAndClick()
 	hoverThing(b.areas["equipGlovesBounds"])
-	Sleep, generateSleepTime(2099, 2263)
+	Sleep, generateSleepTime(1987, 2163)
 	
 	Loop, 5 {
 		If(b.spots["collectGoldBars"].waitForPixel(1000) == False) {
-			equipGloves("ice")
+			equipGloves("ice", True)
 			b.marks["purpleMark"].moveAndClick()
-			Sleep, generateSleepTime(319, 445)
+			Sleep generateSleepTime(319, 445)
 		} Else {
 			Send, 1
 			hoverThing(b.marks["greenMark"])
@@ -256,7 +282,11 @@ takeBars() {
 }
 
 openBank() {
-	b.marks["greenMark"].moveAndClick()
+	b.marks["greenMark"].doClick()
+	If(Mark.checkClick() == False) {
+		b.marks["greenMark"].moveAndClick()
+	}
+	
 	If(b.spots["bankOpenCheck1"].waitForPixel(generateSleepTime(4880, 5212)) Or b.spots["bankOpenCheck2"].checkPixelColor()) {
 		Return True
 	} Else {
@@ -300,7 +330,7 @@ closeBank() {
 
 blastGold() {
 	Loop {
-		;drinkStam()
+		drinkStam()
 		putOres()
 		takeBars()
 		openBank()
@@ -313,7 +343,6 @@ blastGold() {
 ; == Globals ======================================================================================================================================= ;
 ; ================================================================================================================================================== ;
 
-Global optStringSuffix := " OT38 OB40 OL40 OR39 P2-3"
 Global b := New Blast()
 
 ; ================================================================================================================================================== ;
