@@ -228,16 +228,18 @@ drinkStam() {
 }
 
 equipGloves(gloves, alreadyThere := False) {
+	; If the gloves we want to equip are already equipped (e.g. not in the inventory), return without doing anything.
 	If((gloves == "gold" && !b.spots["firstInvSlotGoldGloves"].checkPixelColor()) Or (gloves == "ice" && !b.spots["firstInvSlotIceGloves"].checkPixelColor())) {
 		Return
 	}
 
-	If(alreadyThere == False) {
-		Thing.moveAndClick(b.areas["equipGlovesBounds"].generateCoords(),, generateSleepTime())
-	} Else {
+	; If the cursor is already where we need to click, simply click. Otherwise, move and click.
+	If(alreadyThere == True) {
 		If(Thing.doClick(generateSleepTime()) == False) {
 			Thing.moveAndClick(b.areas["equipGlovesBounds"].generateCoords(),, generateSleepTime())
 		}
+	} Else {
+		Thing.moveAndClick(b.areas["equipGlovesBounds"].generateCoords(),, generateSleepTime())
 	}
 	
 	Sleep, generateSleepTime()
@@ -278,8 +280,8 @@ takeBars() {
 				Return True
 			}
 		}
-		; Check if the bars are cooled down before we even put on our gloves
-		If(b.spots["collectGoldBars"].waitForPixel(100)) {
+		; Check if the bars are cooled down before we even got to them
+		If(b.spots["collectGoldBars"].waitForPixel(250)) {
 			Send, 1
 			earlyMouseMove(b.marks["greenMark"])
 			b.spots["thirdInvSlotGoldBar"].waitForPixel()
@@ -287,28 +289,20 @@ takeBars() {
 		}
 	}
 	
-	;MsgBox % "Unable to take bars"
-	;Reload
-}
-
-takeBarsAux() {
-	If(b.spots["collectGoldBars"].waitForPixel(1000)) {
-		Send, 1
-		earlyMouseMove(b.marks["greenMark"])
-		b.spots["thirdInvSlotGoldBar"].waitForPixel()
-		Return True
-	}
+	MsgBox % "Unable to take bars"
+	Reload
 }
 
 openBank() {
-	b.marks["greenMark"].doClick()
-	If(Mark.checkClick() == False) {
+	If(b.marks["greenMark"].doClick() == False) {
 		b.marks["greenMark"].moveAndClick()
 	}
 	
+	; Wait ~5 seconds for first attempt to open bank, since it's a bit of a run
 	If(b.spots["bankOpenCheck1"].waitForPixel(generateSleepTime(4880, 5212)) Or b.spots["bankOpenCheck2"].checkPixelColor()) {
 		Return True
 	} Else {
+		; We should at least be near the bank by now, so subsequent attempts are afforded less time
 		Loop, 3 {
 			b.marks["greenMark"].moveAndClick()
 			If(b.spots["bankOpenCheck"].waitForPixel(generateSleepTime(879, 1214)) Or b.spots["bankOpenCheck2"].checkPixelColor()) {
@@ -317,20 +311,24 @@ openBank() {
 		}
 	}
 	
-	MsgBox % "Unable to open bank"
+	MsgBox % "Unable to open bank."
 	Reload
 }
 
 useBank() {
+	; Check to see if we're out of ore
 	If(b.spots["goldOresExhustedCheck"].checkPixelColor()) {
 		Thing.moveAndClick(b.areas["depositAllBounds"].generateCoords(),, generateSleepTime())
-		MsgBox % "No more gold ore. Looks like we're done!"
+		
+		MsgBox % "No more ore. Looks like we're done!"
 		Reload
 	}
 
+	; Deposit bars, withdraw ore
 	Thing.moveAndClick(b.areas["thirdInvSlotBounds"].generateCoords(),, generateSleepTime())
 	Thing.moveAndClick(b.areas["withdrawGoldOreBounds"].generateCoords(),, generateSleepTime())
 	
+	; Deposit empty vial, withdraw potion
 	If(b.spots["secondInvSlotStamEmpty"].checkPixelColor()) {
 		Thing.moveAndClick(b.areas["drinkStamBounds"].generateCoords(),, generateSleepTime())
 		Thing.moveAndClick(b.areas["withdrawStamBounds"].generateCoords(),, generateSleepTime())
@@ -341,6 +339,7 @@ closeBank() {
 	Send, {Esc}
 	Sleep, generateSleepTime(124, 241)
 	
+	; Check to see if we somehow closed the inventory while exiting bank
 	If(b.spots["inventoryOpen"].checkPixelColor() == False) {
 		Send, {Esc}
 		Sleep, generateSleepTime()
@@ -349,7 +348,7 @@ closeBank() {
 
 blastGold() {
 	Loop {
-		;drinkStam()
+		drinkStam()
 		putOres()
 		takeBars()
 		openBank()
