@@ -32,9 +32,9 @@ Class Thing {
 		
 		; Click and validate
 		Click
-		Sleep, 100
 		valid := This.checkClick()
 		
+		; Generate small sleep time if not already provided
 		If(sleepFor == 0)
 			sleepFor := generateSleepTime()
         Sleep, sleepFor
@@ -42,11 +42,19 @@ Class Thing {
 		Return valid
 	}
 	
-	checkClick() {
-		MouseGetPos, X, Y
-		PixelGetColor, pixelColor, X, Y, RGB
+	checkClick(timeout:=100, frequency:=5) {
+		MouseGetPos, X, Y	
 		
-		Return pixelColor == This.RED
+		Loop % (timeout / frequency) {
+			PixelGetColor, pixelColor, X, Y, RGB
+			If(pixelColor == This.RED) {
+				Return True
+			}
+			
+			Sleep, frequency
+		}
+		
+		Return False
 	}
 	
 	moveAndClick(clickCoords, optString := "", sleepFor := 0, attemptNo := 1) {
@@ -122,13 +130,9 @@ Class Spot Extends Thing {
 		Return pixelColor == This.colour
 	}
 	
-	waitForPixel(timeout := 10000, hoverNext := 0) {
-		sleepFor := 100
-		sleepNum := timeout / sleepFor
-		
-		Loop, %sleepNum% {
-			Sleep, sleepFor
-			
+	waitForPixel(timeout:=10000, hoverNext:=0, frequency:=20) {	
+		Loop % (timeout / frequency) {
+			Sleep, frequency
 			If(This.checkPixelColor()) {
 				Return True
 			}
@@ -381,6 +385,10 @@ F4::
 	ToolTip, Green, %XXX%, %YYY%
 	Return
 */
+
+F4::
+	Thing.doClick()
+	Return
 
 ; ================================================================================================================================================== ;
 ; == Controls ====================================================================================================================================== ;
