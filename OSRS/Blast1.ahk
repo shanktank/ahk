@@ -236,6 +236,7 @@ putOres() {
 
 takeBars() {
 	b.marks["purpleMark"].moveAndClick()
+	hoverThing(b.areas["firstInvSlotIceGloves"])
 	Sleep, generateSleepTime(1987, 2263)
 	
 	Loop, 5 {
