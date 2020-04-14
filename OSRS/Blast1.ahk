@@ -30,7 +30,7 @@ Class Thing {
 		RandomBezier(newCoords[1], newCoords[2], optString)
 	}
 	
-	doClick(sleepFor := 200, numClicks := 1) {
+	doClick(sleepFor := 100, numClicks := 1) {
 		Loop, %numClicks% {
 			Sleep, generateSleepTime(52, 163)
 			Click
@@ -183,7 +183,6 @@ Class Blast {
 		This.areas["drinkStamBounds"]			:= New Area("drinkStamBounds",       [ 1463, 665 ], [ 1486, 691 ])
 		This.areas["thirdInvSlotBounds"]		:= New Area("thirdInvSlotBounds",    [ 1518, 664 ], [ 1548, 689 ])
 		This.areas["purpleHoverBounds"]			:= New Area("purpleHoverBounds",     [  680, 630 ], [  860, 810 ])
-		This.areas["greenHoverBounds"]			:= New Area("greenHoverBounds",      [  ], [  ])
 	}
 }
 
@@ -197,12 +196,12 @@ generateSleepTime(lowerBound := 109, upperBound := 214) {
 	Return sleepFor
 }
 
-hoverThing(area) {
-	newCoords  := area.generateCoords()
+hoverThing(thing) {
+	newCoords  := thing.generateCoords()
 	mouseSpeed := DecideSpeed(CalculateDistance(newCoords))
 	optString  := "T"(mouseSpeed)(optStringSuffix)
 	
-	area.moveMouse(newCoords, optString)
+	thing.moveMouse(newCoords, optString)
 }
 
 drinkStam() {
@@ -236,8 +235,8 @@ putOres() {
 
 takeBars() {
 	b.marks["purpleMark"].moveAndClick()
-	hoverThing(b.areas["firstInvSlotIceGloves"])
-	Sleep, generateSleepTime(1987, 2263)
+	hoverThing(b.areas["equipGlovesBounds"])
+	Sleep, generateSleepTime(2099, 2263)
 	
 	Loop, 5 {
 		If(b.spots["collectGoldBars"].waitForPixel(1000) == False) {
