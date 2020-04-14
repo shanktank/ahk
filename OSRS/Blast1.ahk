@@ -20,23 +20,28 @@ SendMode, Input
 ; ================================================================================================================================================== ;
 
 Class Thing {
+	Static RED := 0xFF0000
+
 	moveMouse(newCoords, optString := "") {
 		RandomBezier(newCoords[1], newCoords[2], optString)
 	}
 	
-	doClick(sleepFor := 0, numClicks := 1) {
-		Loop, %numClicks% {
-			Sleep, generateSleepTime(52, 163)
-			Click
-		}
+	doClick(sleepFor := 0) {
+		; Pre-click sleep
+		Sleep, generateSleepTime(52, 163)
+		
+		; Click and validate
+		Click
+		Sleep, 100
+		valid := This.checkClick()
 		
 		If(sleepFor == 0)
 			sleepFor := generateSleepTime()
         Sleep, sleepFor
 		
-		Return This.checkClick()
+		Return valid
 	}
-		
+	
 	checkClick() {
 		MouseGetPos, X, Y
 		PixelGetColor, pixelColor, X, Y, RGB
@@ -44,17 +49,14 @@ Class Thing {
 		Return pixelColor == This.RED
 	}
 	
-	moveAndClick(clickCoords, optString := "", sleepFor := 0, numClicks := 1, attemptNo := 1) {
-		If(sleepFor == 0)
-			sleepFor := generateSleepTime()
-		
+	moveAndClick(clickCoords, optString := "", sleepFor := 0, attemptNo := 1) {
 		mouseSpeed := DecideSpeed(CalculateDistance(clickCoords))
 		If(attemptNo > 1)
 			mouseSpeed := mouseSpeed / 3
 		optString := "T"(mouseSpeed)" OT38 OB40 OL40 OR39 P2-3"
 		
 		This.moveMouse(clickCoords, optString)
-		This.doClick(sleepFor, numClicks)
+		Return This.doClick(sleepFor)
     }
 }
 
@@ -63,28 +65,21 @@ Class Mark Extends Thing {
 	Static playRoomXY  := [ ]
 	Static minOffsetXY := [ ]
 	
-	Static RED := 0xFF0000
-	
 	__New(c, pxy, mxy) {
 		This.colour      := c
 		This.playRoomXY  := pxy
 		This.minOffsetXY := mxy
 	}
 	
-	moveAndClick(optString := "", sleepFor := 0, numClicks := 1) {
-		While(This.checkClick() == False) {
-			If(A_Index > 10) {
-				Return False
-			}
-		
+	moveAndClick(optString := "", sleepFor := 0) {
+		While(A_Index < 10) {
 			Sleep, generateSleepTime(184, 319)
-			
-			If(sleepFor == 0)
-				sleepFor := generateSleepTime()
-			Base.moveAndClick(This.generateCoords(), optString, sleepFor, numClicks, A_Index)
+			If(Base.moveAndClick(This.generateCoords(), optString, sleepFor, A_Index) == True) {
+				Return True
+			}
 		}
 		
-		Return True
+		Return False
 	}
 				
 	findPixel() {
@@ -263,14 +258,24 @@ takeBars() {
 	Sleep, generateSleepTime(1987, 2163)
 	
 	Loop, 5 {
+		; Check if the bars are cooled down before we even got to them
+		If(b.spots["collectGoldBars"].waitForPixel(250)) {
+			ToolTip, c1, 0, 0
+			Send, 1
+			earlyMouseMove(b.marks["greenMark"])
+			b.spots["thirdInvSlotGoldBar"].waitForPixel()
+			Return True
+		}
 		; Check if bars have not yet been smelted
 		If(b.spots["noBarsCheck"].checkPixelColor(250)) {
+			ToolTip, c2, 0, 0
 			b.marks["purpleMark"].moveAndClick()
 			earlyMouseMove(b.areas["equipGlovesBounds"])
 			Sleep generateSleepTime(319, 445)
 		}
 		; Check if the bars are molten and require Ice Gloves
 		If(b.spots["moltenBarsCheck"].checkPixelColor()) {
+			ToolTip, c3, 0, 0
 			equipGloves("ice", (A_Index < 2))
 			b.marks["purpleMark"].moveAndClick()
 			If(b.spots["collectGoldBars"].waitForPixel(1000)) {
@@ -279,13 +284,6 @@ takeBars() {
 				b.spots["thirdInvSlotGoldBar"].waitForPixel()
 				Return True
 			}
-		}
-		; Check if the bars are cooled down before we even got to them
-		If(b.spots["collectGoldBars"].waitForPixel(250)) {
-			Send, 1
-			earlyMouseMove(b.marks["greenMark"])
-			b.spots["thirdInvSlotGoldBar"].waitForPixel()
-			Return True
 		}
 	}
 	
@@ -348,7 +346,7 @@ closeBank() {
 
 blastGold() {
 	Loop {
-		drinkStam()
+		;drinkStam()
 		putOres()
 		takeBars()
 		openBank()
@@ -371,6 +369,7 @@ F1::
 	blastGold()
 	Return
 
+/*
 F4::
 	PixelSearch, XXX, YYY, 0, 25, 1350, 850, 0x0000FF, 25, RGB, Fast
 	ToolTip, Blue, %XXX%, %YYY%
@@ -381,11 +380,11 @@ F4::
 	PixelSearch, XXX, YYY, 0, 25, 1350, 850, 0x00FF00, 25, RGB, Fast
 	ToolTip, Green, %XXX%, %YYY%
 	Return
+*/
 
 ; ================================================================================================================================================== ;
 ; == Controls ====================================================================================================================================== ;
 ; ================================================================================================================================================== ;
 
-#If
 ^R::Reload
 +^C::ExitApp
