@@ -20,51 +20,41 @@ SendMode, Input
 ; ================================================================================================================================================== ;
 
 Class Thing {
-	Static RED := 0xFF0000
-
 	moveMouse(newCoords, optString := "") {
 		RandomBezier(newCoords[1], newCoords[2], optString)
 	}
 	
-	doClick(validateClick:=False, sleepFor:=0) {
-		; Pre-click sleep
-		Sleep, generateSleepTime(52, 163)
+	doClick(sleepFor := 0, numClicks := 1) {
+		Loop, %numClicks% {
+			Sleep, generateSleepTime(52, 163)
+			Click
+		}
 		
-		; Click and validate
-		Click
-		valid := This.checkClick()
-		
-		; Generate small sleep time if not already provided
 		If(sleepFor == 0)
 			sleepFor := generateSleepTime()
         Sleep, sleepFor
 		
-		Return valid
+		Return This.checkClick()
+	}
+		
+	checkClick() {
+		MouseGetPos, X, Y
+		PixelGetColor, pixelColor, X, Y, RGB
+		
+		Return pixelColor == This.RED
 	}
 	
-	checkClick(timeout:=100, frequency:=5) {
-		MouseGetPos, X, Y	
+	moveAndClick(clickCoords, optString := "", sleepFor := 0, numClicks := 1, attemptNo := 1) {
+		If(sleepFor == 0)
+			sleepFor := generateSleepTime()
 		
-		Loop % (timeout / frequency) {
-			PixelGetColor, pixelColor, X, Y, RGB
-			If(pixelColor == This.RED) {
-				Return True
-			}
-			
-			Sleep, frequency
-		}
-		
-		Return False
-	}
-	
-	moveAndClick(clickCoords, optString:="", validateClick:=False, sleepFor:=0, attemptNo:=1) {
 		mouseSpeed := DecideSpeed(CalculateDistance(clickCoords))
 		If(attemptNo > 1)
 			mouseSpeed := mouseSpeed / 3
 		optString := "T"(mouseSpeed)" OT38 OB40 OL40 OR39 P2-3"
 		
 		This.moveMouse(clickCoords, optString)
-		Return This.doClick(validateClick, sleepFor)
+		This.doClick(sleepFor, numClicks)
     }
 }
 
@@ -73,21 +63,28 @@ Class Mark Extends Thing {
 	Static playRoomXY  := [ ]
 	Static minOffsetXY := [ ]
 	
+	Static RED := 0xFF0000
+	
 	__New(c, pxy, mxy) {
 		This.colour      := c
 		This.playRoomXY  := pxy
 		This.minOffsetXY := mxy
 	}
 	
-	moveAndClick(optString:="", validateClick:=True, sleepFor:=0) {
-		While(A_Index < 10) {
-			Sleep, generateSleepTime(184, 319)
-			If(Base.moveAndClick(This.generateCoords(), optString, validateClick, sleepFor, A_Index) == True) {
-				Return True
+	moveAndClick(optString := "", sleepFor := 0, numClicks := 1) {
+		While(This.checkClick() == False) {
+			If(A_Index > 10) {
+				Return False
 			}
+		
+			Sleep, generateSleepTime(184, 319)
+			
+			If(sleepFor == 0)
+				sleepFor := generateSleepTime()
+			Base.moveAndClick(This.generateCoords(), optString, sleepFor, numClicks, A_Index)
 		}
 		
-		Return False
+		Return True
 	}
 				
 	findPixel() {
@@ -130,9 +127,13 @@ Class Spot Extends Thing {
 		Return pixelColor == This.colour
 	}
 	
-	waitForPixel(timeout:=10000, hoverNext:=0, frequency:=20) {	
-		Loop % (timeout / frequency) {
-			Sleep, frequency
+	waitForPixel(timeout := 10000, hoverNext := 0) {
+		sleepFor := 100
+		sleepNum := timeout / sleepFor
+		
+		Loop, %sleepNum% {
+			Sleep, sleepFor
+			
 			If(This.checkPixelColor()) {
 				Return True
 			}
@@ -189,7 +190,6 @@ Class Blast {
 		This.spots["goldOresExhustedCheck"]		:= New Spot(0x937A25, [  707,  343 ])
 		This.spots["moltenBarsCheck"]			:= New Spot(0x0A0907, [  105,  905 ])
 		This.spots["noBarsCheck"]				:= New Spot(0x0B0A08, [  175,  905 ])
-		This.spots["goldBarsDoneIndicator"]		:= New Spot(0xB19015, [   33,   74 ])
 		
 		This.areas["depositAllBounds"]			:= New Area([  902, 779 ], [  939, 815 ])
 		This.areas["withdrawAddyOreBounds"]		:= New Area([  561, 326 ], [  593, 356 ])
@@ -223,26 +223,26 @@ earlyMouseMove(thing) {
 
 drinkStam() {
 	If(b.spots["stamPotionBuff1"].checkPixelColor() == False && b.spots["stamPotionBuff2"].checkPixelColor() == False) {
-		Thing.moveAndClick(b.areas["drinkStamBounds"].generateCoords())
+		Thing.moveAndClick(b.areas["drinkStamBounds"].generateCoords(),, generateSleepTime())
 	}
 }
 
 equipGloves(gloves, alreadyThere := False) {
 	; If the gloves we want to equip are already equipped (e.g. not in the inventory), return without doing anything.
-	If((gloves == "gold" && !b.spots["firstInvSlotGoldGloves"].checkPixelColor()) || (gloves == "ice" && !b.spots["firstInvSlotIceGloves"].checkPixelColor())) {
+	If((gloves == "gold" && !b.spots["firstInvSlotGoldGloves"].checkPixelColor()) Or (gloves == "ice" && !b.spots["firstInvSlotIceGloves"].checkPixelColor())) {
 		Return
 	}
 
 	; If the cursor is already where we need to click, simply click. Otherwise, move and click.
-	;If(alreadyThere == True) {
-	;	If(Thing.doClick() == False) {
-	;		Thing.moveAndClick(b.areas["equipGlovesBounds"].generateCoords())
-	;	}
-	;} Else {
-		Thing.moveAndClick(b.areas["equipGlovesBounds"].generateCoords())
-	;}
+	If(alreadyThere == True) {
+		If(Thing.doClick(generateSleepTime()) == False) {
+			Thing.moveAndClick(b.areas["equipGlovesBounds"].generateCoords(),, generateSleepTime())
+		}
+	} Else {
+		Thing.moveAndClick(b.areas["equipGlovesBounds"].generateCoords(),, generateSleepTime())
+	}
 	
-	;Sleep, generateSleepTime()
+	Sleep, generateSleepTime()
 }
 
 putOres() {
@@ -263,20 +263,15 @@ takeBars() {
 	Sleep, generateSleepTime(1987, 2163)
 	
 	Loop, 5 {
-		; Check if the bars are cooled down before we even got to them
-		If(b.spots["collectGoldBars"].waitForPixel(50)) {
-			ToolTip, cooled, 0, 0
-			Send, 1
-			earlyMouseMove(b.marks["greenMark"])
-			b.spots["thirdInvSlotGoldBar"].waitForPixel()
-			Return True
+		; Check if bars have not yet been smelted
+		If(b.spots["noBarsCheck"].checkPixelColor(250)) {
+			b.marks["purpleMark"].moveAndClick()
+			earlyMouseMove(b.areas["equipGlovesBounds"])
+			Sleep generateSleepTime(319, 445)
 		}
 		; Check if the bars are molten and require Ice Gloves
-		If(b.spots["moltenBarsCheck"].checkPixelColor(50)) {
-			ToolTip, molten, 0, 0
-			;equipGloves("ice", (A_Index < 2))
-			equipGloves("ice")
-			Sleep generateSleepTime()
+		If(b.spots["moltenBarsCheck"].checkPixelColor()) {
+			equipGloves("ice", (A_Index < 2))
 			b.marks["purpleMark"].moveAndClick()
 			If(b.spots["collectGoldBars"].waitForPixel(1000)) {
 				Send, 1
@@ -285,12 +280,12 @@ takeBars() {
 				Return True
 			}
 		}
-		; Check if bars have not yet been smelted
-		If(b.spots["noBarsCheck"].checkPixelColor(50)) {
-			ToolTip, unsmelted, 0, 0
-			b.marks["purpleMark"].moveAndClick()
-			earlyMouseMove(b.areas["equipGlovesBounds"])
-			Sleep generateSleepTime()
+		; Check if the bars are cooled down before we even got to them
+		If(b.spots["collectGoldBars"].waitForPixel(250)) {
+			Send, 1
+			earlyMouseMove(b.marks["greenMark"])
+			b.spots["thirdInvSlotGoldBar"].waitForPixel()
+			Return True
 		}
 	}
 	
@@ -299,7 +294,7 @@ takeBars() {
 }
 
 openBank() {
-	If(b.marks["greenMark"].doClick(True) == False) {
+	If(b.marks["greenMark"].doClick() == False) {
 		b.marks["greenMark"].moveAndClick()
 	}
 	
@@ -323,20 +318,20 @@ openBank() {
 useBank() {
 	; Check to see if we're out of ore
 	If(b.spots["goldOresExhustedCheck"].checkPixelColor()) {
-		Thing.moveAndClick(b.areas["depositAllBounds"].generateCoords())
+		Thing.moveAndClick(b.areas["depositAllBounds"].generateCoords(),, generateSleepTime())
 		
 		MsgBox % "No more ore. Looks like we're done!"
 		Reload
 	}
 
 	; Deposit bars, withdraw ore
-	Thing.moveAndClick(b.areas["thirdInvSlotBounds"].generateCoords())
-	Thing.moveAndClick(b.areas["withdrawGoldOreBounds"].generateCoords())
+	Thing.moveAndClick(b.areas["thirdInvSlotBounds"].generateCoords(),, generateSleepTime())
+	Thing.moveAndClick(b.areas["withdrawGoldOreBounds"].generateCoords(),, generateSleepTime())
 	
 	; Deposit empty vial, withdraw potion
 	If(b.spots["secondInvSlotStamEmpty"].checkPixelColor()) {
-		Thing.moveAndClick(b.areas["drinkStamBounds"].generateCoords())
-		Thing.moveAndClick(b.areas["withdrawStamBounds"].generateCoords())
+		Thing.moveAndClick(b.areas["drinkStamBounds"].generateCoords(),, generateSleepTime())
+		Thing.moveAndClick(b.areas["withdrawStamBounds"].generateCoords(),, generateSleepTime())
 	}
 }
 
@@ -353,7 +348,7 @@ closeBank() {
 
 blastGold() {
 	Loop {
-		;drinkStam()
+		drinkStam()
 		putOres()
 		takeBars()
 		openBank()
@@ -376,7 +371,6 @@ F1::
 	blastGold()
 	Return
 
-/*
 F4::
 	PixelSearch, XXX, YYY, 0, 25, 1350, 850, 0x0000FF, 25, RGB, Fast
 	ToolTip, Blue, %XXX%, %YYY%
@@ -387,7 +381,6 @@ F4::
 	PixelSearch, XXX, YYY, 0, 25, 1350, 850, 0x00FF00, 25, RGB, Fast
 	ToolTip, Green, %XXX%, %YYY%
 	Return
-*/
 
 ; ================================================================================================================================================== ;
 ; == Controls ====================================================================================================================================== ;
