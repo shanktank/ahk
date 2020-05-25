@@ -39,7 +39,7 @@ Class Thing {
 	}
 	
 	moveAndClick(clickCoords, optString := "", sleepFor := 100, numClicks := 1, attemptNo := 1) {
-		mouseSpeed := DecideSpeed(CalculateDistance(clickCoords))
+		mouseSpeed := DecideSpeed(CalculateDistance(clickCoords), 2)
 		If(attemptNo > 1)
 			mouseSpeed := mouseSpeed / 2
 		optString := "T"(mouseSpeed)" OT38 OB40 OL40 OR39 P2-3"
@@ -192,13 +192,12 @@ Class Blast {
 
 generateSleepTime(lowerBound := 109, upperBound := 214) {
 	Random, sleepFor, %lowerBound%, %upperBound%
-	
 	Return sleepFor
 }
 
 hoverThing(thing) {
 	newCoords  := thing.generateCoords()
-	mouseSpeed := DecideSpeed(CalculateDistance(newCoords))
+	mouseSpeed := DecideSpeed(CalculateDistance(newCoords), 2)
 	optString  := "T"(mouseSpeed)(optStringSuffix)
 	
 	thing.moveMouse(newCoords, optString)
@@ -229,7 +228,7 @@ putOres() {
 	hoverThing(b.areas["purpleHoverBounds"])
 	If(b.spots["thirdInvSlotEmpty"].waitForPixel() == False) {
 		MsgBox % "Either we're out of money or something fucked up"
-		Reload	
+		Reload
 	}
 }
 

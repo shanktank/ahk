@@ -25,4 +25,5 @@ Return
 	FileAppend, %PixelColor% (%MX%\, %MY%)\n, coords.txt
 	Return
 
++^R::Reload
 +^C::ExitApp
