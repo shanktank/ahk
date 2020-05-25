@@ -10,8 +10,6 @@ SetWorkingDir %A_ScriptDir%
 ; == Globals ======================================================================================================================================= ;
 ; ================================================================================================================================================== ;
 
-;Static Global MONITORS := { "left" : 3, "center" : 2, "right" : 1 }
-;GetMonitors()
 Global NULL =
 
 ; ================================================================================================================================================== ;
@@ -19,7 +17,7 @@ Global NULL =
 ; ================================================================================================================================================== ;
 
 ; Ctrl + H: Toggle hidden files
-^h::
+^H::
     #IfWinActive AHK_Class CabinetWClass
         RegRead, HiddenFiles_Status, HKEY_CURRENT_USER, Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced, Hidden
         If(HiddenFiles_Status = 2) {
@@ -32,7 +30,7 @@ Global NULL =
     Return
 
 ; Ctrl + Shift + H: Toggle hidden system files
-^+h::
+^+H::
     #IfWinActive AHK_Class CabinetWClass
         RegRead, SuperHidden, HKEY_CURRENT_USER, Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced, ShowSuperHidden
         If(SuperHidden = 0) {
@@ -48,6 +46,11 @@ Global NULL =
 ; == Launchers ===================================================================================================================================== ;
 ; ================================================================================================================================================== ;
 
+; Ctrl + Alt + Shift + O: Open Debian terminal.
+^!+O::
+    Run debian
+    Return
+
 ; Ctrl + Alt + Shift + P: Launch PuTTY.
 ^!+P::
     Run putty
@@ -58,60 +61,29 @@ Global NULL =
     Run putty -load super
     Return
 
-; Ctrl + Alt + Shift + O: Open Debian terminal.
-^!+O::
-    Run debian
+; Ctrl + Alt + Shift + O: Open PowerShell terminal.
+^!+L::
+    Run "C:/Users/User/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Windows PowerShell/PowerShell"
     Return
 
 ; Ctrl + Alt + Shift + I: Open Firefox.
 ^!+I::
-    Run C:/Program Files/Mozilla Firefox/firefox.exe
+    Run "C:/Program Files/Mozilla Firefox/firefox.exe"
     Return
 
 ; Ctrl + Alt + Shift + H: Open File Explorer to "Hotkeys" directory.
 ^!+H::
-    Run C:/Users/User/Documents/Git/ahk/
+    Run "C:/Users/User/Documents/Git/ahk/Scripts/Hotkeys/"
     Return
 
-; Ctrl + Alt + Shift + A: Open File Explorer to "AHK" directory.
+; Ctrl + Alt + Shift + A: Open File Explorer to "OSRS" AHK directory.
 ^!+A::
-    ;Run D:\\Documents\\Stuff\\AHK\\
-    Run Z:\\Documents\\AHK\\
+    Run "C:/Users/User/Documents/Git/ahk/Scripts/OSRS/"
     Return
 
 ; Ctrl + Alt + Shift + S: Open sound options
 ^!+S::
-    Run control mmsys.cpl sounds
-    Return
-
-; Win + E: Open File Explorer, centered on main monitor
-<#E::
-    ; If there's already an explorer opened to "Computer" or "C:\" then abort
-    If(WinExist("AHK_Class CabinetWClass", "Computer")) {
-        WinGet, winID, ID, AHK_Class CabinetWClass, Computer
-        If(ExplorerCurrentDirectory(winID) == "C:") {
-            Return
-        }
-    }
-    ; Get current window handle, open file explorer, then wait until former window is not active
-    activeWindow := "ahk_id " WinExist("a")
-    Run shell:mycomputerfolder
-    WinWaitNotActive, %activeWindow%, , 5
-    ; Scan for desired window
-    Loop, 100 {
-        ; If new window's type is File Explorer and is named "Computer"
-        #IfWinActive AHK_Class CabinetWClass && #IfWinActive Computer
-            ; Get primary monitor dimensions
-            SysGet, primaryMonitor, MonitorPrimary
-            halfPrimMonW := GetMonitorWorkArea("width", primaryMonitor) / 2
-            halfPrimMonH := GetMonitorWorkArea("height", primaryMonitor) / 2
-            ; Get window dimensions, calculate its new coordinates, move it, then Return
-            WinGetActiveStats, Computer, W, H, _, _
-            WinMove, , Computer, halfPrimMonW - W / 2, halfPrimMonH - H / 2
-            Return
-        #IfWinActive
-        Sleep, 10
-    }
+    Run Control mmsys.cpl Sounds
     Return
 
 ; ================================================================================================================================================== ;
@@ -122,8 +94,18 @@ Global NULL =
 <#-::
 <#NumpadSub::
     WinGetTitle, Window, A
-    ;WinMove, %Window%, , , , 1366, 768
-    WinMove, %Window%, , , , 1280, 720
+	WinGetPos,,, Width, Height, A
+
+	Widths := [ 1024, 1280, 1366 ]
+	Heights := [ 540, 576, 720 ]
+
+	If(Width == Widths[2] and Height == Heights[2])
+		WinMove, %Window%,,,, Widths[3], Heights[3]
+	Else If(Width == Widths[1] and Height == Heights[1])
+		WinMove, %Window%,,,, Widths[2], Heights[2]
+	Else
+		WinMove, %Window%,,,, Widths[1], Heights[1]
+
     Return
 
 ; ================================================================================================================================================== ;
@@ -476,28 +458,6 @@ MoveWindow(direction) {
 ; == Auxiliary functions =========================================================================================================================== ;
 ; ================================================================================================================================================== ;
 
-ValidWindow() {
-    exclude := ",Start,Program Manager,Sticky Notes,Vol_OSD"
-    WinGet, windows, List
-    Total := 0
-
-    Loop, %windows% {
-        id := windows%A_Index%
-
-        WinGetTitle, Title, ahk_id %id%
-
-        If Title In %exclude%
-            continue
-
-        WinGet, Min_Max, MinMax, ahk_id %id%
-
-        If(Min_Max = 1 || Min_Max = 0)
-            Return 1
-    }
-
-    Return 0
-}
-
 GetMonitorNumber(baseX, baseY, winX, winY, monCount) {
     i := 0
     monFound := 0
@@ -553,121 +513,4 @@ DoesMonitorExist(newWinX, newWinY, monCount) {
     }
 
     Return monitorFound
-}
-
-ExplorerCurrentDirectory(winID = "") {
-    WinGet, process, processName, % "ahk_id" winID := winID ? winID : WinExist("A")
-    WinGetClass winClass, ahk_id %winID%
-    If(process = "explorer.exe") {
-        If(winClass ~= "(Cabinet|Explore)WClass") {
-            For win In ComObjCreate("Shell.Application").Windows {
-                If(win.hwnd == winID) {
-                    path := win.Document.FocusedItem.path
-                }
-            }
-            SplitPath, path,,dir
-        }
-        Return dir
-    }
-    Return
-}
-
-GetIndex(haystack, needle) {
-    If(!IsObject(haystack)) {
-        Throw Exception("Bad haystack!", -1, haystack)
-    }
-
-    For index, value In haystack {
-        If(value = needle) {
-            Return index
-        }
-    }
-
-    Return -1
-}
-
-JoinArray(arrayToJoin, elementSeparator = " ") {
-    joinedString := ""
-
-    For elementIndex, arrayElement In arrayToJoin {
-        joinedString .= arrayElement . elementSeparator
-    }
-
-    Return joinedString
-}
-
-GetMonitors() {
-    CoordMode, ToolTip, Screen
-
-    MsgBox % GetMonitorNumber(0, 0, 0, 0, 3)
-    Return
-
-    SysGet, monCount, MonitorCount
-    monLefts := [ ]
-
-    monNum := 1
-    Loop %monCount% {
-        SysGet, Mon, Monitor, %monNum%
-        ;MsgBox % "MonLeft: " MonLeft
-        monLefts.Push(MonLeft)
-        monNum := monNum + 1
-    }
-    ;monNum := 1
-    ;Loop %monCount% {
-    ;   MsgBox % monLefts[monNum]
-    ;   monNum := monNum + 1
-    ;}
-    ;Return
-    monNums := [ ]
-    While(monLefts.Length() > 0) {
-        minLeft := Min(monLefts*)
-        minLeftIndex := GetIndex(monLefts, minLeft)
-        ;MsgBox % "monLefts.Length(): " monLefts.Length() " -- monLefts[minLeftIndex]: " monLefts[minLeftIndex] " -- minLeftIndex: " minLeftIndex
-        monNums.Push(monLefts[minLeftIndex])
-        monLefts.Remove(minLeftIndex)
-    }
-    MsgBox % "monNums.Length(): " monNums.Length()
-    monNum := 1
-    ;Loop %monCount% {
-    ;   MsgBox % "monNums[monNum]: " monNums[monNum]
-    ;   monNum := monNum + 1
-    ;}
-    monNumsStr := ""
-    delim := " "
-    For index, monNum In monNums
-        monNumsStr .= delim . monNum
-    MsgBox % "monNumsStr: " monNumsStr
-    ;For monNum in monNums {
-    ;   MsgBox % "monNum: " monNum
-    ;}
-    Return
-
-    ;SysGet, Mon1, Monitor, 1
-    ;SysGet, Mon2, Monitor, 2
-    ;SysGet, Mon3, Monitor, 3
-    ;MsgBox, 1: %Mon1Left%   2: %Mon2Left%   3: %Mon3Left%
-
-    mons := [ Mon1, Mon2, Mon3 ]
-    lefts := [ Mon1Left, Mon2Left, Mon3Left ]
-
-    monitors = []
-    While(lefts.Length() > 0) { ; or lefts.Count()?
-        min1 := Min(lefts*)
-        index := GetIndex(lefts, min1)
-        monitors.Push(mons[1])
-        mons.Delete(1)
-        lefts.Delete(1)
-    }
-    MsgBox, %monitors%
-    Return
-
-    ;If(Mon3Left > 1920)
-    ;   leftMon := 1
-    ;Else If(Mon3Left < 0)
-    ;   leftMon := 3
-    ;Else
-    ;   leftMon := 2
-
-    ;SysGet, primaryMonitor, MonitorPrimary
-    ;monitors := { "left" : 3, "center" : primaryMonitor, "right" : 1 }
 }
