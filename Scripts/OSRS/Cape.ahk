@@ -129,11 +129,6 @@ moveAndClick(clickCoords, rightClick := False, sleepFor := 0, divisor := 0.75, a
 	Return doClick(sleepFor, rightClick)
 }
 
-checkInvSlot(slot) {
-	PixelGetColor, pixelColor, slot[2], slot[3], RGB
-	Return pixelColor == slot[1]
-}
-
 generateSleepTime(lowerBound := 109, upperBound := 214) {
 	Random, sleepFor, %lowerBound%, %upperBound%
 	Return sleepFor
@@ -190,28 +185,29 @@ getMorePlanks() {
 	; Open options menu if not open
 	If(checkPixelColor(optionsButton) == False)
 		Send, {F5}
+	; Click house options button and wait for call servant button
 	moveAndClick(generateCoordsStatic(houseOptionsButton),,, 2.5)
 	waitForPixel(callServantVisible)
-	Sleep, generateSleepTime(239, 312)
-	;moveAndClick(generateCoordsStatic(callServantBounds))
+	; Click call servant button, and do it again if he's slow
+	Sleep, generateSleepTime(134, 213)
 	Click
 	If(waitForPixel(getPlanksChat, 500) == False) {
-		;moveAndClick(generateCoordsStatic(houseOptionsButton))
 		Click
 		waitForPixel(callServantVisible)
 		Sleep, generateSleepTime(239, 312)
-		;moveAndClick(generateCoordsStatic(callServantBounds))
 		Click
 		If(waitForPixel(getPlanksChat) == False) {
 			MsgBox % "The butler never came :("
 			Reload
 		}
 	}
-	Sleep, generateSleepTime(465, 746)
+	; Send butler to get planks
+	Sleep, generateSleepTime(365, 646)
 	Send, 1
+	; Move mouse back to build spot
 	Sleep, generateSleepTime()
 	moveMouse(generateCoords(capeSpotInfo))
-	Sleep, generateSleepTime(133, 239)
+	Sleep, generateSleepTime(433, 739)
 }
 
 main() {
@@ -227,21 +223,28 @@ main() {
 }
 
 mainOneClick() {
-	; Move mouse to building spot and begin building
-	moveMouse(generateCoords(capeSpotInfo))
-	While(checkInvSlot(invSlot17))
-		doBuildCycleOneClick()
+	Loop {
+		If(checkPixelColor(inventorySlot20) == False) {
+			MsgBox % "We're done!"
+			Return
+		}
 
-	; Send butler for more planks when we have 3 left
-	getMorePlanks()
+		; Move mouse to building spot and begin building
+		moveMouse(generateCoords(capeSpotInfo))
+		While(checkPixelColor(inventorySlot17))
+			doBuildCycleOneClick()
 
-	; Use our last three planks while the butler is gone
-	If(checkInvSlot(invSlot20))
-		doBuildCycleOneClick()
+		; Send butler for more planks when we have 3 left
+		getMorePlanks()
 
-	; Wait for the butler and finish dialogue so he'll fuck off
-	waitForPixel(demonButlerChat, 9001)
-	Send, {Space}
+		; Use our last three planks while the butler is gone
+		If(checkPixelColor(inventorySlot20))
+			doBuildCycleOneClick()
+
+		; Wait for the butler and finish dialogue so he'll fuck off
+		waitForPixel(demonButlerChat, 9001)
+		Send, {Space}
+	}
 }
 
 ; ============================================================================================================================================================ ;
@@ -268,22 +271,19 @@ Global callServantVisible	:= { "color" : 0x000000, "xy" : [ 1611,  669 ] }
 Global callServantButton	:= { "color" : 0xDFDFDF, "xy" : [  648,  887 ] }
 Global getPlanksChat		:= { "color" : 0x4E4B20, "xy" : [  554,  871 ] }
 Global demonButlerChat		:= { "color" : 0x6D240D, "xy" : [   79,  904 ] }
+Global inventorySlot01		:= { "color" : 0x604E2C, "xy" : [ 1440,  315 ] }
+Global inventorySlot17		:= { "color" : 0x695630, "xy" : [ 1435,  560 ] }
+Global inventorySlot20		:= { "color" : 0x63512C, "xy" : [ 1605,  560 ] }
 
 ; Elements: (1) top left click area coords, (2) bottom right click area coords
 Global houseOptionsButton	:= { "xy1" : [ 1520, 945 ], "xy2" : [ 1560, 965 ] }
 Global callServantBounds	:= { "xy1" : [ 1510, 925 ], "xy2" : [ 1580, 960 ] }
 
-; One-click construction variables
-Global invSlot20 := [ 0x63512C, 1605, 560 ]
-Global invSlot17 := [ 0x695630, 1435, 560 ]
-
 ; ============================================================================================================================================================ ;
 ; == Hotkeys ================================================================================================================================================= ;
 ; ============================================================================================================================================================ ;
 
-F1::
-	mainOneClick()
-	Return
+F1::mainOneClick()
 
 ; ============================================================================================================================================================ ;
 ; == Script Controls ========================================================================================================================================= ;
