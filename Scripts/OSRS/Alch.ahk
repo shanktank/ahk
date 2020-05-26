@@ -54,9 +54,5 @@ F1::
     }
     Return
 
-PrintScreen::
-ScrollLock::
-Pause::
-	Suspend
-	BREAKOUT := True
-	Return
+^R::Reload
++^C::ExitApp

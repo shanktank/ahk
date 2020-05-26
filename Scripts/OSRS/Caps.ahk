@@ -1,14 +1,13 @@
+SetWorkingDir, %A_ScriptDir%
 SetTitleMatchMode, RegEx
+SetKeyDelay, 0, 1, Play
+SendMode, Play
 
-#IfWinActive (RuneLite|OpenOSRS)( - Enari)?
+#IfWinActive (RuneLite|OpenOSRS)( - [a-zA-Z0-9]+)?
 #SingleInstance FORCE
 #Persistent
 #NoEnv
 #Warn
-
-SetWorkingDir %A_ScriptDir%
-SetKeyDelay, 0, 1, Play
-SendMode Play
 
 Cap(letter) {
 	If(GetKeyState("CapsLock","T")) {
@@ -22,8 +21,6 @@ Cap(letter) {
 ShiftCap(letter) {
 	Send {ASC 0151}%letter%
 }
-
-^R::RELOAD
 
 $A::Cap("A")
 $B::Cap("B")

@@ -1,4 +1,4 @@
-﻿#SingleInstance FORCE
+#SingleInstance FORCE
 #Persistent
 #NoEnv
 #Warn

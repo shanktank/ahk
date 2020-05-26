@@ -1,4 +1,4 @@
-﻿#SingleInstance FORCE
+#SingleInstance FORCE
 #Persistent
 #NoEnv
 #Warn
@@ -64,7 +64,7 @@ Numpad6::
 		Random, sleep7, 250, 500
 		Random, sleep8, 1000, 1500
 		Random, sleep9, 250, 500
-		
+
 		; Click unstrung bow
 		Send {Numpad1}
 		sleepAndClick(sleep1)
@@ -93,7 +93,7 @@ Numpad6::
 		Sleep, sleep8
 		Send {Esc}
 		Sleep, sleep9
-		
+
 		If(BREAKOUT = True) {
 			Return
 		}

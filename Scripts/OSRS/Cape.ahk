@@ -1,4 +1,4 @@
-#Include "../_RandomBezier.ahk"
+#Include "../../Libraries/RandomBezier.ahk"
 
 #SingleInstance FORCE
 #Persistent
@@ -60,17 +60,17 @@ generateCoords(target, rel := False) {
 	} Else {
 		xy := findPixel(target)
 	}
-	
+
 	Random, xr, target["xr"][1], target["xr"][2]
 	Random, yr, target["yr"][1], target["yr"][2]
-	
+
 	Return [ xy[1] + xr, xy[2] + yr ]
 }
 
 generateCoordsStatic(target) {
 	Random, x, target["xy1"][1], target["xy2"][1]
 	Random, y, target["xy1"][2], target["xy2"][2]
-	
+
 	Return [ x, y ]
 }
 
@@ -85,7 +85,7 @@ moveMouse(newCoords, optString := "") {
 doLeftClick(sleepFor := 0) {
 	Sleep, generateSleepTime(52, 163)
 	Click
-	
+
 	If(sleepFor == 0)
 		sleepFor := generateSleepTime()
 	Sleep, sleepFor
@@ -138,7 +138,7 @@ doBuildCycle() {
 	waitForPixel(removePrompt)
 	Sleep, generateSleepTime(139, 313)
 	Send, 1
-	
+
 	waitForPixel(emptyBuildSpot2)
 	Sleep, generateSleepTime(148, 267)
 	Loop {
@@ -154,7 +154,7 @@ doBuildCycle() {
 }
 
 doBuildCycleOneClick() {
-	
+
 }
 
 getMorePlanks() {

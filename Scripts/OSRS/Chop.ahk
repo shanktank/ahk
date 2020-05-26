@@ -1,4 +1,4 @@
-﻿#Include _RandomBezier.ahk
+#Include _RandomBezier.ahk
 
 #SingleInstance FORCE
 ;#EscapeChar \
