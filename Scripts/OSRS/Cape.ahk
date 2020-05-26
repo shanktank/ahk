@@ -1,4 +1,4 @@
-#Include "../../Libraries/RandomBezier.ahk"
+#Include ..\..\Libraries\RandomBezier.ahk
 
 #SingleInstance FORCE
 #Persistent
@@ -53,6 +53,18 @@ waitForPixel(target, timeout := 10000, hoverNext := 0) {
 	Return False
 }
 
+waitForPixel2(target1, target2, timeout := 10000, hoverNext := 0) {
+	sleepFor := 100
+	sleepNum := timeout / sleepFor
+	Loop, %sleepNum% {
+		Sleep, sleepFor
+		If(checkPixelColor(target1) or checkPixelColor(target2)) {
+			Return True
+		}
+	}
+	Return False
+}
+
 generateCoords(target, rel := False) {
 	If(rel == True) {
 		MouseGetPos, x, y
@@ -82,21 +94,30 @@ moveMouse(newCoords, optString := "") {
 	RandomBezier(newCoords[1], newCoords[2], optString)
 }
 
-doLeftClick(sleepFor := 0) {
-	Sleep, generateSleepTime(52, 163)
-	Click
-
-	If(sleepFor == 0)
-		sleepFor := generateSleepTime()
+doClick(sleepFor, rightClick := False) {
+	Sleep, generateSleepTime(52, 163) ; Pre-click sleep
+	If(rightClick == False) {
+		Click
+		rc := checkClick()
+	} Else {
+		Click, Right
+		rc := True
+	}
 	Sleep, sleepFor
+	Return rc
 }
 
-doRightClick(sleepFor := 0) {
-	Sleep, generateSleepTime(52, 163)
-	Click, Right
-	If(sleepFor == 0)
-		sleepFor := generateSleepTime()
-	Sleep, sleepFor
+; Look for red pixel at clicked coordinates
+checkClick() {
+	MouseGetPos, X, Y
+	Loop, 20 {
+		Sleep, 5
+		PixelGetColor, pixelColor, X, Y, RGB
+		If(pixelColor == 0xFF0000) {
+			Return True
+		}
+	}
+	Return False
 }
 
 moveAndClick(clickCoords, rightClick := False, sleepFor := 0, divisor := 0.75, attemptNo := 1) {
@@ -108,18 +129,9 @@ moveAndClick(clickCoords, rightClick := False, sleepFor := 0, divisor := 0.75, a
 	Return doClick(sleepFor, rightClick)
 }
 
-doLeftClickAndVerify() {
-	Sleep, generateSleepTime(52, 163)
-	MouseGetPos, X, Y
-	Click
-	Loop, 20 {
-		Sleep, 5
-		PixelGetColor, pixelColor, X, Y, RGB
-		If(pixelColor == 0xFF0000) {
-			Return True
-		}
-	}
-	Return False
+checkInvSlot(slot) {
+	PixelGetColor, pixelColor, slot[2], slot[3], RGB
+	Return pixelColor == slot[1]
 }
 
 generateSleepTime(lowerBound := 109, upperBound := 214) {
@@ -128,6 +140,7 @@ generateSleepTime(lowerBound := 109, upperBound := 214) {
 }
 
 doBuildCycle() {
+	; Remove mounted cape
 	Loop {
 		moveAndClick(generateCoords(capeSpotInfo), True, generateSleepTime(132, 222))
 		If(moveAndClick(generateCoords(capeMenuEntryPlay, True)))
@@ -139,6 +152,7 @@ doBuildCycle() {
 	Sleep, generateSleepTime(139, 313)
 	Send, 1
 
+	; Build mounted cape
 	waitForPixel(emptyBuildSpot2)
 	Sleep, generateSleepTime(148, 267)
 	Loop {
@@ -154,25 +168,50 @@ doBuildCycle() {
 }
 
 doBuildCycleOneClick() {
+	; Remove mounted cape
+	Click
+	waitForPixel(removePrompt)
+	Send, 1
 
+	; Wait for mounted cape to be removed
+	If(waitForPixel2(emptyBuildSpot1, emptyBuildSpot2) == False)
+		MsgBox % "Couldn't find either build spot pixel"
+	Sleep, generateSleepTime(250, 500)
+
+	; Build mounted cape
+	Click
+	waitForPixel(buildInterface)
+	Sleep, generateSleepTime(250, 500)
+	Send, 4
+	Sleep, generateSleepTime(1750, 2250)
 }
 
 getMorePlanks() {
+	; Open options menu if not open
+	If(checkPixelColor(optionsButton) == False)
+		Send, {F5}
 	moveAndClick(generateCoordsStatic(houseOptionsButton),,, 2.5)
 	waitForPixel(callServantVisible)
 	Sleep, generateSleepTime(239, 312)
-	moveAndClick(generateCoordsStatic(callServantBounds))
-	If(waitForPixel(getPlanksChat, 2000) == False) {
-		moveAndClick(generateCoordsStatic(houseOptionsButton))
+	;moveAndClick(generateCoordsStatic(callServantBounds))
+	Click
+	If(waitForPixel(getPlanksChat, 500) == False) {
+		;moveAndClick(generateCoordsStatic(houseOptionsButton))
+		Click
 		waitForPixel(callServantVisible)
 		Sleep, generateSleepTime(239, 312)
-		moveAndClick(generateCoordsStatic(callServantBounds))
-		waitForPixel(getPlanksChat)
+		;moveAndClick(generateCoordsStatic(callServantBounds))
+		Click
+		If(waitForPixel(getPlanksChat) == False) {
+			MsgBox % "The butler never came :("
+			Reload
+		}
 	}
-	Sleep, generateSleepTime(265, 446)
+	Sleep, generateSleepTime(465, 746)
 	Send, 1
+	Sleep, generateSleepTime()
 	moveMouse(generateCoords(capeSpotInfo))
-	Sleep, generateSleepTime(500, 813)
+	Sleep, generateSleepTime(133, 239)
 }
 
 main() {
@@ -185,6 +224,24 @@ main() {
 		waitForPixel(demonButlerChat, 2000)
 		Send, {Space}
 	}
+}
+
+mainOneClick() {
+	; Move mouse to building spot and begin building
+	moveMouse(generateCoords(capeSpotInfo))
+	While(checkInvSlot(invSlot17))
+		doBuildCycleOneClick()
+
+	; Send butler for more planks when we have 3 left
+	getMorePlanks()
+
+	; Use our last three planks while the butler is gone
+	If(checkInvSlot(invSlot20))
+		doBuildCycleOneClick()
+
+	; Wait for the butler and finish dialogue so he'll fuck off
+	waitForPixel(demonButlerChat, 9001)
+	Send, {Space}
 }
 
 ; ============================================================================================================================================================ ;
@@ -207,21 +264,25 @@ Global emptyBuildSpot1		:= { "color" : 0xEDEAE3, "xy" : [  800,  410 ] }
 Global emptyBuildSpot2		:= { "color" : 0xEDEAE3, "xy" : [  825,  410 ] }
 Global optionsButton		:= { "color" : 0x6B241B, "xy" : [ 1525, 1015 ] }
 Global houseOptionsCheck	:= { "color" : 0x6B6983, "xy" : [ 1540,  955 ] }
-Global callServantVisible	:= { "color" : 0x4F4F4B, "xy" : [ 1510,  930 ] }
+Global callServantVisible	:= { "color" : 0x000000, "xy" : [ 1611,  669 ] }
 Global callServantButton	:= { "color" : 0xDFDFDF, "xy" : [  648,  887 ] }
 Global getPlanksChat		:= { "color" : 0x4E4B20, "xy" : [  554,  871 ] }
 Global demonButlerChat		:= { "color" : 0x6D240D, "xy" : [   79,  904 ] }
 
 ; Elements: (1) top left click area coords, (2) bottom right click area coords
-Global houseOptionsButton	:= { "xy1" : [ 1520, 945 ], "xy2" : [ 1560, 985 ] }
+Global houseOptionsButton	:= { "xy1" : [ 1520, 945 ], "xy2" : [ 1560, 965 ] }
 Global callServantBounds	:= { "xy1" : [ 1510, 925 ], "xy2" : [ 1580, 960 ] }
+
+; One-click construction variables
+Global invSlot20 := [ 0x63512C, 1605, 560 ]
+Global invSlot17 := [ 0x695630, 1435, 560 ]
 
 ; ============================================================================================================================================================ ;
 ; == Hotkeys ================================================================================================================================================= ;
 ; ============================================================================================================================================================ ;
 
 F1::
-	main()
+	mainOneClick()
 	Return
 
 ; ============================================================================================================================================================ ;

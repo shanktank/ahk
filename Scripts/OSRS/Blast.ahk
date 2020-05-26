@@ -1,7 +1,6 @@
-#Include _RandomBezier.ahk
+#Include ..\..\Libraries\RandomBezier.ahk
 
 #SingleInstance FORCE
-;#EscapeChar \
 #Persistent
 #NoEnv
 #Warn
@@ -21,15 +20,15 @@ SendMode, Input
 
 Class Thing {
 	Static name := ""
-	
+
 	__New(n, w) {
 		This.name := n
 	}
-	
+
 	moveMouse(newCoords, optString := "") {
 		RandomBezier(newCoords[1], newCoords[2], optString)
 	}
-	
+
 	doClick(sleepFor := 100, numClicks := 1) {
 		Loop, %numClicks% {
 			Sleep, generateSleepTime(52, 163)
@@ -37,7 +36,7 @@ Class Thing {
 		}
         Sleep, sleepFor
 	}
-	
+
 	moveAndClick(clickCoords, optString := "", sleepFor := 100, numClicks := 1, attemptNo := 1) {
 		mouseSpeed := DecideSpeed(CalculateDistance(clickCoords), 2)
 		If(attemptNo > 1)
@@ -52,16 +51,16 @@ Class Mark Extends Thing {
 	Static colour      := 0x0
 	Static playRoomXY  := [ ]
 	Static minOffsetXY := [ ]
-	
+
 	Static RED := 0xFF0000
-	
+
 	__New(n, c, pxy, mxy) {
 		Base.__New(n)
 		This.colour      := c
 		This.playRoomXY  := pxy
 		This.minOffsetXY := mxy
 	}
-	
+
 	moveAndClick(optString := "", sleepFor := 100, numClicks := 1) {
 		While(This.checkClick() == False) {
 			Sleep, generateSleepTime(184, 319)
@@ -71,13 +70,13 @@ Class Mark Extends Thing {
 		}
 		Return True
 	}
-	
+
 	checkClick() {
 		MouseGetPos, X, Y
 		PixelGetColor, pixelColor, X, Y, RGB
 		Return pixelColor == This.RED
 	}
-				
+
 	findPixel() {
 		Loop, 5 {
 			PixelSearch, X, Y, 0, 25, 1350, 850, This.colour, 25, RGB, Fast
@@ -87,12 +86,12 @@ Class Mark Extends Thing {
 				Sleep, 100
 			}
 		}
-		
+
 		SetFormat, IntegerFast, hex
 		MsgBox % "Could not find pixel (" This.colour ")"
 		Reload
 	}
-	
+
 	generateCoords() {
 		XY := This.findPixel()
 		Random, X, XY[1] + This.playRoomXY[1], XY[1] + This.minOffsetXY[1]
@@ -104,18 +103,18 @@ Class Mark Extends Thing {
 Class Spot Extends Thing {
 	Static colour  := 0x0
 	Static fixedXY := [ ]
-	
+
 	__New(n, c, fxy) {
 		Base.__New(n)
 		This.colour  := c
 		This.fixedXY := fxy
 	}
-	
+
 	checkPixelColor() {
 		PixelGetColor, pixelColor, This.fixedXY[1], This.fixedXY[2], RGB
 		Return pixelColor == This.colour
 	}
-	
+
 	waitForPixel(timeout := 10000, hoverNext := 0) {
 		sleepFor := 100
 		sleepNum := timeout / sleepFor
@@ -132,13 +131,13 @@ Class Spot Extends Thing {
 Class Area Extends Thing {
 	Static lowXY  := [ ]
 	Static highXY := [ ]
-	
+
 	__New(n, lxy, hxy) {
 		Base.__New(n)
 		This.lowXY  := lxy
 		This.highXY := hxy
 	}
-	
+
 	generateCoords() {
 		Random, X, This.lowXY[1], This.highXY[1]
 		Random, Y, This.lowXY[2], This.highXY[2]
@@ -150,12 +149,12 @@ Class Blast {
 	Static marks := { }
 	Static spots := { }
 	Static areas := { }
-	
+
 	__New() {
 		This.marks["blueMark"]   				:= New Mark("blueMark",   0x0000FF, [  25, 30 ], [  0, 0 ])
 		This.marks["purpleMark"] 				:= New Mark("purpleMark", 0xFF00FF, [ -15, 20 ], [  0, 1 ])
 		This.marks["greenMark"]  				:= New Mark("greenMark",  0x00FF00, [ -20, 25 ], [ -2, 2 ])
-		
+
 		This.spots["inventoryOpen"]				:= New Spot("inventoryOpen",          0x78281F, [ 1210, 1010 ])
 		This.spots["stamPotionBuff"]			:= New Spot("stamPotionBuff",         0xA37E4B, [ 1320,  108 ])
 		This.spots["firstInvSlotEmpty"]			:= New Spot("firstInvSlotEmpty",      0x3E3529, [ 1420,  680 ])
@@ -199,7 +198,7 @@ hoverThing(thing) {
 	newCoords  := thing.generateCoords()
 	mouseSpeed := DecideSpeed(CalculateDistance(newCoords), 2)
 	optString  := "T"(mouseSpeed)(optStringSuffix)
-	
+
 	thing.moveMouse(newCoords, optString)
 }
 
@@ -236,7 +235,7 @@ takeBars() {
 	b.marks["purpleMark"].moveAndClick()
 	hoverThing(b.areas["equipGlovesBounds"])
 	Sleep, generateSleepTime(2099, 2263)
-	
+
 	Loop, 5 {
 		If(b.spots["collectGoldBars"].waitForPixel(1000) == False) {
 			equipGloves("ice")
@@ -249,7 +248,7 @@ takeBars() {
 			Return True
 		}
 	}
-	
+
 	MsgBox % "Unable to take bars"
 	Reload
 }
@@ -266,7 +265,7 @@ openBank() {
 			}
 		}
 	}
-	
+
 	MsgBox % "Unable to open bank"
 	Reload
 }
@@ -280,7 +279,7 @@ useBank() {
 
 	Thing.moveAndClick(b.areas["thirdInvSlotBounds"].generateCoords(),, generateSleepTime())
 	Thing.moveAndClick(b.areas["withdrawGoldOreBounds"].generateCoords(),, generateSleepTime())
-	
+
 	If(b.spots["secondInvSlotStamEmpty"].checkPixelColor()) {
 		Thing.moveAndClick(b.areas["drinkStamBounds"].generateCoords(),, generateSleepTime())
 		Thing.moveAndClick(b.areas["withdrawStamBounds"].generateCoords(),, generateSleepTime())
@@ -290,7 +289,7 @@ useBank() {
 closeBank() {
 	Send, {Esc}
 	Sleep, generateSleepTime(124, 241)
-	
+
 	If(b.spots["inventoryOpen"].checkPixelColor() == False) {
 		Send, {Esc}
 		Sleep, generateSleepTime()

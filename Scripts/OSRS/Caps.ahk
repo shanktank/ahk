@@ -10,7 +10,7 @@ SendMode, Play
 #Warn
 
 Cap(letter) {
-	If(GetKeyState("CapsLock","T")) {
+	If(GetKeyState("CapsLock", "T")) {
 		Send {ASC 0151}%letter%
 	} Else {
 		StringLower, letter, letter

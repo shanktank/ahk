@@ -1,4 +1,4 @@
-#Include "../../Libraries/RandomBezier.ahk"
+#Include ..\..\Libraries\RandomBezier.ahk
 
 #SingleInstance FORCE
 #Persistent
@@ -48,16 +48,6 @@ Class Target {
 	display() {
 		MsgBox % This.clickCoords[1] ", " This.clickCoords[2] " " This.sleepTime " " This.mouseSpeed
 	}
-}
-
-targetList := []
-targetList.Push(New Target("Seaweed", [ 283, 298, 818, 843 ],   [ 97, 143 ],  [ 298, 401 ]))
-targetList.Push(New Target("Sand",    [ 283, 298, 869, 886 ],   [ 172, 239 ], [ 133, 198 ]))
-targetList.Push(New Target("Spell",   [ 812, 828, 1607, 1616 ], [ 123, 321 ], [ 365, 418 ]))
-targetList.Push(New Target("Banker",  [ 425, 552, 664, 687 ],   [ 329, 455 ], [ 417, 501 ]))
-targetList.Push(New Target("Deposit", [ 816, 843, 883, 910 ],   [ 232, 772 ], [ 119, 256 ]))
-for i2, e2 in targetList {
-	e2.display()
 }
 
 ;=================================================================================================;
@@ -227,6 +217,16 @@ displayCoords(coords) {
 
 ;=================================================================================================;
 
+targetList := []
+targetList.Push(New Target("Seaweed", [ 283, 298, 818, 843 ],   [ 97, 143 ],  [ 298, 401 ]))
+targetList.Push(New Target("Sand",    [ 283, 298, 869, 886 ],   [ 172, 239 ], [ 133, 198 ]))
+targetList.Push(New Target("Spell",   [ 812, 828, 1607, 1616 ], [ 123, 321 ], [ 365, 418 ]))
+targetList.Push(New Target("Banker",  [ 425, 552, 664, 687 ],   [ 329, 455 ], [ 417, 501 ]))
+targetList.Push(New Target("Deposit", [ 816, 843, 883, 910 ],   [ 232, 772 ], [ 119, 256 ]))
+for i2, e2 in targetList {
+	e2.display()
+}
+
 cb := New ClickBounds()
 
 ;=================================================================================================;
@@ -246,7 +246,8 @@ F1::cb.doCycle()
 ;== Old version ==================================================================================;
 ;=================================================================================================;
 
-/*#Include "../../Libraries/RandomBezier.ahk"
+/*
+#Include "../../Libraries/RandomBezier.ahk"
 
 #SingleInstance FORCE
 #Persistent
