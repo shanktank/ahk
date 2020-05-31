@@ -23,7 +23,8 @@ Global amuletEquipped := [ 0x72A64D, [ 1500, 740 ] ]
 Global slot01Unfinished := [ 0x99B199, [ 1420, 685 ] ]
 Global slot15SnapeGrass := [ 0x010D08, [ 1530, 820 ] ]
 Global slot14Prayer := [ 0x49D2A2, [ 1475, 830 ] ]
-Global slot14ViewerPrayer := [ 0x32C796, [ 1495, 470 ] ]
+Global slot14ViewerPrayer3 := [ 0x32C796, [ 1495, 470 ] ]
+Global slot14ViewerPrayer4 := [ 0x30BE8F, [ 1495, 470 ] ]
 Global bankOpen := [ 0x151111, [ 445, 395 ] ]
 Global herbPrompt1 := [ 0x57E1AD, [ 340, 970 ] ]
 Global herbPrompt2 := [ 0xB1E55C, [ 340, 970 ] ]
@@ -44,7 +45,7 @@ neededNewNecklace() {
 	totalLoops := checkTimeout / sleepTime
 
 	Loop, %totalLoops% {
-		If(verifyPixelColor(slot14ViewerPrayer[1], slot14ViewerPrayer[2]) == True) {
+		If(verifyPixelColor(slot14ViewerPrayer3[1], slot14ViewerPrayer3[2]) == True) {
 			Return False
 		}
 
@@ -64,7 +65,7 @@ neededNewNecklace() {
 			moveMouseAndClick(generateCoords(amuletBankBounds[1], amuletBankBounds[2]))
 			Sleep, generateSleepTime()
 			moveMouseAndClick(generateCoords(invSlot01Bounds[1], invSlot01Bounds[2]))
-			Sleep, generateSleepTime(253, 495)
+			Sleep, generateSleepTime(495, 737)
 			Send, {Shift Up}
 
 			; Withdraw more reagents
@@ -114,6 +115,7 @@ main() {
 		/*
 		; Wait for potion mixing to finish
 		waitForPixelToBeColor(slot14ViewerPrayer[1], slot14ViewerPrayer[2], 20000)
+		;waitForPixelToBeColors([ slot14ViewerPrayer3[1], slot14ViewerPrayer3[1] ], [ slot14ViewerPrayer3[2], slot14ViewerPrayer4[2] ], 20000)
 
 		; If our amulet was exhausted:
 		If(verifyPixelColor(amuletEquipped[1], amuletEquipped[2]) == False) {

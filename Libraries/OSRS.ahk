@@ -35,6 +35,22 @@ waitForPixelToBeColor(pixelColor, xy, timeout := 5000, hoverNext := 0) {
 	Return False
 }
 
+waitForPixelToBeColors(pixelColors, xys, timeout := 5000, hoverNext := 0) {
+	sleepFor := 100
+	sleepNum := timeout / sleepFor
+
+	Loop, %sleepNum% {
+		Sleep, sleepFor
+		For index, element In pixelColors {
+			If(verifyPixelColor(pixelColors[index], xys[index])) {
+				Return True
+			}
+		}
+	}
+
+	Return False
+}
+
 findPixelByColor(pixelColor, lowerBounds := 0, upperBounds := 0, shadeTolerance := 10) {
 	If(lowerBounds == 0)
 		lowerBounds := [ 0, 25 ]
@@ -151,3 +167,5 @@ traceCoordsBounds(lb, ub) {
 		Sleep, 500
 	}
 }
+
+;SetFormat, IntegerFast, Hex

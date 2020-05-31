@@ -87,7 +87,7 @@ Class Mark Extends Thing {
 			}
 		}
 
-		SetFormat, IntegerFast, hex
+		SetFormat, IntegerFast, Hex
 		MsgBox % "Could not find pixel (" This.colour ")"
 		Reload
 	}
