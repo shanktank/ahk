@@ -22,7 +22,7 @@ verifyPixelColor(pixelColor, xy) {
 }
 
 waitForPixelToBeColor(pixelColor, xy, timeout := 5000, hoverNext := 0) {
-	sleepFor := 100
+	sleepFor := 25
 	sleepNum := timeout / sleepFor
 
 	Loop, %sleepNum% {
@@ -35,16 +35,14 @@ waitForPixelToBeColor(pixelColor, xy, timeout := 5000, hoverNext := 0) {
 	Return False
 }
 
-waitForPixelToBeColors(pixelColors, xys, timeout := 5000, hoverNext := 0) {
-	sleepFor := 100
+waitForPixelToNotBeColor(pixelColor, xy, timeout := 5000, hoverNext := 0) {
+	sleepFor := 25
 	sleepNum := timeout / sleepFor
 
 	Loop, %sleepNum% {
 		Sleep, sleepFor
-		For index, element In pixelColors {
-			If(verifyPixelColor(pixelColors[index], xys[index])) {
-				Return True
-			}
+		If(verifyPixelColor(pixelColor, xy) == False) {
+			Return True
 		}
 	}
 
@@ -58,6 +56,7 @@ findPixelByColor(pixelColor, lowerBounds := 0, upperBounds := 0, shadeTolerance 
 		upperBounds := [ 1350, 850 ]
 
 	PixelSearch, X, Y, lowerBounds[1], lowerBounds[2], upperBounds[1], upperBounds[2], pixelColor, shadeTolerance, RGB, Fast
+
 	Return { xy : [ X, Y ], rc : ErrorLevel }
 }
 
@@ -150,7 +149,7 @@ handleDropdownMenu() {
 	; NYI
 }
 
-inputKeyAndSleep(inputKey, sleepFor) {
+inputKeyAndSleep(inputKey, sleepFor := 0) {
 	Send, %inputKey%
 	Sleep, sleepFor
 }

@@ -37,7 +37,7 @@ Return
 GuiClose:
 ExitApp
 
-^LButton::
++^LButton::
 	MouseGetPos, MX, MY
 	PixelGetColor, ClickedColor, MX, MY, RGB
 	GuiControl,, C3, %MX%\, %MY%
@@ -45,10 +45,10 @@ ExitApp
 	GuiControl, +c%ClickedColor%, CC
 	Return
 
-^RButton::
++^RButton::
 	MouseGetPos, MX, MY
 	PixelGetColor, PixelColor, MX, MY, RGB
-	FileAppend, %PixelColor% (%MX%\, %MY%)\n, coords.txt
+	FileAppend, %PixelColor%\, [ %MX%\, %MY% ]\n, coords.txt
 	Return
 
 +^R::Reload
