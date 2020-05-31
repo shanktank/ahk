@@ -110,21 +110,23 @@ generateCoordsWithOffsets(lowerBounds, upperBounds, offsetRangeX, offsetRangeY) 
 ; -- Input Operations ------------------------------------------------------------------------------------------------------------------------------ ;
 ; ================================================================================================================================================== ;
 
-moveMouse(moveCoords, mouseSpeedDivisor := 2) {
+moveMouse(moveCoords, mouseSpeedDivisor := 3) {
 	mouseSpeed := DecideSpeed(CalculateDistance(moveCoords), mouseSpeedDivisor)
 	RandomBezier(moveCoords[1], moveCoords[2], "T"(mouseSpeed)" OT38 OB40 OL40 OR39 P2-3")
 }
 
-doClick(sleepFor := 1, actionType := "Neither", mouseButton := "Left") {
+doClick(sleepFor := 0, actionType := "Neither", mouseButton := "Left") {
 	Sleep, generateSleepTime(52, 163)
 	MouseClick, %mouseButton%
-	rc := verifyClick(mouseButton)
+	rc := verifyClick(actionType)
 	Sleep, sleepFor
 	Return rc
 }
 
-moveMouseAndClick(clickCoords, sleepFor := 1, actionType := "Neither", rightClick := False) {
-	moveMouse(clickCoords)
+moveMouseAndClick(clickCoords, mouseSpeedDivisor := 3, sleepFor := 0, actionType := "Neither", rightClick := False) {
+	If(sleepFor == 0)
+		sleepFor := generateSleepTime(174, 242)
+	moveMouse(clickCoords, mouseSpeedDivisor)
 	Return doClick(sleepFor, actionType, rightClick)
 }
 

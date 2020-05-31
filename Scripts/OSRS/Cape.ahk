@@ -226,10 +226,10 @@ main() {
 
 mainOneClick() {
 	Loop {
-		If(checkPixelColor(inventorySlot01) == False) {
-			MsgBox % "We're done!"
-			Return
-		}
+		;If(checkPixelColor(inventorySlot01) == False) {
+		;	MsgBox % "We're done!"
+		;	Return
+		;}
 
 		; Move mouse to building spot and begin building
 		moveMouse(generateCoords(capeSpotInfo))

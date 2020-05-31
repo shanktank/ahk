@@ -30,6 +30,12 @@ Global invFoodBounds := [ [ 1405, 750 ], [ 1615, 985 ] ]
 Global necklaceColor := 0xC2C1A1
 Global invNecklaceBounds := [ [ 1400, 655 ], [ 1615, 745 ] ]
 
+Global stunCheck := [ 0xECB900, [ 132, 69 ] ]
+
+Global invViewerCoinPouchesFull := [ 0xC1BD0B, [ 1429, 301 ] ]
+
+Global equippedNecklace := [ 0xC7C1B6, [ 1495, 735 ] ]
+
 checkHitpoints() {
 	If(verifyPixelColor(healthCheck[1], healthCheck[2]) == True) {
 		Return False
@@ -48,15 +54,9 @@ checkHitpoints() {
 	}
 }
 
-checkCoinPouchesFullish() {
-	If(verifyPixelColor(coinPouchCheck[1], coinPouchCheck[2])) {
-		openCoinPouches()
-	}
-}
-
 openCoinPouches() {
-	;If(verifyPixelColor(coinPouchInv[1], coinPouchInv[2])) {
-	If(verifyPixelColor(coinPouch[1], coinPouch[2])) {
+	;If(verifyPixelColor(coinPouch[1], coinPouch[2])) {
+	If(verifyPixelColor(coinPouchInv[1], coinPouchInv[2])) {
 		moveMouseAndClick(coinPouchInv[2])
 		While(verifyPixelColor(coinPouch[1], coinPouch[2])) {
 			doClick()
@@ -64,8 +64,49 @@ openCoinPouches() {
 	}
 }
 
+shouldEquipNecklace() {
+
+}
+
+shouldOpenCoinPouches() {
+	If(verifyPixelColor(stunCheck[1], stunCheck[2]) || verifyPixelColor(invViewerCoinPouchesFull[1], invViewerCoinPouchesFull[2])) {
+		openCoinPouches()
+	}
+}
+
 main() {
 	Loop {
+		; Test 1
+		/*
+		If(checkHitpoints() || shouldOpenCoinPouches())
+			Continue
+		If(Mod(A_Index, 100) == 0) {
+			openCoinPouches()
+			Continue
+		}
+		*/
+
+		; Test 2
+		/*
+		Send, {F4}
+		Sleep, 250
+		If(verifyPixelColor(equippedNecklace[1], equippedNecklace[2] == False)) {
+			Send, {Esc}
+			Sleep, 234
+			moveMouseAndClick(findPixelByColor(0xC2C1A1, [ 1400, 655 ], [ 1615, 745 ])["xy"])
+			Sleep, 333
+			Send, {F4}
+			Sleep, 321
+		}
+		Send, {Esc}
+		Reload
+		*/
+
+		If(Mod(A_Index, 5) == 0) {
+			openCoinPouches()
+			Continue
+		}
+
 		; Find the Knight
 		FindBy := knightStarColor
 		Coords := findPixelByColor(FindBy, [ 570, 250 ], [ 1260, 800 ])
@@ -78,20 +119,19 @@ main() {
 
 		; Thieve until he moves
 		XY := Coords["xy"]
-		moveMouseAndClick(XY)
+		moveMouseAndClick(XY, 1)
 		lowerBounds := [ XY[1] - miniSearchArea, XY[2] - miniSearchArea ]
 		upperBounds := [ XY[1] + miniSearchArea, XY[2] + miniSearchArea ]
 		While(findPixelByColor(FindBy, lowerBounds, upperBounds)["rc"] == 0) {
+			moveMouseAndClick(XY, 1)
 			doClick()
-			If(checkHitpoints())
-				Break
-			checkCoinPouchesFullish()
-			If(Mod(A_Index, 250) == 0) {
+			If(checkHitpoints() || shouldOpenCoinPouches())
+				Continue
+			If(Mod(A_Index, 25) == 0) {
 				openCoinPouches()
-				moveMouseAndClick(XY)
+				Continue
 			}
 		}
-		openCoinPouches()
 	}
 }
 
