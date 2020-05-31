@@ -146,7 +146,6 @@ main() {
 
 F1::main()
 F2::traceCoordsBounds(bankerBounds[1], bankerBounds[2])
-F3::doBank(, True)
 
 ;=================================================================================================;
 
