@@ -112,8 +112,9 @@ doBank(sleepFor := 0, getAmulet := False) {
 		inputKeyAndSleep("{Shift Down}", generateSleepTime(473, 655))
 		moveMouseAndClick(generateCoords(amuletBankBounds[1], amuletBankBounds[2]),, generateSleepTime(172, 316))
 		moveMouseAndClick(generateCoords(invSlot01Bounds[1], invSlot01Bounds[2]),, generateSleepTime(737, 944))
+		While(verifyPixelColor(slot01Amulet[1], slot01Amulet[2]))
+			doClick(generateSleepTime())
 		inputKeyAndSleep("{Shift Up}", generateSleepTime())
-		waitForPixelToNotBeColor(slot01Amulet[1], slot01Amulet[2])
 	}
 
 	; Withdraw more reagents
