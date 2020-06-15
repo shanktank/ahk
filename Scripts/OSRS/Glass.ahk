@@ -1,15 +1,18 @@
-#Include "../../Libraries/RandomBezier.ahk"
+#Include %A_MyDocuments%/Git/ahk/Libraries/RandomBezier.ahk
 
 #SingleInstance FORCE
 #Persistent
 #NoEnv
 #Warn
 
-SetTitleMatchMode, RegEx
-#IfWinActive, RuneLite
-
+SetWorkingDir, %A_ScriptDir%
+CoordMode, ToolTip, Screen
 CoordMode, Mouse, Screen
 CoordMode, Pixel, Screen
+SetTitleMatchMode, RegEx
+SendMode, Input
+
+#IfWinActive ^(RuneLite|OpenOSRS)$
 
 ;=================================================================================================;
 
