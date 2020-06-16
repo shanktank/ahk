@@ -232,15 +232,16 @@ CenterWindow() {
 
         baseX := winX + winW / 2
         baseY := winY + winH / 2
+		
         curMonNum := GetMonitorNumber(baseX, baseY, winX, winY, monCount)
         curMonWidth := GetMonitorWorkArea("width", curMonNum)
         curMonHeight := GetMonitorWorkArea("height", curMonNum)
-
+		
         SysGet, curMon, Monitor, %curMonNum%
 
         newWinX := (curMonWidth - winW) / 2 + curMonLeft
         newWinY := (curMonHeight - winH) / 2 + curMonTop
-
+		
         WinMove, A, , newWinX, newWinY
     }
 
@@ -256,9 +257,11 @@ CornerWindow(location) {
 
         baseX := winX + winW / 2
         baseY := winY + winH / 2
+		
         curMonNum := GetMonitorNumber(baseX, baseY, winX, winY, monCount)
         curMonWidth := GetMonitorWorkArea("width", curMonNum)
         curMonHeight := GetMonitorWorkArea("height", curMonNum)
+		
         SysGet, curMon, Monitor, %curMonNum%
 
         If(location = "TopLeft") {
@@ -304,9 +307,11 @@ MoveWindow(direction) {
 
     baseX := winx + winw / 2
     baseY := winy + winh / 2
+	
     curMonNum := GetMonitorNumber(baseX, baseY, winX, winY, monCount)
     curMonWidth := GetMonitorWorkArea("width", curMonNum)
     curMonHeight := GetMonitorWorkArea("height", curMonNum)
+	
     SysGet, curMon, Monitor, %curMonNum%
 
     ; Check for monitor in corresponding direction.
@@ -323,8 +328,8 @@ MoveWindow(direction) {
         tmpWinX := baseX
         tmpWinY := baseY + curMonHeight
     }
+	
     monitorExists := DoesMonitorExist(tmpWinX, tmpWinY, monCount)
-
     If(monitorExists = "true") { ; Move to new monitor.
         If(mm = 1) { ; Maximized windows are -4x + -4y of their current monitor. Account for this here.
             winX := winX + 4
@@ -408,6 +413,7 @@ MoveWindow(direction) {
                 newWinX := winX
             }
         }
+		
         Return
     }
 
@@ -450,6 +456,7 @@ MoveWindow(direction) {
                 newWinY := (winY + newMonHeight)  + padding
             }
         }
+		
         Return
     }
 }
