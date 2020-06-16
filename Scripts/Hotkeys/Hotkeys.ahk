@@ -10,7 +10,8 @@ SetWorkingDir %A_ScriptDir%
 ; == Globals ======================================================================================================================================= ;
 ; ================================================================================================================================================== ;
 
-Global NULL =
+Global Null =
+Global WinTenPadding := 8
 
 ; ================================================================================================================================================== ;
 ; == Hotkeys ======================================================================================================================================= ;
@@ -174,7 +175,7 @@ Global NULL =
 <#5::
 <#Numpad5::
 <#NumpadClear::
-    CenterWindow()
+    MoveWindow("Center")
     Return
 
 ; LWin + 1: Move active window to the bottom-left corner.
@@ -210,18 +211,17 @@ Global NULL =
 ; ================================================================================================================================================== ;
 
 ResizeWindow() {
-    WinGetTitle, Window, A
 	WinGetPos,,, Width, Height, A
 
-	Widths := [ 1024, 1280, 1366 ]
-	Heights := [ 540, 576, 720 ]
+	Widths  := [ 1024, 1280, 1366 ]
+	Heights := [ 540,   576,  720 ]
 
 	If(Width == Widths[2] And Height == Heights[2]) {
-		WinMove, %Window%,,,, Widths[3], Heights[3]
+		WinMove, A,,,, Widths[3], Heights[3]
 	} Else If(Width == Widths[1] And Height == Heights[1]) {
-		WinMove, %Window%,,,, Widths[2], Heights[2]
+		WinMove, A,,,, Widths[2], Heights[2]
 	} Else {
-		WinMove, %Window%,,,, Widths[1], Heights[1]
+		WinMove, A,,,, Widths[1], Heights[1]
 	}
 }
 
@@ -229,72 +229,45 @@ ResizeWindow() {
 ; == Mover functions =============================================================================================================================== ;
 ; ================================================================================================================================================== ;
 
-CenterWindow() {
-    WinGet, mm, MinMax, A
-
-    If(mm != 1) {
-        SysGet, monCount, MonitorCount
-        WinGetPos, winX, winY, winW, winH, A
-
-        baseX := winX + winW / 2
-        baseY := winY + winH / 2
-		
-        curMonNum := GetMonitorNumber(baseX, baseY, winX, winY, monCount)
-        curMonWidth := GetMonitorWorkArea("width", curMonNum)
-        curMonHeight := GetMonitorWorkArea("height", curMonNum)
-		
-        SysGet, curMon, Monitor, %curMonNum%
-
-        newWinX := (curMonWidth - winW) / 2 + curMonLeft
-        newWinY := (curMonHeight - winH) / 2 + curMonTop
-		
-        WinMove, A,, newWinX, newWinY
-    }
-
-    Return
-}
-
 CornerWindow(location) {
-    WinGet, mm, MinMax, A
+    WinGet, maximized, MinMax, A
 
-    If(mm != 1) {
+    If(maximized != 1) {
         SysGet, monCount, MonitorCount
         WinGetPos, winX, winY, winW, winH, A
 
-        baseX := winX + winW / 2
-        baseY := winY + winH / 2
+        curBaseX := winX + winW / 2
+        curBaseY := winY + winH / 2
+        curMonNo := GetMonitorNumber(curBaseX, curBaseY, winX, winY, monCount)
+		curMonWH := GetMonitorWorkArea(curMonNo)
 		
-        curMonNum := GetMonitorNumber(baseX, baseY, winX, winY, monCount)
-        curMonWidth := GetMonitorWorkArea("width", curMonNum)
-        curMonHeight := GetMonitorWorkArea("height", curMonNum)
-		
-        SysGet, curMon, Monitor, %curMonNum%
+        SysGet, curMon, Monitor, %curMonNo%
 
-        If(location = "TopLeft") {
+		If(location == "TopLeft") {
             newWinX := curMonLeft
             newWinY := curMonTop
-            If(winX = 0 && winY = 0) {
+            If(winX == 0 && winY == 0) {
                 newWinX += 100
                 newWinY += 100
             }
-        } Else If(location = "TopRight") {
-            newWinX := curMonWidth - winW + curMonLeft
+        } Else If(location == "TopRight") {
+            newWinX := curMonWH[1] - winW + curMonLeft
             newWinY := curMonTop
-            If(winX = curMonWidth - winW && winY = 0) {
+            If(winX == curMonWH[1] - winW && winY == 0) {
                 newWinX -= 100
                 newWinY += 100
             }
-        } Else If(location = "BottomLeft") {
+        } Else If(location == "BottomLeft") {
             newWinX := curMonLeft
-            newWinY := curMonHeight - winH + curMonTop
-            If(winX = 0 && winY = curMonHeight - winH) {
+            newWinY := curMonWH[2] - winH + curMonTop
+            If(winX == 0 && winY == curMonWH[2] - winH) {
                 newWinX += 100
                 newWinY -= 100
             }
-        } Else If(location = "BottomRight") {
-            newWinX := curMonWidth - winW + curMonLeft
-            newWinY := curMonHeight - winH + curMonTop
-            If(winX = curMonWidth - winW && winY = curMonHeight - winH) {
+        } Else If(location == "BottomRight") {
+            newWinX := curMonWH[1] - winW + curMonLeft
+            newWinY := curMonWH[2] - winH + curMonTop
+            If(winX == curMonWH[1] - winW && winY == curMonWH[2] - winH) {
                 newWinX -= 100
                 newWinY -= 100
             }
@@ -308,162 +281,83 @@ CornerWindow(location) {
 
 MoveWindow(direction) {
     SysGet, monCount, MonitorCount
+    WinGet, maximized, MinMax, A
     WinGetPos, winX, winY, winW, winH, A
-    WinGet, mm, MinMax, A
 
-    baseX := winX + winW / 2
-    baseY := winY + winH / 2
+    curBaseX := winX + winW / 2
+    curBaseY := winY + winH / 2
+    curMonNo := GetMonitorNumber(curBaseX, curBaseY, winX, winY, monCount)
+	curMonWH := GetMonitorWorkArea(curMonNo)
 	
-    curMonNum := GetMonitorNumber(baseX, baseY, winX, winY, monCount)
-    curMonWidth := GetMonitorWorkArea("width", curMonNum)
-    curMonHeight := GetMonitorWorkArea("height", curMonNum)
-	
-    SysGet, curMon, Monitor, %curMonNum%
+    SysGet, curMon, Monitor, %curMonNo%
+
+	; If centering window, no need to do monitor checks.
+	If(direction == "Center") {
+		If(maximized != 1) {
+			newWinX := (curMonWH[1] - winW) / 2 + curMonLeft
+			newWinY := (curMonWH[2] - winH) / 2 + curMonTop
+
+			WinMove, A,, newWinX, newWinY
+		}
+
+		Return
+	}
 
     ; Check for monitor in corresponding direction.
-    If(direction = "Right") {
-        tmpWinX := baseX + curMonWidth
-        tmpWinY := baseY
-    } Else If(direction = "Left") {
-        tmpWinX := baseX - curMonWidth
-        tmpWinY := baseY
-    } Else If(direction = "Up") {
-        tmpWinX := baseX
-        tmpWinY := baseY - curMonHeight
-    } Else If(direction = "Down") {
-        tmpWinX := baseX
-        tmpWinY := baseY + curMonHeight
+    If(direction == "Right") {
+        tmpWinX := curBaseX + curMonWH[1]
+        tmpWinY := curBaseY
+    } Else If(direction == "Left") {
+        tmpWinX := curBaseX - curMonWH[1]
+        tmpWinY := curBaseY
+    } Else If(direction == "Up") {
+        tmpWinX := curBaseX
+        tmpWinY := curBaseY - curMonWH[2]
+    } Else If(direction == "Down") {
+        tmpWinX := curBaseX
+        tmpWinY := curBaseY + curMonWH[2]
     }
 	
-    monitorExists := DoesMonitorExist(tmpWinX, tmpWinY, monCount)
-    If(monitorExists == True) { ; Move to new monitor.
-        If(mm = 1) { ; Maximized windows are -4x + -4y of their current monitor. Account for this here.
+	; Move to new monitor. If not found, re-align in current monitor.
+    If(DoesMonitorExist(tmpWinX, tmpWinY, monCount) == True) {
+		; Maximized windows are -4X, -4Y of their current monitor. Account for this here.
+		If(maximized == 1) {
             winX := winX + 4
             winY := winY + 4
-        } If(direction = "Right") {
-            newBaseX := baseX + curMonWidth
-            newBaseY := baseY
-            monForReAlign := GetMonitorNumber(newBaseX, newBaseY, NULL, NULL, monCount)
-        } Else If(direction = "Left") {
-            newBaseX := baseX - curMonWidth
-            newBaseY := baseY
-            monForReAlign := GetMonitorNumber(newBaseX, newBaseY, NULL, NULL, monCount)
-        } Else If(direction = "Up") {
-            newBaseX := baseX
-            newBaseY := baseY - curMonHeight
-            monForReAlign := GetMonitorNumber(newBaseX, newBaseY, NULL, NULL, monCount)
-        } Else If(direction = "Down") {
-            newBaseX := baseX
-            newBaseY := baseY + curMonHeight
-            monForReAlign := GetMonitorNumber(newBaseX, newBaseY, NULL, NULL, monCount)
         }
 
-        Gosub ReAlignX
-        Gosub ReAlignY
+		If(direction == "Right") {
+            newBaseX := curBaseX + curMonWH[1]
+            newBaseY := curBaseY
+        } Else If(direction == "Left") {
+            newBaseX := curBaseX - curMonWH[1]
+            newBaseY := curBaseY
+        } Else If(direction == "Up") {
+            newBaseX := curBaseX
+            newBaseY := curBaseY - curMonWH[2]
+        } Else If(direction == "Down") {
+            newBaseX := curBaseX
+            newBaseY := curBaseY + curMonWH[2]
+        }
 
-        If(mm = 1) {
+		newMonNo := GetMonitorNumber(newBaseX, newBaseY, NULL, NULL, monCount)
+        newWinX  := ReAlignX(newMonNo, curMonWH, direction, winX, winW)
+        newWinY  := ReAlignY(curMonNo, newMonNo, curMonWH, direction, winY, winH)
+
+        If(maximized == 1) {
             WinRestore, A
             WinMove, A,, newWinX, newWinY
             WinMaximize, A
         } Else {
             WinMove, A,, newWinX, newWinY
         }
-    } Else If(monitorExists == False) { ; New monitor not found, re-align in current monitor.
-        monForReAlign := curMonNum
+    } Else {
+		If(maximized != 1) {
+			newWinX := ReAlignX(curMonNo, curMonWH, direction, winX, winW)
+			newWinY := ReAlignY(curMonNo, curMonNo, curMonWH, direction, winY, winH)
 
-        Gosub ReAlignX
-        Gosub ReAlignY
-
-        WinMove, A,, newWinX, newWinY
-    }
-
-    Return
-
-    ; ReAlignX and ReAlignY work to keep the window in a monitor.
-
-    ReAlignX:
-    {
-        If(direction = "Right") {
-            SysGet, newMon, Monitor, %monForReAlign%
-            newMonWidth := GetMonitorWorkArea("width", monForReAlign)
-            padding := 0 ; curMonRight - curMonLeft - newMonWidth ; Adjust by setup, not fully tested.
-
-            If((winX + winW + curMonWidth) > newMonRight) {
-                newWinX := (newMonRight - winW) + padding
-            } Else If((winX + curMonWidth) < newMonLeft) {
-                newWinX := newMonLeft + padding
-            } Else {
-                newWinX := (winX + newMonWidth) + padding
-            }
-        } Else If(direction = "Left") {
-            SysGet, newMon, Monitor, %monForReAlign%
-            newMonWidth := GetMonitorWorkArea("width", monForReAlign)
-            padding := 0 ; curMonRight - curMonLeft - newMonWidth ; Adjust by setup, not fully tested.
-
-            If((winX - curMonWidth) < newMonLeft) {
-                newWinX := newMonLeft - padding
-            } Else If((winX + winW - curMonWidth) > newMonRight) {
-                newWinX := (newMonRight - winW) - padding
-            } Else {
-                newWinX := (winX - newMonWidth) - padding
-            }
-        } Else If(direction = "Up" or direction = "Down") {
-            SysGet, newMon, Monitor, %monForReAlign%
-            newMonWidth := GetMonitorWorkArea("width", monForReAlign)
-
-            If(winX < newMonLeft) {
-                newWinX := newMonLeft
-            } Else If((winX + winW) > (newMonWidth + newMonLeft)) {
-                newWinX := (newMonWidth + newMonLeft) - winW
-            } Else {
-                newWinX := winX
-            }
-        }
-		
-        Return
-    }
-
-    ReAlignY:
-    {
-        If(direction = "Right" or direction = "Left") {
-            SysGet, newMon, Monitor, %monForReAlign%
-            newMonHeight := GetMonitorWorkArea("height", monForReAlign)
-
-            If(winY < newMonTop) {
-                newWinY := newMonTop
-            } Else If((winY + winH) > (newMonHeight + newMonTop)) {
-                newWinY := (newMonHeight + newMonTop) - winH
-            } Else {
-                newWinY := winY
-            }
-        } Else If(Direction = "Up") {
-            SysGet, newMon, Monitor, %monForReAlign%
-            newMonHeight := GetMonitorWorkArea("height", monForReAlign)
-            ; Adjust by setup, not fully tested.
-            padding := 0 ; curMonBottom - curMonTop - newMonHeight
-
-            If((winY - curMonHeight) < newMonTop) {
-                newWinY := newMonTop + padding
-            } Else If((winY + winH - curMonHeight) > (newMonTop + newMonHeight)) {
-                newWinY := ((newMonTop + newMonHeight) - winH) - padding
-            } Else {
-                newWinY := (winY - newMonHeight) - padding
-            }
-        } Else If(Direction = "Down") {
-            SysGet, newMon, Monitor, %monForReAlign%
-            newMonHeight := GetMonitorWorkArea("height", monForReAlign)
-            padding := curMonBottom - curMonTop - newMonHeight
-
-            If((winY + winH + curMonHeight) > newMonBottom) {
-                newWinY := (newMonBottom - winH) - padding
-            } Else If((winY + curMonHeight) < newMonTop) {
-                newWinY := newMonTop + padding
-            } Else {
-                newWinY := (winY + newMonHeight)  + padding
-            }
-        }
-		
-        Return
+			WinMove, A,, newWinX, newWinY
+		}
     }
 }
 
@@ -471,29 +365,28 @@ MoveWindow(direction) {
 ; == Auxiliary functions =========================================================================================================================== ;
 ; ================================================================================================================================================== ;
 
-GetMonitorNumber(baseX, baseY, winX, winY, monCount) {
+GetMonitorNumber(curBaseX, curBaseY, winX, winY, monCount) {
     Loop %monCount% {
         SysGet, tmpMon, Monitor, %A_Index%
-        If(baseX >= tmpMonLeft And baseX <= tmpMonRight And baseY >= tmpMonTop And baseY <= tmpMonBottom) {
+        If(curBaseX >= tmpMonLeft And curBaseX <= tmpMonRight And curBaseY >= tmpMonTop And curBaseY <= tmpMonBottom) {
             Return A_Index
         }
     }
+
 	Loop %monCount% { ; If we couldn't find a monitor through the assumed X/Y, check by window X/Y.
 		SysGet, tmpMon, Monitor, %A_Index%
 		If(winX >= tmpMonLeft And winX <= tmpMonRight And winY >= tmpMonTop And winY <= tmpMonBottom) {
 			Return A_Index
 		}
 	}
+
     Return monCount
 }
 
-GetMonitorWorkArea(measurement, monToGet) {
+GetMonitorWorkArea(monToGet) {
     SysGet, tmpMon, MonitorWorkArea, %monToGet%
-    If(measurement = "width") {
-        Return tmpMonRight - tmpMonLeft
-    } Else If(measurement = "height") {
-        Return tmpMonBottom - tmpMonTop
-    }
+
+    Return [ tmpMonRight - tmpMonLeft, tmpMonBottom - tmpMonTop ]
 }
 
 DoesMonitorExist(newWinX, newWinY, monCount) {
@@ -503,5 +396,74 @@ DoesMonitorExist(newWinX, newWinY, monCount) {
 			Return True
         }
     }
+
     Return False
+}
+
+ReAlignX(newMonNo, curMonWH, direction, winX, winW) {
+	SysGet, newMon, Monitor, %newMonNo%
+	newMonWidth := GetMonitorWorkArea(newMonNo)[1]
+
+	If(direction == "Right") {
+		If(winX + winW + curMonWH[1] > newMonRight) {
+			newWinX := newMonRight - winW + WinTenPadding
+		} Else If(winX + curMonWH[1] < newMonLeft) {
+			newWinX := newMonLeft + WinTenPadding
+		} Else {
+			newWinX := winX + newMonWidth + WinTenPadding
+		}
+	} Else If(direction == "Left") {
+		If(winX - curMonWH[1] < newMonLeft) {
+			newWinX := newMonLeft - WinTenPadding
+		} Else If(winX + winW - curMonWH[1] > newMonRight) {
+			newWinX := newMonRight - winW - WinTenPadding
+		} Else {
+			newWinX := winX - newMonWidth - WinTenPadding
+		}
+	} Else If(direction == "Up" Or direction == "Down") {
+		If(winX < newMonLeft) {
+			newWinX := newMonLeft
+		} Else If(winX + winW > newMonWidth + newMonLeft) {
+			newWinX := newMonWidth + newMonLeft - winW
+		} Else {
+			newWinX := winX
+		}
+	}
+
+	Return newWinX
+}
+
+ReAlignY(curMonNo, newMonNo, curMonWH, direction, winY, winH) {
+	SysGet, curMon, Monitor, %curMonNo%
+	SysGet, newMon, Monitor, %newMonNo%
+	newMonHeight := GetMonitorWorkArea(newMonNo)[2]
+
+	If(direction == "Right" Or direction == "Left") {
+		If(winY < newMonTop) {
+			newWinY := newMonTop
+		} Else If(winY + winH > newMonHeight + newMonTop) {
+			newWinY := newMonHeight + newMonTop - winH
+		} Else {
+			newWinY := winY
+		}
+	} Else If(Direction == "Up") {
+		If(winY - curMonWH[2] < newMonTop) {
+			newWinY := newMonTop
+		} Else If(winY + winH - curMonWH[2] > newMonTop + newMonHeight) {
+			newWinY := newMonTop + newMonHeight - winH
+		} Else {
+			newWinY := winY - newMonHeight
+		}
+	} Else If(Direction == "Down") {
+		bottomPadding := curMonBottom - curMonTop - newMonHeight - WinTenPadding
+		If(winY + winH + curMonWH[2] > newMonBottom) {
+			newWinY := newMonBottom - winH - bottomPadding
+		} Else If(winY + curMonWH[2] < newMonTop) {
+			newWinY := newMonTop + bottomPadding
+		} Else {
+			newWinY := winY + newMonHeight + bottomPadding
+		}
+	}
+
+	Return newWinY
 }
