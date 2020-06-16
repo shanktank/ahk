@@ -69,7 +69,7 @@ GuiClose:
 +^RButton::
 	MouseGetPos, MX, MY
 	PixelGetColor, PixelColor, MX, MY, RGB
-	FileAppend, %PixelColor%\, [ %MX%\, %MY% ]\n, coords.txt
+	FileAppend, %PixelColor%\, [ %MX%\, %MY% ]\n, Colors.txt
 	Return
 
 +^R::Reload

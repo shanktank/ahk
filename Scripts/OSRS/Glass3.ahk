@@ -18,11 +18,11 @@ SendMode, Input
 
 Class ClickBounds {
 	; Elements: North, South, West, East
-	Static seaweedCoordBounds := [ 283, 298,  818,  843 ]
-	Static sandCoordBounds    := [ 283, 298,  869,  886 ]
-	Static spellCoordBounds   := [ 812, 828, 1607, 1616 ]
-	Static bankerCoordBounds  := [ 406, 672,  470,  543 ]
-	Static depositCoordBounds := [ 816, 843,  883,  910 ]
+	Static seaweedCoordBounds := [ [  434, 136 ], [  465, 163 ] ]
+	Static sandCoordBounds    := [ [  504, 135 ], [  528, 164 ] ]
+	Static spellCoordBounds   := [ [ 1404, 670 ], [ 1419, 691 ] ]
+	Static bankerCoordBounds  := [ [  830, 108 ], [  918, 389 ] ]
+	Static depositCoordBounds := [ [ 1465, 665 ], [ 1493, 690 ] ]
 
 	; Lower and upper bounds for random sleep times
 	Static seaweedSleepBounds := [  97, 143 ]
@@ -38,9 +38,9 @@ Class ClickBounds {
     Static depositSpeedBounds := [ 275, 369 ]
 
 	; Coords and colors
-	Static spellBookColor := [ 1345, 1010, 0x71261D ]
-	Static spellCastColor := [ 1410,  675, 0xD00D2F ]
-	Static bankOpenColor  := [  450,  150, 0xC5A118 ]
+	Static spellBookColor     := [ 1345, 1010, 0x71261D ]
+	Static spellCastColor     := [ 1410,  675, 0xD00D2F ]
+	Static bankOpenColor      := [  450,  148, 0x096744 ]
 
 	clickQueue := []
     sleepQueue := []
@@ -53,12 +53,14 @@ Class ClickBounds {
 	}
 
 	generateCoords(targets) {
-		clickCoords := []
+		clickCoords := [ ]
+
 		For index, element In targets {
-			Random, X, element[3], element[4]
-			Random, Y, element[1], element[2]
+			Random, X, element[1][1], element[2][1]
+			Random, Y, element[1][2], element[2][2]
 			clickCoords.Push(Array(X, Y))
 		}
+
 		Return clickCoords
 	}
 
