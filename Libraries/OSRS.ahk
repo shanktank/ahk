@@ -42,7 +42,7 @@ Class UIObject {
 		Return rc
 	}
 
-	moveMouseAndClick(clickCoords, mouseSpeedDivisor := 3, sleepFor := 0, actionType := "Neither", rightClick := False) {
+	moveMouseAndClick(clickCoords, mouseSpeedDivisor := 1.5, sleepFor := 0, actionType := "Neither", rightClick := False) {
 		If(sleepFor == 0)
 			sleepFor := generateSleepTime(174, 242)
 		
@@ -65,13 +65,13 @@ Class PixelColorLocation Extends UIObject {
 		Return pixelColor == This.pixelColor
 	}
 
-	waitForPixelToBeColor(checkFor := True, timeout := 5000) {
+	waitForPixelToBeColor(timeout := 5000) {
 		sleepFor := 25
 		sleepNum := timeout / sleepFor
 		
 		Loop, %sleepNum% {
 			Sleep, sleepFor
-			If(This.verifyPixelColor() == checkFor) {
+			If(This.verifyPixelColor()) {
 				Return True
 			}
 		}
@@ -109,7 +109,7 @@ Class TileMarkerBounds Extends UIObject {
 		This.shadeTolerance := shadeTolerance
 	}
 	
-	moveMouseAndClick(mouseSpeedDivisor := 3, sleepFor := 100) {
+	moveMouseAndClick(mouseSpeedDivisor := 1.5, sleepFor := 100) {
 		While(This.verifyClick() == False) {
 			If(A_Index > 10)
 				Return False
@@ -156,8 +156,8 @@ Class TileMarkerBounds Extends UIObject {
 			Reload
 		}
 		
-		Random, X, XY["xy"][1] + This.minOffsetXY[1], XY["xy"][1] + This.maxOffsetXY[1]
-		Random, Y, XY["xy"][2] + This.minOffsetXY[2], XY["xy"][2] + This.maxOffsetXY[2]
+		Random, X, XY["xy"][1] + This.minOffset[1], XY["xy"][1] + This.maxOffset[1]
+		Random, Y, XY["xy"][2] + This.minOffset[2], XY["xy"][2] + This.maxOffset[2]
 		
 		Return [ X, Y ]
 	}
@@ -276,7 +276,7 @@ generateCoordsWithOffsets(lowerBounds, upperBounds, offsetRangeX, offsetRangeY) 
 ; -- Input Operations ------------------------------------------------------------------------------------------------------------------------------ ;
 ; ================================================================================================================================================== ;
 
-moveMouse(moveCoords, mouseSpeedDivisor := 3) {
+moveMouse(moveCoords, mouseSpeedDivisor := 1.5) {
 	mouseSpeed := DecideSpeed(CalculateDistance(moveCoords), mouseSpeedDivisor)
 	RandomBezier(moveCoords[1], moveCoords[2], "T"(mouseSpeed)" OT38 OB40 OL40 OR39 P2-3")
 }
@@ -289,7 +289,7 @@ doClick(sleepFor := 0, actionType := "Neither", mouseButton := "Left") {
 	Return rc
 }
 
-moveMouseAndClick(clickCoords, mouseSpeedDivisor := 3, sleepFor := 0, actionType := "Neither", rightClick := False) {
+moveMouseAndClick(clickCoords, mouseSpeedDivisor := 1.5, sleepFor := 0, actionType := "Neither", rightClick := False) {
 	If(sleepFor == 0)
 		sleepFor := generateSleepTime(174, 242)
 	moveMouse(clickCoords, mouseSpeedDivisor)
