@@ -7,52 +7,31 @@ SetWorkingDir %A_ScriptDir%
 CoordMode, Mouse, Screen
 SendMode Input
 
-Global BREAKOUT := False
-
-sleepClick(sleepy) {
+sleepClick(key, sleepy) {
     Sleep, sleepy
-	If(BREAKOUT = True) {
-		Return
-	}
-	Send ``
+	Send, %key%
 }
 
-`::
-	Click
-	Return
-
-Numpad1::
-	MouseMove, 1475, 765, 0
-	Return
-
-Numpad2::
-	MouseMove, 1520, 765, 0
-	Return
+Numpad1::MouseMove, 1475, 765, 50
+Numpad2::MouseMove, 1520, 765, 50
+Numpad3::Click
 
 ^B::
-	BREAKOUT := False
-	
 	Loop {
-		Random, sleep1, 100, 200
-		Random, sleep2, 250, 500
-		Random, sleep3, 1500, 2500
-		Random, sleep4, 13000, 15000
+		Random, sleep1, 400, 550
+		Random, sleep2, 400, 500
+		Random, sleep3, 900, 1000
+		Random, sleep4, 900, 1000
 
-		Send {Numpad1}
-		sleepClick(sleep1)
-		Send {Numpad2}
-		sleepClick(sleep2)
-		Sleep, sleep3
-		Send 1
+		sleepClick("{Numpad1}", sleep1)
+		sleepClick("{Numpad2}", sleep2)
+		sleepClick("1", sleep3)
+
+		ToolTip % "Sleeping forever"
 		Sleep, sleep4
-		
-		If(BREAKOUT = True) {
-			Return
-		}
+		ToolTip
 	}
 
 	Return
 
-PrintScreen::
-	BREAKOUT := True
-	Return
+^R::Reload
