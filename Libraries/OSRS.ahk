@@ -240,7 +240,7 @@ verifyClick(actionType := "Interact") {
 	MouseGetPos, X, Y
 	pixelColor := actionType == "Walk" ? 0xFFFF00 : 0xFF0000
 
-	Loop, 25 {
+	Loop, 20 {
 		If(verifyPixelColor(pixelColor, [ X, Y ])) {
 			Return True
 		}
@@ -285,7 +285,8 @@ doClick(sleepFor := 0, actionType := "Neither", mouseButton := "Left") {
 	Sleep, generateSleepTime(52, 163)
 	MouseClick, %mouseButton%
 	rc := verifyClick(actionType)
-	Sleep, sleepFor
+	If(rc == True)
+		Sleep, sleepFor
 	Return rc
 }
 
