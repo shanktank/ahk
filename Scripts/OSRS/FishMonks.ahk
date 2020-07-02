@@ -51,6 +51,15 @@ main() {
 			Sleep, generateSleepTime()
 		}
 
+		; Walk back out of the bank to the purple marker
+		If(findPixelByColor(fishingSpotColor, [ 0, 50 ], [ 1350, 950 ])["rc"] != 0) {
+			XY := findPixelByColor(PURPLE, [ 0, 50 ], [ 1350, 950 ])["xy"]
+			Random, dx, -14, 16
+			Random, dy, -9, 13
+			moveMouseAndClick([ XY[1] - dx, XY[2] + dy ])
+			Sleep, generateSleepTime(3323, 4836)
+		}
+
 		; Wait until a fishing pool is visible
 		While(findPixelByColor(fishingSpotColor, [ 0, 50 ], [ 1350, 950 ])["rc"] != 0) {
 			Sleep, 1000
