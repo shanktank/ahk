@@ -61,13 +61,19 @@ main() {
 		}
 
 		; Wait until a fishing pool is visible
-		While(findPixelByColor(fishingSpotColor, [ 0, 50 ], [ 1350, 950 ])["rc"] != 0) {
+		;While(findPixelByColor(fishingSpotColor, [ 0, 50 ], [ 1350, 950 ])["rc"] != 0) {
+		While(findPixelByColorWaveSearch(fishingSpotColor, [ 0, 50 ], [ 1350, 950 ])["xy"] == False)
+			If(A_Index > 5) {
+				ToolTip % "Couldn't find a fishing spot"
+				Reload
+			}
 			Sleep, 1000
 		}
-		
+
 		; Resume fishing
 		Loop {
-			XY := findPixelByColor(fishingSpotColor, [ 0, 50 ], [ 1350, 950 ])["xy"]
+			;XY := findPixelByColor(fishingSpotColor, [ 0, 50 ], [ 1350, 950 ])["xy"]
+			XY := findPixelByColorWaveSearch(fishingSpotColor, [ 0, 50 ], [ 1350, 950 ])["xy"]
 			Random, dx, 3, 8
 			Random, dy, 3, 8
 			If(moveMouseAndClick([ XY[1] - dx, XY[2] + dy ],,, "Interact") == True) {
