@@ -235,10 +235,11 @@ findPixelByColorWaveSearch(pixelColor, lowerBounds := -1, upperBounds := -1, sha
 
 	ErrorLevel := -1
 	While(ErrorLevel != 0) {
-		If(A_Index > 10)
+		If(A_Index > 25)
 			Return { xy : [ X, Y ], rc : ErrorLevel }
 		waveLength += 25
 		PixelSearch, X, Y, startingPointX - waveLength, startingPointY - waveLength, startingPointX + waveLength, startingPointY + waveLength, pixelColor, shadeTolerance, RGB, Fast
+		Sleep, 100
 	}
 
 	Return { xy : [ X, Y ], rc : ErrorLevel }
