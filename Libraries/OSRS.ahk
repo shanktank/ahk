@@ -45,7 +45,7 @@ Class UIObject {
 	moveMouseAndClick(clickCoords, mouseSpeedDivisor := 1.5, sleepFor := 0, actionType := "Neither", rightClick := False) {
 		If(sleepFor == 0)
 			sleepFor := generateSleepTime(174, 242)
-		
+
 		This.moveMouse(clickCoords, mouseSpeedDivisor)
 		Return This.doClick(sleepFor, actionType, rightClick)
 	}
@@ -59,7 +59,7 @@ Class PixelColorLocation Extends UIObject {
 		This.pixelColor  := pixelColor
 		This.pixelCoords := pixelCoords
 	}
-	
+
 	verifyPixelColor() {
 		PixelGetColor, pixelColor, This.pixelCoords[1], This.pixelCoords[2], RGB
 		Return pixelColor == This.pixelColor
@@ -68,14 +68,14 @@ Class PixelColorLocation Extends UIObject {
 	waitForPixelToBeColor(timeout := 5000) {
 		sleepFor := 25
 		sleepNum := timeout / sleepFor
-		
+
 		Loop, %sleepNum% {
 			Sleep, sleepFor
 			If(This.verifyPixelColor()) {
 				Return True
 			}
 		}
-		
+
 		Return False
 	}
 }
@@ -88,7 +88,7 @@ Class ClickAreaBounds Extends UIObject {
 		This.lowerBounds := lowerBounds
 		This.upperBounds := upperBounds
 	}
-	
+
 	generateCoords() {
 		Random, X, This.lowerBounds[1], This.upperBounds[1]
 		Random, Y, This.lowerBounds[2], This.upperBounds[2]
@@ -108,18 +108,18 @@ Class TileMarkerBounds Extends UIObject {
 		This.maxOffset      := maxOffset
 		This.shadeTolerance := shadeTolerance
 	}
-	
+
 	moveMouseAndClick(mouseSpeedDivisor := 1.5, sleepFor := 100) {
 		While(This.verifyClick() == False) {
 			If(A_Index > 10)
 				Return False
 			If(A_Index == 2)
 				mouseSpeedDivisor := mouseSpeedDivisor / 2
-				
+
 			Sleep, generateSleepTime(184, 319)
 			Base.moveMouseAndClick(This.generateCoords(), mouseSpeedDivisor, sleepFor)
 		}
-		
+
 		Return True
 	}
 
@@ -134,7 +134,7 @@ Class TileMarkerBounds Extends UIObject {
 			lowerBounds := [ 0, 25 ]
 		If(upperBounds == -1)
 			upperBounds := [ 1350, 850 ]
-			
+
 		Loop, 5 {
 			PixelSearch, X, Y, lowerBounds[1], lowerBounds[2], upperBounds[1], upperBounds[2], This.pixelColor, This.shadeTolerance, RGB, Fast
 			If(ErrorLevel == 0) {
@@ -143,22 +143,22 @@ Class TileMarkerBounds Extends UIObject {
 				Sleep, 100
 			}
 		}
-		
+
 		Return { xy : [ X, Y ], rc : ErrorLevel }
 	}
 
 	generateCoords() {
 		XY := This.findPixelByColor()
-		
+
 		If(XY["rc"] != 0) {
 			SetFormat, IntegerFast, Hex
 			MsgBox % "Could not find pixel (" This.pixelColor ")"
 			Reload
 		}
-		
+
 		Random, X, XY["xy"][1] + This.minOffset[1], XY["xy"][1] + This.maxOffset[1]
 		Random, Y, XY["xy"][2] + This.minOffset[2], XY["xy"][2] + This.maxOffset[2]
-		
+
 		Return [ X, Y ]
 	}
 }
@@ -227,6 +227,24 @@ findPixelByColorX(pixelColor, lowerBounds := 0, upperBounds := 0, tries := 10, s
 	}
 }
 
+findPixelByColorWaveSearch(pixelColor, lowerBounds := -1, upperBounds := -1, shadeTolerance := 10) {
+	startingPointX := 960
+	startingPointY := 540
+
+	waveLengthX := 0
+	waveLengthY := 0
+
+	ErrorLevel := 1
+	While(ErrorLevel != 0) {
+		If(A_Index > 10)
+			Return { xy : [ X, Y ], rc : ErrorLevel }
+		waveLength += 25
+		PixelSearch, X, Y, startingPointX - waveLength, startingPointY - waveLength, startingPointX + waveLength, startingPointY + waveLength, pixelColor, shadeTolerance, RGB, Fast
+	}
+
+	Return { xy : [ X, Y ], rc : ErrorLevel }
+}
+
 checkIfHoveringAction() {
 	MouseGetPos, X, Y
 	Return verifyPixelColor(0x433A32, [ X, Y + 35 ])
@@ -249,6 +267,8 @@ verifyClick(actionType := "Interact") {
 
 	Return False
 }
+
+
 
 ; ================================================================================================================================================== ;
 ; -- Random Value Generators ----------------------------------------------------------------------------------------------------------------------- ;
