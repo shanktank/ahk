@@ -68,6 +68,9 @@ main() {
 			Random, dx, 3, 8
 			Random, dy, 3, 8
 			If(moveMouseAndClick([ XY[1] - dx, XY[2] + dy ],,, "Interact") == True) {
+				Random, offsetX, -219, -331
+				Random, offsetY, -412, 287
+				moveMouse([ XY[1] + offsetX, XY[2] + dy ])
 				Break
 			} Else If(A_Index > 10) {
 				ToolTip % "Tons of misclicks"
