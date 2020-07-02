@@ -62,7 +62,7 @@ main() {
 
 		; Wait until a fishing pool is visible
 		;While(findPixelByColor(fishingSpotColor, [ 0, 50 ], [ 1350, 950 ])["rc"] != 0) {
-		While(findPixelByColorWaveSearch(fishingSpotColor, [ 0, 50 ], [ 1350, 950 ])["xy"] == False)
+		While(findPixelByColorWaveSearch(fishingSpotColor, [ 0, 50 ], [ 1350, 950 ])["xy"] == False) {
 			If(A_Index > 5) {
 				ToolTip % "Couldn't find a fishing spot"
 				Reload
