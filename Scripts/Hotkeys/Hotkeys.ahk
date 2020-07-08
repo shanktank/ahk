@@ -45,11 +45,6 @@ Global WinTenPadding := 8
 ; == Launchers ===================================================================================================================================== ;
 ; ================================================================================================================================================== ;
 
-; Ctrl + Alt + Shift + O: Open Debian terminal.
-^!+O::
-    Run debian
-    Return
-
 ; Ctrl + Alt + Shift + P: Launch PuTTY.
 ^!+P::
     Run putty
@@ -57,16 +52,26 @@ Global WinTenPadding := 8
 
 ; Ctrl + Alt + Shift + U: Launch SSH session "Super".
 ^!+U::
-    Run putty -load super
+    Run putty -load "super remote"
     Return
 
-; Ctrl + Alt + Shift + O: Open PowerShell terminal.
+; Ctrl + Alt + Shift + J: Launch SSH session "Super".
+^!+J::
+    Run putty -load "super local"
+    Return
+
+; Ctrl + Alt + Shift + O: Open Debian terminal.
+^!+O::
+    Run debian
+    Return
+
+; Ctrl + Alt + Shift + L: Open PowerShell terminal.
 ^!+L::
     Run "C:/Users/User/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Windows PowerShell/PowerShell"
     Return
 
-; Ctrl + Alt + Shift + I: Open Firefox.
-^!+I::
+; Ctrl + Alt + Shift + M: Open Firefox.
+^!+M::
     Run "C:/Program Files/Mozilla Firefox/firefox.exe"
     Return
 
@@ -240,7 +245,7 @@ CornerWindow(location) {
         curBaseY := winY + winH / 2
         curMonNo := GetMonitorNumber(curBaseX, curBaseY, winX, winY, monCount)
 		curMonWH := GetMonitorWorkArea(curMonNo)
-		
+
         SysGet, curMon, Monitor, %curMonNo%
 
 		If(location == "TopLeft") {
@@ -288,7 +293,7 @@ MoveWindow(direction) {
     curBaseY := winY + winH / 2
     curMonNo := GetMonitorNumber(curBaseX, curBaseY, winX, winY, monCount)
 	curMonWH := GetMonitorWorkArea(curMonNo)
-	
+
     SysGet, curMon, Monitor, %curMonNo%
 
 	; If centering window, no need to do monitor checks.
@@ -317,7 +322,7 @@ MoveWindow(direction) {
         tmpWinX := curBaseX
         tmpWinY := curBaseY + curMonWH[2]
     }
-	
+
 	; Move to new monitor. If not found, re-align in current monitor.
     If(DoesMonitorExist(tmpWinX, tmpWinY, monCount) == True) {
 		; Maximized windows are -4X, -4Y of their current monitor. Account for this here.
