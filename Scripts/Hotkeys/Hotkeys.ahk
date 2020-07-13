@@ -75,6 +75,11 @@ Global WinTenPadding := 8
     Run "C:/Program Files/Mozilla Firefox/firefox.exe"
     Return
 
+; Ctrl + Alt + Shift + K: Open KeePassX.
+^!+K::
+    Run "C:/Users/User/Documents/KeePassX/KeePassX.exe"
+    Return
+
 ; Ctrl + Alt + Shift + H: Open File Explorer to "Hotkeys" directory.
 ^!+H::
     Run "C:/Users/User/Documents/Git/ahk/Scripts/Hotkeys/"

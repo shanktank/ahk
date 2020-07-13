@@ -61,31 +61,29 @@ main() {
 		}
 		
 		; Wait until a fishing pool is visible
-		While(findPixelByColor(fishingSpotColor, [ 0, 50 ], [ 1350, 950 ])["rc"] != 0) {
-		;While(findPixelByColorWaveSearch(fishingSpotColor, [ 0, 50 ], [ 1350, 950 ], 25)["rc"] != 0) {
+		;While(findPixelByColor(fishingSpotColor, [ 0, 50 ], [ 1350, 950 ])["rc"] != 0) {
+		While(findPixelByColorWaveSearch(fishingSpotColor, [ 0, 50 ], [ 1350, 950 ], 25)["rc"] != 0) {
 			If(A_Index > 5) {
 				MsgBox % "Couldn't find a fishing spot"
 				Reload
 			}
+			Sleep, 200
 		}
 
 		; Resume fishing
 		Loop {
-			If(A_Index > 10) {
-				MsgBox % "Tons of misclicks"
-				Reload
-			}
-			XY := findPixelByColor(fishingSpotColor, [ 0, 50 ], [ 1350, 950 ], 25)["xy"]
-			;XY := findPixelByColorWaveSearch(fishingSpotColor, [ 0, 50 ], [ 1350, 950 ], 25)["xy"]
-			If(XY["rc"] != 0)
-				Continue
+			;XY := findPixelByColor(fishingSpotColor, [ 0, 50 ], [ 1350, 950 ], 25)["xy"]
+			XY := findPixelByColorWaveSearch(fishingSpotColor, [ 0, 50 ], [ 1350, 950 ], 25)["xy"]
 			Random, dx, 3, 7
 			Random, dy, 3, 7
-			If(moveMouseAndClick([ XY["xy"][1] - dx, XY["xy"][2] + dy ],,, "Interact") == True) {
-				Random, offsetX, -119, -231
-				Random, offsetY, -312, 287
-				moveMouse([ XY["xy"][1] + offsetX, XY["xy"][2] + offsetY ], 1.5)
+			If(moveMouseAndClick([ XY[1] - dx, XY[2] + dy ],,, "Interact") == True) {
+				Random, offsetX, -219, -331
+				Random, offsetY, -412,  287
+				moveMouse([ XY[1] + offsetX, XY[2] + dy ])
 				Break
+			} Else If(A_Index > 10) {
+				MsgBox % "Tons of misclicks"
+				Reload
 			}
 		}
 		Sleep, 7500
