@@ -12,7 +12,17 @@ CoordMode, Pixel, Screen
 SetTitleMatchMode, RegEx
 SendMode, Input
 
-;#IfWinActive ^(RuneLite|OpenOSRS)$
+#IfWinActive ^(RuneLite|OpenOSRS)$
+
+; Config:
+;  Entity Hider and Inventory Viewer active
+;  Interface pane open to Worn Equipment
+;  Camera zoom: 533/1004
+;  World: 378
+;  First slot: Coins
+;  Second slot: Coin Pouch
+;  Third through eighth slots: Dodgy Necklace
+;  Ninth through last slots: Jug of Wine
 
 Global knightTabardColor := 0x6B18BF
 Global knightStarColor := 0x97119F
