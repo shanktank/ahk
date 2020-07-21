@@ -16,11 +16,12 @@ SendMode, Input
 
 ; Config:
 ;  Entity Hider and Inventory Viewer active
+;  Menu Entry Swapper set to prioritize "walk here" over everything but pickpocket
 ;  Interface pane open to Worn Equipment
 ;  Camera zoom: 533/1004
 ;  World: 378
-;  First slot: Coins
-;  Second slot: Coin Pouch
+;  First slot: Coin Pouch
+;  Second slot: Coins
 ;  Third through eighth slots: Dodgy Necklace
 ;  Ninth through last slots: Jug of Wine
 
@@ -53,6 +54,15 @@ Global equippedNecklace := [ 0xC7C1B6, [ 1495, 735 ] ]
 
 Global inventoryOpen := [ 0x35110E, [ 1240, 1010 ] ]
 
+getKnightCoords(ByRef FindBy, ByRef Coords) {
+	FindBy := knightStarColor
+	Coords := findPixelByColor(FindBy, [ 570, 250 ], [ 1260, 800 ])
+	If(Coords["rc"] != 0) {
+		FindBy := knightTabardColor
+		Coords := findPixelByColor(FindBy, [ 570, 250 ], [ 1260, 800 ])
+	}
+}
+
 checkHitpoints() {
 	If(verifyPixelColor(healthCheck[1], healthCheck[2]) == True) {
 		Return False
@@ -77,6 +87,7 @@ checkHitpoints() {
 	}
 }
 
+; TODO: Bug: when cash stack gets to like 127k, this operation will click the money stack instead of a necklace
 checkNecklace() {
 	If(verifyPixelColor(equippedNecklace[1], equippedNecklace[2]) == False) {
 		Send, {Esc}
@@ -149,6 +160,7 @@ main() {
 		}
 
 		; Find the Knight
+		/*
 		FindBy := knightStarColor
 		Coords := findPixelByColor(FindBy, [ 570, 250 ], [ 1260, 800 ])
 		If(Coords["rc"] != 0) {
@@ -157,20 +169,44 @@ main() {
 		} If(Coords["rc"] != 0) {
 			Continue
 		}
+		*/
+		FindBy := ""
+		Coords := ""
+		getKnightCoords(FindBy, Coords)
+		If(Coords["rc"] != 0)
+			Continue
 
 		; Thieve until he moves
+		rc := True
 		XY := Coords["xy"]
 		moveMouseAndClick(XY)
 		lowerBounds := [ XY[1] - miniSearchArea, XY[2] - miniSearchArea ]
 		upperBounds := [ XY[1] + miniSearchArea, XY[2] + miniSearchArea ]
-		While(findPixelByColor(FindBy, lowerBounds, upperBounds)["rc"] == 0) {
-			moveMouseAndClick(XY, 2)
-			doClick()
-			If(checkHitpoints() || shouldOpenCoinPouches() || checkNecklace())
-				Continue
-			If(Mod(A_Index, 25) == 0) {
+		;moveMouse(XY, 2)
+		;While(findPixelByColor(FindBy, lowerBounds, upperBounds)["rc"] == 0 || rc == True) {
+		;While(findPixelByColor(FindBy, lowerBounds, upperBounds)["rc"] == 0 && rc == True) {
+		While(rc == True) {
+			;moveMouseAndClick(XY, 2)
+			rc := doClick(, "Interact")
+			If(checkHitpoints() || shouldOpenCoinPouches() || checkNecklace()) {
+				getKnightCoords(FindBy, Coords)
+				If(Coords["rc"] != 0) {
+					Break
+				} Else {
+					XY := Coords["xy"]
+					moveMouseAndClick(XY, 2)
+					Continue
+				}
+			} Else If(Mod(A_Index, 75) == 0) {
 				openCoinPouches()
-				Continue
+				getKnightCoords(FindBy, Coords)
+				If(Coords["rc"] != 0) {
+					Break
+				} Else {
+					XY := Coords["xy"]
+					moveMouseAndClick(XY, 2)
+					Continue
+				}
 			}
 		}
 	}

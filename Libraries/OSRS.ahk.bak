@@ -163,7 +163,7 @@ Class TileMarkerBounds Extends UIObject {
 		If(lowerBounds == -1)
 			lowerBounds := [ 0, 25 ]
 		If(upperBounds == -1)
-			upperBounds := [ 1350, 850 ]
+			upperBounds := [ 1350, 950 ] ; changed from 850 for fishing stuff
 
 		Loop, 5 {
 			PixelSearch, X, Y, lowerBounds[1], lowerBounds[2], upperBounds[1], upperBounds[2], This.pixelColor, This.shadeTolerance, RGB, Fast

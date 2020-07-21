@@ -54,11 +54,10 @@ TraverseArea() {
 
 	colorOut := FileOpen("Colors.txt", "w")
 	coordOut := FileOpen("Coords.txt", "w")
+	colorStr := ""
+	coordStr := ""
 
 	While(UpperXY[2] >= LowerXY[2]++) {
-		colorStr := ""
-		coordStr := ""
-
 		While(UpperXY[1] >= LowerXY[1] + A_Index - 1) {
 			RealLowerXY := [ LowerXY[1] + A_Index - 1, LowerXY[2] - 1 ]
 			

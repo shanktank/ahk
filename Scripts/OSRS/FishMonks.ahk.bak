@@ -70,6 +70,13 @@ main() {
 			Sleep, generateSleepTime(243, 413)
 			Send {Esc}
 			Sleep, generateSleepTime()
+			
+			; TODO: Note: repeated from below; make into a function
+			XY := findPixelByColor(PURPLE, screenLowerBounds, screenUpperBounds, shadeTolerance)["xy"]
+			Random, dx, -14, 16
+			Random, dy, -9, 13
+			moveMouseAndClick([ XY[1] - dx, XY[2] + dy ])
+			Sleep, generateSleepTime(1323, 2836)
 		}
 
 		; Walk back out of the bank to the purple marker
