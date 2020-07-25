@@ -86,12 +86,12 @@ main() {
 			Random, dx, -14, 16
 			Random, dy, -9, 13
 			moveMouseAndClick([ XY[1] - dx, XY[2] + dy ])
-			Sleep, generateSleepTime(1323, 2836)
+			Sleep, generateSleepTime(3323, 3836)
 		}
 		
 		; Wait until a fishing pool is visible
-		While(findPixelByColor(fishingSpotColor, screenLowerBounds, screenUpperBounds, shadeTolerance)["rc"] != 0) {
-		;While(fishingSpot.proximitySearch(screenLowerBounds, screenUpperBounds)["rc"] != 0) {
+		;While(findPixelByColor(fishingSpotColor, screenLowerBounds, screenUpperBounds, shadeTolerance)["rc"] != 0) {
+		While(fishingSpot.proximitySearch(screenLowerBounds, screenUpperBounds)["rc"] != 0) {
 			If(A_Index > 10) {
 				MsgBox % "Couldn't find a fishing spot"
 				Reload
