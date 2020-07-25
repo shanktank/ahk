@@ -1,107 +1,64 @@
+#Include %A_MyDocuments%/Git/ahk/Libraries/OSRS.ahk
+
 #SingleInstance FORCE
 #Persistent
 #NoEnv
 #Warn
 
-SetWorkingDir %A_ScriptDir%
+SetWorkingDir, %A_ScriptDir%
+CoordMode, ToolTip, Screen
 CoordMode, Mouse, Screen
-SendMode Input
+CoordMode, Pixel, Screen
+SetTitleMatchMode, RegEx
+SendMode, Input
 
-Global BREAKOUT := False
+#IfWinActive ^(RuneLite|OpenOSRS)$
 
-sleepAndClick(sleepy) {
-    Sleep, sleepy
-	If(BREAKOUT = True) {
-		Return
+; ============================================================================================================================================================ ;
+; == Functions =============================================================================================================================================== ;
+; ============================================================================================================================================================ ;
+
+main() {
+	While(bankSlot1Color.verifyPixelColor()) {
+		BankSlot1Bounds.moveMouseAndClick()
+		BankSlot2Bounds.moveMouseAndClick()
+		UIObject.inputKeyAndSleep("{Esc}")
+		UIObject.verifyInvIsOpen()
+		InvSlot14Bounds.moveMouseAndClick()
+		InvSlot15Bounds.moveMouseAndClick()
+		stringPrompt.waitForPixelToBeColor()
+		UIObject.inputKeyAndSleep("{Space}")
+		UIObject.moveMouse(bankerBounds.generateCoords())
+		invSlot14Color.waitForPixelToBeColor(20000)
+		;bankerBounds.moveMouseAndClick()
+		Click
+		bankOpenCheck.waitForPixelToBeColor()
+		Random, num, 1, 100
+		If(num >= 38) {
+			DepositAllBounds.moveMouseAndClick()
+		} Else {
+			InvSlot1Bounds.moveMouseAndClick()
+		}
 	}
-    Send ``
 }
 
-`::
-	Click
-	Return
+; ============================================================================================================================================================ ;
+; == Global Variables ======================================================================================================================================== ;
+; ============================================================================================================================================================ ;
 
-; Unstrung bow
-Numpad1::
-	MouseMove, 1520, 880, 0
-	Return
+Global invSlot14Color := New PixelColorLocation(0x686161, [ 1467, 809 ])
+Global invSlot28Color := New PixelColorLocation(0x3E3529, [ 1601, 969 ])
+Global bankerBounds := New ClickAreaBounds([ 837, 120 ], [ 939, 464 ])
+Global bankOpenCheck := New PixelColorLocation(0x8D8D98, [ 496, 91 ])
+Global bankSlot1Color := New PixelColorLocation(0x8F7D11, [ 452, 148 ])
+Global stringPrompt := New PixelColorLocation(0x80700D, [ 329, 920 ])
 
-; Bow string
-Numpad2::
-	MouseMove, 1560, 880, 0
-	Return
+; ============================================================================================================================================================ ;
+; == Hotkeys ================================================================================================================================================= ;
+; ============================================================================================================================================================ ;
 
-; Banker
-Numpad3::
-	MouseMove, 825, 500, 0
-	Return
+F1::main()
 
-; Deposit all
-Numpad4::
-	MouseMove, 900, 830, 0
-	Return
-
-; Unstrung bow in bank
-Numpad5::
-	MouseMove, 540, 290, 0
-	Return
-
-; Bow string in bank
-Numpad6::
-	MouseMove, 590, 290, 0
-	Return
-
-^B::
-	BREAKOUT := False
-
-	Loop {
-		Random, sleep1, 250, 500
-		Random, sleep2, 250, 500
-		Random, sleep3, 1500, 2500
-		Random, sleep4, 17500, 20000
-		Random, sleep5, 1000, 1500
-		Random, sleep6, 250, 500
-		Random, sleep7, 250, 500
-		Random, sleep8, 1000, 1500
-		Random, sleep9, 250, 500
-
-		; Click unstrung bow
-		Send {Numpad1}
-		sleepAndClick(sleep1)
-		; Click bow string
-		Send {Numpad2}
-		sleepAndClick(sleep2)
-		; Press 1
-		Sleep, sleep3
-		Send 1
-		; Click banker
-		Send {Numpad3}
-		sleepAndClick(sleep4)
-		If(BREAKOUT = True) {
-			Return
-		}
-		; Deposit inventory
-		Send {Numpad4}
-		sleepAndClick(sleep5)
-		; Withdraw unstrung bows
-		Send {Numpad5}
-		sleepAndClick(sleep6)
-		; Withdraw bow strings
-		Send {Numpad6}
-		sleepAndClick(sleep7)
-		; Press escape
-		Sleep, sleep8
-		Send {Esc}
-		Sleep, sleep9
-
-		If(BREAKOUT = True) {
-			Return
-		}
-	}
-
-	Return
-
-^C::
-PrintScreen::
-	BREAKOUT := True
-	Return
+#If
+^R::Reload
++^C::ExitApp

@@ -20,7 +20,7 @@ SendMode, Input
 ;  Hide Players?
 ;  Hide Players 2D?
 ; NPC Indicators
-;  Hightlight Style: 
+;  Hightlight Style: Hull
 
 Global fishingSpotColor		:= CYAN
 Global depositHullColor		:= BLUE
@@ -34,7 +34,7 @@ Global shadeTolerance       := 25
 Global screenLowerBounds	:= [ 0, 25 ]
 Global screenUpperBounds	:= [ 1350, 950 ]
 Global fishingSpot          := New TileMarkerBounds(fishingSpotColor, [ 0, 0 ], [ 0, 0 ], shadeTolerance)
-Global depositSpot          := New TileMarkerBounds(depositHullColor, [ 0, 0 ], [ 5, 9 ], shadeTolerance)
+Global depositSpot          := New TileMarkerBounds(depositHullColor, [ -5, 9 ], [ 0, 9 ], shadeTolerance)
 
 main() {
 	Loop {
@@ -45,6 +45,7 @@ main() {
 
 		; Bank fish if inventory is full
 		If(verifyPixelColor(invSlot28MonkFish.pixelColor, invSlot28MonkFish.pixelCoords)) {
+			Send {Space}
 			Loop {
 				/*
 				XY := findPixelByColor(depositHullColor, screenLowerBounds, screenUpperBounds, shadeTolerance)["xy"]
@@ -70,6 +71,13 @@ main() {
 			Sleep, generateSleepTime(243, 413)
 			Send {Esc}
 			Sleep, generateSleepTime()
+
+			; repeated shit from below, need to shore up
+			XY := findPixelByColor(PURPLE, screenLowerBounds, screenUpperBounds, shadeTolerance)["xy"]
+			Random, dx, -74, 66
+			Random, dy, -99, 113
+			moveMouseAndClick([ XY[1] - dx, XY[2] + dy ])
+			Sleep, generateSleepTime(1323, 2836)
 		}
 
 		; Walk back out of the bank to the purple marker

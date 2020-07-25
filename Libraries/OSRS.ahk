@@ -200,7 +200,6 @@ Class TileMarkerBounds Extends UIObject {
 			} Else {
 				Sleep, 100
 			}
-
 		}
 	}
 
@@ -300,6 +299,32 @@ findPixelByColorWaveSearch(pixelColor, lowerBounds := -1, upperBounds := -1, sha
 	}
 
 	Return { xy : [ X, Y ], rc : ErrorLevel }
+}
+
+proximitySearch(pixelColor, lowerBounds := -1, upperBounds := -1, shadeTolerance := 10) {
+	If(lowerBounds == -1)
+		lowerBounds := [ 0, 25 ]
+	If(upperBounds == -1)
+		upperBounds := [ 1350, 850 ]
+
+	centerXY := [ 830, 535 ]
+	maxXY := [ 1640, 1050 ]
+	increments := [ 20, 10 ]
+	
+	Loop {
+		proximity := [ increments[1] * A_Index, increments[2] * A_Index ]
+
+		If(centerXY[1] + proximity[1] > maxXY[1] Or centerXY[2] + proximity[2] > maxXY[2]) {
+			Return { xy : [ 0, 0 ], rc : ErrorLevel }
+		}
+
+		PixelSearch, X, Y, centerXY[1] - proximity[1], centerXY[2] - proximity[2], centerXY[1] + proximity[1], centerXY[2] + proximity[2], pixelColor, shadeTolerance, RGB, Fast
+		If(ErrorLevel == 0) {
+			Return { xy : [ X, Y ], rc : ErrorLevel }
+		} Else {
+			Sleep, 100
+		}
+	}
 }
 
 checkIfHoveringAction() {
