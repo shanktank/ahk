@@ -33,8 +33,11 @@ Global depositFishBounds	:= New ClickAreaBounds([  880, 500 ], [  915, 525 ])
 Global shadeTolerance       := 25
 Global screenLowerBounds	:= [ 0, 25 ]
 Global screenUpperBounds	:= [ 1350, 950 ]
-Global fishingSpot          := New TileMarkerBounds(fishingSpotColor, [ 0, 0 ], [ 0, 0 ], shadeTolerance)
-Global depositSpot          := New TileMarkerBounds(depositHullColor, [ -5, 9 ], [ 0, 9 ], shadeTolerance)
+;Global fishingSpot          := New TileMarkerBounds(fishingSpotColor, [ 0, 0 ], [ 0, 0 ], shadeTolerance)
+Global fishingSpot          := New TileMarkerBounds(fishingSpotColor, [ 3, 3 ], [ 9, 9 ], shadeTolerance)
+;Global depositSpot          := New TileMarkerBounds(depositHullColor, [ -5, 9 ], [ 0, 9 ], shadeTolerance)
+;Global depositSpot          := New TileMarkerBounds(depositHullColor, [ -5, 4 ], [ -16, 13 ], shadeTolerance)
+Global depositSpot          := New TileMarkerBounds(depositHullColor, [ 0, 3 ], [ 0, 7 ], shadeTolerance)
 
 main() {
 	Loop {
@@ -109,9 +112,10 @@ main() {
 			XYR := fishingSpot.proximitySearch(screenLowerBounds, screenUpperBounds)
 			If(XYR["rc"] != 0)
 				Continue
-			Random, dx, -3, 3
-			Random, dy, -3, 3
-			If(moveMouseAndClick([ XYR["xy"][1] + dx, XYR["xy"][2] + dy ],,, "Interact") == True) {
+			;Random, dx, -3, 3
+			;Random, dy, -3, 3
+			;If(moveMouseAndClick([ XYR["xy"][1] + dx, XYR["xy"][2] + dy ],,, "Interact") == True) {
+			If(moveMouseAndClick([ XYR["xy"][1], XYR["xy"][2] ],,, "Interact") == True) {
 				Random, offsetX, -119, -231
 				Random, offsetY, -312, 287
 				moveMouse([ XYR["xy"][1] + offsetX, XYR["xy"][2] + offsetY ], 1.5)
