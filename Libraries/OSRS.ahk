@@ -27,9 +27,11 @@ Global InvSlot14Bounds  := New ClickAreaBounds([ 1465, 805 ], [ 1493, 832 ])
 Global InvSlot15Bounds  := New ClickAreaBounds([ 1518, 805 ], [ 1549, 835 ])
 Global BankSlot1Bounds  := New ClickAreaBounds([  439, 135 ], [  464, 166 ])
 Global BankSlot2Bounds  := New ClickAreaBounds([  498, 137 ], [  529, 169 ])
+Global BankSlot3Bounds	:= New ClickAreaBounds([  566, 138 ], [  590, 165 ])
 Global DepositAllBounds := New ClickAreaBounds([  903, 776 ], [  938, 815 ])
 
-Global InvOpenCheck := New PixelColorLocation(0x75281E, [ 1211, 1009 ])
+Global InvOpenCheck  := New PixelColorLocation(0x75281E, [ 1211, 1009 ])
+Global BankOpenCheck := New PixelColorLocation(0xC07926, [  410,   50 ])
 
 ; ================================================================================================================================================== ;
 ; -- Data Classes ---------------------------------------------------------------------------------------------------------------------------------- ;
@@ -218,6 +220,22 @@ Class TileMarkerBounds Extends UIObject {
 		Return [ X, Y ]
 	}
 }
+
+
+
+DepositAll() {
+	; TODO: Standardize multiclickers into classes
+	DepositAllBounds.moveMouseAndClick(, generateSleepTime(172, 316))
+	Click
+	Random, randInt, 1, 3
+	If(randInt == 3) {
+		Sleep, generateSleepTime()
+		Click
+	}
+}
+
+
+
 
 ; ================================================================================================================================================== ;
 ; -- Pixel Color Finders and Validators ------------------------------------------------------------------------------------------------------------ ;
