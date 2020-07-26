@@ -4,10 +4,16 @@ SetKeyDelay, 0, 1, Play
 SendMode, Play
 
 #IfWinActive (RuneLite|OpenOSRS)( - [a-zA-Z0-9]+)?
-#SingleInstance FORCE
+#SingleInstance Force
 #Persistent
 #NoEnv
 #Warn
+
+; TODO; Try Send()
+; TODO: Try Send {Blind}
+; TODO: Try SetStoreCapslockMode, Off
+; TODO: Try https://www.autohotkey.com/docs/commands/Hotkey.htm
+; TODO: Try https://autohotkey.com/board/topic/81090-applying-same-function-over-a-group-of-hotstrings/
 
 Cap(letter) {
 	If(GetKeyState("CapsLock", "T")) {

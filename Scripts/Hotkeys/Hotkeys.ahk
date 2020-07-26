@@ -1,4 +1,4 @@
-#SingleInstance FORCE
+#SingleInstance Force
 #EscapeChar \
 #Persistent
 #NoEnv
@@ -20,11 +20,9 @@ Global WinTenPadding := 8
 ; Ctrl + H: Toggle show hidden files
 ^H::
     #IfWinActive AHK_Class CabinetWClass
-        RegRead, HiddenFiles_Status, HKEY_CURRENT_USER, Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced, Hidden
-        If(HiddenFiles_Status = 2)
-            RegWrite, REG_DWORD, HKEY_CURRENT_USER, Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced, Hidden, 1
-        Else
-            RegWrite, REG_DWORD, HKEY_CURRENT_USER, Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced, Hidden, 2
+		RegPath := "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
+        RegRead, HiddenStatus, HKEY_CURRENT_USER, %RegPath%, Hidden
+		RegWrite, REG_DWORD, HKEY_CURRENT_USER, %RegPath%, Hidden, % HiddenStatus == 1 ? 2 : 1
         Send {F5}
     #IfWinActive
     Return
@@ -32,68 +30,66 @@ Global WinTenPadding := 8
 ; Ctrl + Shift + H: Toggle show system files
 ^+H::
     #IfWinActive AHK_Class CabinetWClass
-        RegRead, SuperHidden, HKEY_CURRENT_USER, Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced, ShowSuperHidden
-        If(SuperHidden = 0)
-            RegWrite, REG_DWORD, HKEY_CURRENT_USER, Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced, ShowSuperHidden, 1
-        Else
-            RegWrite, REG_DWORD, HKEY_CURRENT_USER, Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced, ShowSuperHidden, 0
+		RegPath := "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
+        RegRead, SuperHiddenStatus, HKEY_CURRENT_USER, %RegPath%, ShowSuperHidden
+		RegWrite, REG_DWORD, HKEY_CURRENT_USER, %RegPath%, ShowSuperHidden, % SuperHiddenStatus == 0 ? 1 : 0
         Send {F5}
     #IfWinActive
     Return
+
+; Ctrl + Alt + Shift + N: Toggle hidden status of selected files.
+^!+N::
+	#IfWinActive AHK_Class CabinetWClass
+		Send ^c
+		ClipWait
+		Loop, Parse, Clipboard, \n, \r
+			FileSetAttrib, ^H, % A_LoopField
+		Send {F5}
+	#IfWinActive	
+	Return
+
+; ================================================================================================================================================== ;
+; == Media ========================================================================================================================================= ;
+; ================================================================================================================================================== ;
+
+; Ctrl + Alt + Win + Hotkey: Execute specified shortcut.
+^!+Left::Send {Media_Prev}
+^!+Right::Send {Media_Next}
+^!+Space::Send {Media_Play_Pause}
 
 ; ================================================================================================================================================== ;
 ; == Launchers ===================================================================================================================================== ;
 ; ================================================================================================================================================== ;
 
-; Ctrl + Alt + Shift + P: Launch PuTTY.
-^!+P::
-    Run putty
-    Return
+; Ctrl + Alt + Win + Hotkey: Launch specified program.
+^!+P::Run putty
+^!+U::Run putty -load "super remote"
+^!+J::Run putty -load "super local"
+^!+O::Run debian
+^!+L::Run "C:/Users/User/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Windows PowerShell/PowerShell"
+^!+H::Run "C:/Users/User/Documents/Git/ahk/Scripts/Hotkeys/"
+^!+A::Run "C:/Users/User/Documents/Git/ahk/Scripts/OSRS/"
+^!+K::Run "C:/Users/User/Documents/KeePassX/KeePassX.exe"
+^!+M::Run "C:/Program Files/Mozilla Firefox/firefox.exe"
+^!+S::Run Control mmsys.cpl Sounds
 
-; Ctrl + Alt + Shift + U: Launch SSH session "Super".
-^!+U::
-    Run putty -load "super remote"
-    Return
+; ================================================================================================================================================== ;
+; == Shifters ====================================================================================================================================== ;
+; ================================================================================================================================================== ;
 
-; Ctrl + Alt + Shift + J: Launch SSH session "Super".
-^!+J::
-    Run putty -load "super local"
-    Return
-
-; Ctrl + Alt + Shift + O: Open Debian terminal.
-^!+O::
-    Run debian
-    Return
-
-; Ctrl + Alt + Shift + L: Open PowerShell terminal.
-^!+L::
-    Run "C:/Users/User/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Windows PowerShell/PowerShell"
-    Return
-
-; Ctrl + Alt + Shift + M: Open Firefox.
-^!+M::
-    Run "C:/Program Files/Mozilla Firefox/firefox.exe"
-    Return
-
-; Ctrl + Alt + Shift + K: Open KeePassX.
-^!+K::
-    Run "C:/Users/User/Documents/KeePassX/KeePassX.exe"
-    Return
-
-; Ctrl + Alt + Shift + H: Open File Explorer to "Hotkeys" directory.
-^!+H::
-    Run "C:/Users/User/Documents/Git/ahk/Scripts/Hotkeys/"
-    Return
-
-; Ctrl + Alt + Shift + A: Open File Explorer to "OSRS" AHK directory.
-^!+A::
-    Run "C:/Users/User/Documents/Git/ahk/Scripts/OSRS/"
-    Return
-
-; Ctrl + Alt + Shift + S: Open sound options
-^!+S::
-    Run Control mmsys.cpl Sounds
-    Return
+; Ctrl + Win + Hotkey: Control cursor as specified.
+^#4::
+^#Numpad4::PixelStep(-1, 0)
+^#6::
+^#Numpad6::PixelStep(1, 0)
+^#2::
+^#Numpad2::PixelStep(0, 1)
+^#8::
+^#Numpad8::PixelStep(0, -1)
+^#5::
+^#Numpad5::Click Down
+^#0::
+^#Numpad0::Click Up
 
 ; ================================================================================================================================================== ;
 ; == Resizers ====================================================================================================================================== ;
@@ -101,130 +97,59 @@ Global WinTenPadding := 8
 
 ; LWin + Subtract: Set dimensions of active window.
 <#-::
-<#NumpadSub::
-	ResizeWindow()
-    Return
-
-; ================================================================================================================================================== ;
-; == Shifters ====================================================================================================================================== ;
-; ================================================================================================================================================== ;
-
-; Ctrl + Win + 5: Left mouse button down.
-^#5::
-^#Numpad5::
-    Click Down
-    Return
-
-; Ctrl + Win + 0: Left mouse button up.
-^#0::
-^#Numpad0::
-    Click Up
-    Return
-
-; Ctrl + Win + 4: Move cursor left by one pixel.
-^#4::
-^#Numpad4::
-    MouseGetPos, x, y
-    MouseMove, x - 1, y
-    Return
-
-; Ctrl + Win + 6: Move cursor right by one pixel.
-^#6::
-^#Numpad6::
-    MouseGetPos, x, y
-    MouseMove, x + 1, y
-    Return
-
-; Ctrl + Win + 2: Move cursor down by one pixel.
-^#2::
-^#Numpad2::
-    MouseGetPos, x, y
-    MouseMove, x, y + 1
-    Return
-
-; Ctrl + Win + 8: Move cursor up by one pixel.
-^#8::
-^#Numpad8::
-    MouseGetPos, x, y
-    MouseMove, x, y - 1
-    Return
+<#NumpadSub::ResizeWindow()
 
 ; ================================================================================================================================================== ;
 ; == Movers ======================================================================================================================================== ;
 ; ================================================================================================================================================== ;
 
-; LWin + 4: Move active window one monitor to the left.
+; LWin + Hotkey: Move active window as specified.
 <#4::
 <#Numpad4::
-<#NumpadLeft::
-    MoveWindow("Left")
-    Return
-
-; LWin + 6: Move active window one monitor to the right.
+<#NumpadLeft::MoveWindow("Left")
 <#6::
 <#Numpad6::
-<#NumpadRight::
-    MoveWindow("Right")
-    Return
-
-; LWin + 8: Move active window one monitor up.
+<#NumpadRight::MoveWindow("Right")
 <#8::
 <#Numpad8::
-<#NumpadUp::
-    MoveWindow("Up")
-    Return
-
-; LWin + 2: Move active window one monitor down.
+<#NumpadUp::MoveWindow("Up")
 <#2::
 <#Numpad2::
-<#NumpadDown::
-    MoveWindow("Down")
-    Return
-
-; LWin + 5: Center active window.
+<#NumpadDown::MoveWindow("Down")
 <#5::
 <#Numpad5::
-<#NumpadClear::
-    MoveWindow("Center")
-    Return
-
-; LWin + 1: Move active window to the bottom-left corner.
+<#NumpadClear::MoveWindow("Center")
 <#1::
 <#Numpad1::
-<#NumpadEnd::
-    CornerWindow("BottomLeft")
-    Return
-
-; LWin + 3: Move active window to the bottom-right corner.
+<#NumpadEnd::CornerWindow("BottomLeft")
 <#3::
 <#Numpad3::
-<#NumpadPgDn::
-    CornerWindow("BottomRight")
-    Return
-
-; LWin + 7: Move active window to the top-left corner.
+<#NumpadPgDn::CornerWindow("BottomRight")
 <#7::
 <#Numpad7::
-<#NumpadHome::
-    CornerWindow("TopLeft")
-    Return
-
-; LWin + 9: Move active window to the top-right corner.
+<#NumpadHome::CornerWindow("TopLeft")
 <#9::
 <#Numpad9::
-<#NumpadPgUp::
-    CornerWindow("TopRight")
-    Return
+<#NumpadPgUp::CornerWindow("TopRight")
+
+; ================================================================================================================================================== ;
+; == Shifter functions ============================================================================================================================= ;
+; ================================================================================================================================================== ;
+
+PixelStep(dx := 0, dy := 0) {
+    MouseGetPos, x, y
+    MouseMove, x + dx, y + dy
+}
 
 ; ================================================================================================================================================== ;
 ; == Resizer functions ============================================================================================================================= ;
 ; ================================================================================================================================================== ;
 
 ResizeWindow() {
-	WinGetPos,,, Width, Height, A
-
 	Widths  := [ 1024, 1280, 1366 ]
-	Heights := [ 540,   576,  720 ]
+	Heights := [  540,  576,  720 ]
+
+	WinGetPos,,, Width, Height, A
 
 	If(Width == Widths[2] And Height == Heights[2]) {
 		WinMove, A,,,, Widths[3], Heights[3]
@@ -254,32 +179,32 @@ CornerWindow(location) {
         SysGet, curMon, Monitor, %curMonNo%
 
 		If(location == "TopLeft") {
-            newWinX := curMonLeft
+            newWinX := curMonLeft - WinTenPadding
             newWinY := curMonTop
-            If(winX == 0 && winY == 0) {
-                newWinX += 100
+            If(winX == 0 - WinTenPadding && winY == 0) {
+                newWinX += 100 - WinTenPadding
                 newWinY += 100
             }
         } Else If(location == "TopRight") {
-            newWinX := curMonWH[1] - winW + curMonLeft
+            newWinX := curMonWH[1] - winW + curMonLeft + WinTenPadding
             newWinY := curMonTop
-            If(winX == curMonWH[1] - winW && winY == 0) {
-                newWinX -= 100
+            If(winX == curMonWH[1] - winW + WinTenPadding && winY == 0) {
+                newWinX -= 100 + WinTenPadding
                 newWinY += 100
             }
         } Else If(location == "BottomLeft") {
-            newWinX := curMonLeft
-            newWinY := curMonWH[2] - winH + curMonTop
-            If(winX == 0 && winY == curMonWH[2] - winH) {
-                newWinX += 100
-                newWinY -= 100
+            newWinX := curMonLeft - WinTenPadding
+            newWinY := curMonWH[2] - winH + curMonTop + WinTenPadding
+            If(winX == 0 - WinTenPadding && winY == curMonWH[2] - winH + WinTenPadding) {
+                newWinX += 100 - WinTenPadding
+                newWinY -= 100 + WinTenPadding
             }
         } Else If(location == "BottomRight") {
-            newWinX := curMonWH[1] - winW + curMonLeft
-            newWinY := curMonWH[2] - winH + curMonTop
-            If(winX == curMonWH[1] - winW && winY == curMonWH[2] - winH) {
-                newWinX -= 100
-                newWinY -= 100
+            newWinX := curMonWH[1] - winW + curMonLeft + WinTenPadding
+            newWinY := curMonWH[2] - winH + curMonTop + WinTenPadding
+            If(winX == curMonWH[1] - winW + WinTenPadding && winY == curMonWH[2] - winH + WinTenPadding) {
+                newWinX -= 100 + WinTenPadding
+                newWinY -= 100 + WinTenPadding
             }
         }
 
@@ -350,7 +275,7 @@ MoveWindow(direction) {
             newBaseY := curBaseY + curMonWH[2]
         }
 
-		newMonNo := GetMonitorNumber(newBaseX, newBaseY, NULL, NULL, monCount)
+		newMonNo := GetMonitorNumber(newBaseX, newBaseY, Null, Null, monCount)
         newWinX  := ReAlignX(newMonNo, curMonWH, direction, winX, winW)
         newWinY  := ReAlignY(curMonNo, newMonNo, curMonWH, direction, winY, winH)
 
@@ -383,7 +308,8 @@ GetMonitorNumber(curBaseX, curBaseY, winX, winY, monCount) {
         }
     }
 
-	Loop %monCount% { ; If we couldn't find a monitor through the assumed X/Y, check by window X/Y.
+	; If we couldn't find a monitor through the assumed X/Y, check by window X/Y.
+	Loop %monCount% {
 		SysGet, tmpMon, Monitor, %A_Index%
 		If(winX >= tmpMonLeft And winX <= tmpMonRight And winY >= tmpMonTop And winY <= tmpMonBottom) {
 			Return A_Index
@@ -444,7 +370,7 @@ ReAlignX(newMonNo, curMonWH, direction, winX, winW) {
 }
 
 ReAlignY(curMonNo, newMonNo, curMonWH, direction, winY, winH) {
-	SysGet, curMon, Monitor, %curMonNo%
+	;SysGet, curMon, Monitor, %curMonNo%
 	SysGet, newMon, Monitor, %newMonNo%
 	newMonHeight := GetMonitorWorkArea(newMonNo)[2]
 
