@@ -21,6 +21,15 @@ Global GREEN  := 0x00FF00
 Global YELLOW := 0xFFFF00
 Global PURPLE := 0xFF00FF
 Global CYAN   := 0x00FFFF
+Global TEAL   := 0x008372
+Global ORANGE := 0xFF9B00
+Global HILITE := 0xE6CC80
+
+Global ScreenLowerBounds := [    0,  50 ]
+Global ScreenUpperBounds := [ 1350, 850 ]
+Global ScreenLowerBoundsBig := [    0,   25 ]
+Global ScreenUpperBoundsBig := [ 1640, 1000 ]
+Global ScreenUpperBoundsFull := [ 1640, 1049 ]
 
 Global InvSlot1Bounds   := New ClickAreaBounds([ 1408, 660 ], [ 1436, 689 ])
 Global InvSlot14Bounds  := New ClickAreaBounds([ 1465, 805 ], [ 1493, 832 ])
@@ -30,12 +39,17 @@ Global BankSlot2Bounds  := New ClickAreaBounds([  498, 137 ], [  529, 169 ])
 Global BankSlot3Bounds	:= New ClickAreaBounds([  566, 138 ], [  590, 165 ])
 Global DepositAllBounds := New ClickAreaBounds([  903, 776 ], [  938, 815 ])
 
-Global InvOpenCheck  := New PixelColorLocation(0x75281E, [ 1211, 1009 ])
-Global BankOpenCheck := New PixelColorLocation(0xC07926, [  410,   50 ])
+Global InvOpenCheck   := New PixelColorLocation(0x75281E, [ 1211, 1009 ])
+Global BankOpenCheck  := New PixelColorLocation(0xC07926, [  410,   50 ])
+Global InvSlot28Empty := New PixelColorLocation(0x3E3529, [ 1593,  967 ])
 
 ; ================================================================================================================================================== ;
 ; -- Data Classes ---------------------------------------------------------------------------------------------------------------------------------- ;
 ; ================================================================================================================================================== ;
+
+; TODO: Standardize multiclickers into classes
+; TODO: Make mouseSpeedDivisor, hoverNext, shadeTolerance global variables
+; TODO: Rename UIObject to OSRSlib, PixelColorLocation to PixelColorCoords
 
 Class UIObject {
 	moveMouse(moveCoords, mouseSpeedDivisor := 2.5) {
@@ -146,7 +160,7 @@ Class TileMarkerBounds Extends UIObject {
 			If(A_Index > 10)
 				Return False
 			If(A_Index == 2)
-				mouseSpeedDivisor := mouseSpeedDivisor / 2
+				mouseSpeedDivisor := mouseSpeedDivisor / 1.5
 
 			Sleep, generateSleepTime(184, 319)
 			Base.moveMouseAndClick(This.generateCoords(), mouseSpeedDivisor, sleepFor)
@@ -163,9 +177,9 @@ Class TileMarkerBounds Extends UIObject {
 
 	findPixelByColor(lowerBounds := -1, upperBounds := -1) {
 		If(lowerBounds == -1)
-			lowerBounds := [ 0, 25 ]
+			lowerBounds := ScreenLowerBounds
 		If(upperBounds == -1)
-			upperBounds := [ 1350, 850 ]
+			upperBounds := ScreenUpperBounds
 
 		Loop, 5 {
 			PixelSearch, X, Y, lowerBounds[1], lowerBounds[2], upperBounds[1], upperBounds[2], This.pixelColor, This.shadeTolerance, RGB, Fast
@@ -181,9 +195,9 @@ Class TileMarkerBounds Extends UIObject {
 
 	proximitySearch(lowerBounds := -1, upperBounds := -1) {
 		If(lowerBounds == -1)
-			lowerBounds := [ 0, 25 ]
+			lowerBounds := ScreenLowerBounds
 		If(upperBounds == -1)
-			upperBounds := [ 1350, 850 ]
+			upperBounds := ScreenUpperBounds
 
 		centerXY := [ 830, 535 ]
 		maxXY := [ 1640, 1050 ]
@@ -205,15 +219,20 @@ Class TileMarkerBounds Extends UIObject {
 		}
 	}
 
-	generateCoords() {
-		XY := This.findPixelByColor()
+	generateCoords(lowerBounds := -1, upperBounds := -1) {
+		If(lowerBounds == -1)
+			lowerBounds := ScreenLowerBounds
+		If(upperBounds == -1)
+			upperBounds := ScreenUpperBounds
+	
+		XY := This.findPixelByColor(lowerBounds, upperBounds)
 
 		If(XY["rc"] != 0) {
 			SetFormat, IntegerFast, Hex
 			MsgBox % "Could not find pixel (" This.pixelColor ")"
 			Reload
 		}
-
+		
 		Random, X, XY["xy"][1] + This.minOffset[1], XY["xy"][1] + This.maxOffset[1]
 		Random, Y, XY["xy"][2] + This.minOffset[2], XY["xy"][2] + This.maxOffset[2]
 
@@ -224,14 +243,16 @@ Class TileMarkerBounds Extends UIObject {
 
 
 DepositAll() {
-	; TODO: Standardize multiclickers into classes
-	DepositAllBounds.moveMouseAndClick(, generateSleepTime(172, 316))
-	Click
-	Random, randInt, 1, 3
-	If(randInt == 3) {
-		Sleep, generateSleepTime()
-		Click
+	Random, randInt1, 1, 100
+	Random, randInt2, 1, 100
+	
+	randInt1 >= 38 ? DepositAllBounds.moveMouseAndClick() : InvSlot1Bounds.moveMouseAndClick()
+	UIObject.doClick()
+	If(randInt2 >= 73) {
+		UIObject.doClick()
 	}
+	
+	Sleep, generateSleepTime(212, 357)
 }
 
 
@@ -276,9 +297,9 @@ waitForPixelToNotBeColor(pixelColor, xy, timeout := 5000, hoverNext := 0) {
 
 findPixelByColor(pixelColor, lowerBounds := -1, upperBounds := -1, shadeTolerance := 10) {
 	If(lowerBounds == -1)
-		lowerBounds := [ 0, 25 ]
+		lowerBounds := ScreenLowerBounds
 	If(upperBounds == -1)
-		upperBounds := [ 1350, 850 ]
+		upperBounds := ScreenUpperBounds
 
 	PixelSearch, X, Y, lowerBounds[1], lowerBounds[2], upperBounds[1], upperBounds[2], pixelColor, shadeTolerance, RGB, Fast
 
@@ -287,9 +308,9 @@ findPixelByColor(pixelColor, lowerBounds := -1, upperBounds := -1, shadeToleranc
 
 findPixelByColorX(pixelColor, lowerBounds := 0, upperBounds := 0, tries := 10, shadeTolerance := 10) {
 	If(lowerBounds == 0)
-		lowerBounds := [ 0, 25 ]
+		lowerBounds := ScreenLowerBounds
 	If(upperBounds == 0)
-		upperBounds := [ 1350, 850 ]
+		upperBounds := ScreenUpperBounds
 
 	Loop, %tries% {
 		PixelSearch, X, Y, lowerBounds[1], lowerBounds[2], upperBounds[1], upperBounds[2], pixelColor, shadeTolerance, RGB, Fast
@@ -321,9 +342,9 @@ findPixelByColorWaveSearch(pixelColor, lowerBounds := -1, upperBounds := -1, sha
 
 proximitySearch(pixelColor, lowerBounds := -1, upperBounds := -1, shadeTolerance := 10) {
 	If(lowerBounds == -1)
-		lowerBounds := [ 0, 25 ]
+		lowerBounds := ScreenLowerBounds
 	If(upperBounds == -1)
-		upperBounds := [ 1350, 850 ]
+		upperBounds := ScreenUpperBounds
 
 	centerXY := [ 830, 535 ]
 	maxXY := [ 1640, 1050 ]
