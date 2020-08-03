@@ -25,10 +25,11 @@ Global TEAL   := 0x008372
 Global ORANGE := 0xFF9B00
 Global HILITE := 0xE6CC80
 
-Global ScreenLowerBounds := [    0,  50 ]
-Global ScreenUpperBounds := [ 1350, 850 ]
-Global ScreenLowerBoundsBig := [    0,   25 ]
-Global ScreenUpperBoundsBig := [ 1640, 1000 ]
+Global ScreenLowerBounds     := [    0,   50 ]
+Global ScreenUpperBounds     := [ 1350,  850 ]
+Global ScreenLowerBoundsBig  := [    0,   25 ]
+Global ScreenUpperBoundsBig  := [ 1640, 1000 ]
+Global ScreenLowerBoundsBig  := [    0,   25 ]
 Global ScreenUpperBoundsFull := [ 1640, 1049 ]
 
 Global InvSlot1Bounds   := New ClickAreaBounds([ 1408, 660 ], [ 1436, 689 ])
@@ -53,6 +54,12 @@ Global InvSlot28Empty := New PixelColorLocation(0x3E3529, [ 1593,  967 ])
 
 Class UIObject {
 	moveMouse(moveCoords, mouseSpeedDivisor := 2.5) {
+		mouseSpeed := DecideSpeed(CalculateDistance(moveCoords), mouseSpeedDivisor)
+		RandomBezier(moveCoords[1], moveCoords[2], "T"(mouseSpeed)" OT38 OB40 OL40 OR39 P2-3")
+	}
+	
+	moveMouse2(invokingObject, mouseSpeedDivisor := 2.5) {
+		moveCoords := invokingObject.generateCoords()
 		mouseSpeed := DecideSpeed(CalculateDistance(moveCoords), mouseSpeedDivisor)
 		RandomBezier(moveCoords[1], moveCoords[2], "T"(mouseSpeed)" OT38 OB40 OL40 OR39 P2-3")
 	}
@@ -129,6 +136,10 @@ Class ClickAreaBounds Extends UIObject {
 	__New(lowerBounds, upperBounds) {
 		This.lowerBounds := lowerBounds
 		This.upperBounds := upperBounds
+	}
+
+	moveMouse(mouseSpeedDivisor := 2.5) {
+		Base.moveMouse2(This, mouseSpeedDivisor := 2.5)
 	}
 
 	moveMouseAndClick(mouseSpeedDivisor := 2.5, sleepFor := 0, actionType := "Neither", rightClick := False) {
