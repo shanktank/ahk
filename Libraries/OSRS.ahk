@@ -1,6 +1,6 @@
 ﻿#Include %A_MyDocuments%/Git/ahk/Libraries/RandomBezier.ahk
 
-#SingleInstance FORCE
+#SingleInstance Force
 #Persistent
 #NoEnv
 #Warn
@@ -40,6 +40,7 @@ Global BankSlot2Bounds  := New ClickAreaBounds([  498, 137 ], [  529, 169 ])
 Global BankSlot3Bounds	:= New ClickAreaBounds([  566, 138 ], [  590, 165 ])
 Global DepositAllBounds := New ClickAreaBounds([  903, 776 ], [  938, 815 ])
 
+Global OptsOpenCheck  := New PixelColorLocation(0x6B241B, [ 1525, 1015 ])
 Global InvOpenCheck   := New PixelColorLocation(0x75281E, [ 1211, 1009 ])
 Global BankOpenCheck  := New PixelColorLocation(0xC07926, [  410,   50 ])
 Global InvSlot28Empty := New PixelColorLocation(0x3E3529, [ 1593,  967 ])
@@ -51,6 +52,7 @@ Global InvSlot28Empty := New PixelColorLocation(0x3E3529, [ 1593,  967 ])
 ; TODO: Standardize multiclickers into classes
 ; TODO: Make mouseSpeedDivisor, hoverNext, shadeTolerance global variables
 ; TODO: Rename UIObject to OSRSlib, PixelColorLocation to PixelColorCoords
+; TODO: Make standard "IsUIElementOpen" to reduce repitition
 
 Class UIObject {
 	moveMouse(moveCoords, mouseSpeedDivisor := 2.5) {
@@ -65,7 +67,7 @@ Class UIObject {
 	}
 
 	doClick(sleepFor := 0, actionType := "Neither", mouseButton := "Left") {
-		Sleep, generateSleepTime(52, 163)
+		;Sleep, generateSleepTime(52, 163)
 		MouseClick, %mouseButton%
 		rc := verifyClick(actionType)
 		Sleep, sleepFor
@@ -92,6 +94,16 @@ Class UIObject {
 	verifyInvIsOpen() {
 		If(InvOpenCheck.verifyPixelColor() == False) {
 			Base.inputKeyAndSleep("{Esc}")
+			If(InvOpenCheck.verifyPixelColor() == False) {
+				MsgBox % "Can't detect inventory?"
+				Reload
+			}
+		}
+	}
+	
+	verifyOptsIsOpen() {
+		If(OptsOpenCheck.verifyPixelColor() == False) {
+			Base.inputKeyAndSleep("F5")
 			If(InvOpenCheck.verifyPixelColor() == False) {
 				MsgBox % "Can't detect inventory?"
 				Reload
@@ -159,11 +171,15 @@ Class TileMarkerBounds Extends UIObject {
 	Static maxOffset      := [ 0, 0 ]
 	Static shadeTolerance := 0
 
-	__New(pixelColor, minOffset, maxOffset, shadeTolerance) {
+	__New(pixelColor, minOffset, maxOffset, shadeTolerance := 10) {
 		This.pixelColor     := pixelColor
 		This.minOffset      := minOffset
 		This.maxOffset      := maxOffset
 		This.shadeTolerance := shadeTolerance
+	}
+
+	moveMouse(mouseSpeedDivisor := 2.5) {
+		Base.moveMouse2(This, mouseSpeedDivisor := 2.5)
 	}
 
 	moveMouseAndClick(mouseSpeedDivisor := 2.5, sleepFor := 100) {
@@ -254,17 +270,26 @@ Class TileMarkerBounds Extends UIObject {
 
 
 DepositAll() {
-	Random, randInt1, 1, 100
-	Random, randInt2, 1, 100
+	Random, randInt1, 1, 10000
+	Random, randInt2, 1, 10000
 	
-	randInt1 >= 38 ? DepositAllBounds.moveMouseAndClick() : InvSlot1Bounds.moveMouseAndClick()
+	randInt1 >= 2342 ? DepositAllBounds.moveMouseAndClick() : InvSlot1Bounds.moveMouseAndClick()
 	UIObject.doClick()
-	If(randInt2 >= 73) {
+	If(randInt2 >= 4329)
 		UIObject.doClick()
-	}
 	
 	Sleep, generateSleepTime(212, 357)
 }
+
+
+
+
+; ================================================================================================================================================== ;
+; -------------------------------------------------------------------------------------------------------------------------------------------------- ;
+; -- Legacy Code ----------------------------------------------------------------------------------------------------------------------------------- ;
+; -------------------------------------------------------------------------------------------------------------------------------------------------- ;
+; ================================================================================================================================================== ;
+
 
 
 
@@ -435,14 +460,17 @@ doClick(sleepFor := 0, actionType := "Neither", mouseButton := "Left") {
 	Sleep, generateSleepTime(52, 163)
 	MouseClick, %mouseButton%
 	rc := verifyClick(actionType)
-	If(rc == True)
+	If(rc == True) {
+		If(sleepFor == 0)
+			sleepFor := generateSleepTime()
 		Sleep, sleepFor
+	}
 	Return rc
 }
 
 moveMouseAndClick(clickCoords, mouseSpeedDivisor := 2.5, sleepFor := 0, actionType := "Neither", rightClick := False) {
 	If(sleepFor == 0)
-		sleepFor := generateSleepTime(174, 242)
+		sleepFor := generateSleepTime()
 	moveMouse(clickCoords, mouseSpeedDivisor)
 	Return doClick(sleepFor, actionType, rightClick)
 }
