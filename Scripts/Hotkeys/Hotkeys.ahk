@@ -19,33 +19,33 @@ Global WinTenPadding := 8
 
 ; Ctrl + H: Toggle show hidden files
 ^H::
-    #IfWinActive AHK_Class CabinetWClass
+	If(WinActive("AHK_Class CabinetWClass")) {
 		RegPath := "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
         RegRead, HiddenStatus, HKEY_CURRENT_USER, %RegPath%, Hidden
 		RegWrite, REG_DWORD, HKEY_CURRENT_USER, %RegPath%, Hidden, % HiddenStatus == 1 ? 2 : 1
-        Send {F5}
-    #IfWinActive
+        Send, {F5}
+	}
     Return
 
 ; Ctrl + Shift + H: Toggle show system files
 ^+H::
-    #IfWinActive AHK_Class CabinetWClass
+    If(WinActive("AHK_Class CabinetWClass")) {
 		RegPath := "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
         RegRead, SuperHiddenStatus, HKEY_CURRENT_USER, %RegPath%, ShowSuperHidden
 		RegWrite, REG_DWORD, HKEY_CURRENT_USER, %RegPath%, ShowSuperHidden, % SuperHiddenStatus == 0 ? 1 : 0
-        Send {F5}
-    #IfWinActive
+        Send, {F5}
+    }
     Return
 
 ; Ctrl + Alt + Shift + N: Toggle hidden status of selected files.
 ^!+N::
-	#IfWinActive AHK_Class CabinetWClass
+	If(WinActive("AHK_Class CabinetWClass")) {
 		Send ^c
 		ClipWait
 		Loop, Parse, Clipboard, \n, \r
 			FileSetAttrib, ^H, % A_LoopField
-		Send {F5}
-	#IfWinActive	
+		Send, {F5}
+	}	
 	Return
 
 ; ================================================================================================================================================== ;
