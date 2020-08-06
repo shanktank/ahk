@@ -33,6 +33,8 @@ Global ScreenLowerBoundsBig  := [    0,   25 ]
 Global ScreenUpperBoundsFull := [ 1640, 1049 ]
 
 Global InvSlot1Bounds   := New ClickAreaBounds([ 1408, 660 ], [ 1436, 689 ])
+Global InvSlot2Bounds   := New ClickAreaBounds([ 1465, 663 ], [ 1487, 690 ])
+Global InvSlot3Bounds   := New ClickAreaBounds([ 1518, 662 ], [ 1551, 689 ])
 Global InvSlot14Bounds  := New ClickAreaBounds([ 1465, 805 ], [ 1493, 832 ])
 Global InvSlot15Bounds  := New ClickAreaBounds([ 1518, 805 ], [ 1549, 835 ])
 Global BankSlot1Bounds  := New ClickAreaBounds([  439, 135 ], [  464, 166 ])
@@ -67,7 +69,7 @@ Class UIObject {
 	}
 
 	doClick(sleepFor := 0, actionType := "Neither", mouseButton := "Left") {
-		;Sleep, generateSleepTime(52, 163)
+		Sleep, generateSleepTime(52, 163)
 		MouseClick, %mouseButton%
 		rc := verifyClick(actionType)
 		Sleep, sleepFor
@@ -76,7 +78,7 @@ Class UIObject {
 
 	moveMouseAndClick(clickCoords, mouseSpeedDivisor := 2.5, sleepFor := 0, actionType := "Neither", rightClick := False) {
 		If(sleepFor == 0)
-			sleepFor := generateSleepTime(174, 242)
+			sleepFor := generateSleepTime(274, 342)
 
 		This.moveMouse(clickCoords, mouseSpeedDivisor)
 		Return This.doClick(sleepFor, actionType, rightClick)
@@ -179,27 +181,24 @@ Class TileMarkerBounds Extends UIObject {
 	}
 
 	moveMouse(mouseSpeedDivisor := 2.5) {
-		Base.moveMouse2(This, mouseSpeedDivisor := 2.5)
+		Base.moveMouse2(This, mouseSpeedDivisor)
 	}
-
-	moveMouseAndClick(mouseSpeedDivisor := 2.5, sleepFor := 100) {
-		While(This.verifyClick() == False) {
+	
+	moveMouseAndClick(mouseSpeedDivisor := 2.5, sleepFor := 10) {
+		rc := False
+		
+		While(rc == False) {
 			If(A_Index > 10)
 				Return False
 			If(A_Index == 2)
-				mouseSpeedDivisor := mouseSpeedDivisor / 1.5
+				mouseSpeedDivisor := mouseSpeedDivisor - 1
+				;mouseSpeedDivisor := mouseSpeedDivisor / 1.5
 
-			Sleep, generateSleepTime(184, 319)
-			Base.moveMouseAndClick(This.generateCoords(), mouseSpeedDivisor, sleepFor)
+			Sleep, generateSleepTime(134, 219)
+			rc := Base.moveMouseAndClick(This.generateCoords(), mouseSpeedDivisor, sleepFor, "Interact")
 		}
 
 		Return True
-	}
-
-	verifyClick() {
-		MouseGetPos, X, Y
-		PixelGetColor, pixelColor, X, Y, RGB
-		Return pixelColor == RED
 	}
 
 	findPixelByColor(lowerBounds := -1, upperBounds := -1) {
