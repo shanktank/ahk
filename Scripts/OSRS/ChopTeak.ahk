@@ -24,6 +24,7 @@ SendMode, Input
 chopTeaks() {
 	ToolTip % "Waiting for tree to grow back...", 0, 0
 	While(teakStumpCheck.verifyPixelColor()) { ; TODO: Will only work from a particular tile
+		;getNests()
 		Sleep, 1000
 	}
 	ToolTip % "Begin chopping tree...", 0, 0
@@ -64,7 +65,12 @@ doBank() {
 }
 
 getNests() {
-
+	xyr := birdNestBounds.findPixelByColor()
+	If(xyr["rc"] == 0) {
+		birdNestBounds.moveMouseAndClick()
+		Sleep, generateSleepTime(1212, 1784)
+		teakTreeBounds.moveMouseAndClick()
+	}
 }
 
 main() {
@@ -89,6 +95,7 @@ Global teakTreeBounds  := New TileMarkerBounds(0x0101E9, [ 5, -5 ], [ 17, -19 ],
 ;Global climbHoleBounds  := New TileMarkerBounds(0xA5A4A4, -1, -1, 10)
 Global southHoleBounds := New TileMarkerBounds(PURPLE, [ -60, 0 ], [ -5, 25 ], 10)
 Global northHoleBounds := New TileMarkerBounds(ORANGE, [ 0, 0 ], [ -75, 30 ], 10)
+Global birdNestBounds  := New TileMarkerBounds(HILITE, [ -5, 5 ], [ -15, 15 ], 10)
 
 Global bankClickBounds := New ClickAreaBounds([   94, 264 ], [  109, 282 ])
 ;Global southHoleBounds := New ClickAreaBounds([  813, 394 ], [  868, 436 ])
