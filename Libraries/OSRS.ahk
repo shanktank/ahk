@@ -29,7 +29,7 @@ Global ScreenLowerBounds     := [    0,   50 ]
 Global ScreenUpperBounds     := [ 1350,  850 ]
 Global ScreenLowerBoundsBig  := [    0,   25 ]
 Global ScreenUpperBoundsBig  := [ 1640, 1000 ]
-Global ScreenLowerBoundsBig  := [    0,   25 ]
+Global ScreenLowerBoundsFull := [    0,   25 ]
 Global ScreenUpperBoundsFull := [ 1640, 1049 ]
 
 Global InvSlot1Bounds   := New ClickAreaBounds([ 1408, 660 ], [ 1436, 689 ])

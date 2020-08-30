@@ -66,11 +66,12 @@ Global WinTenPadding := 8
 ^!+U::Run putty -load "super remote"
 ^!+J::Run putty -load "super local"
 ^!+O::Run debian
-^!+L::Run "C:/Users/User/AppData/Roaming/Microsoft/Windows/Start Menu/Programs/Windows PowerShell/PowerShell"
-^!+H::Run "C:/Users/User/Documents/Git/ahk/Scripts/Hotkeys/"
-^!+A::Run "C:/Users/User/Documents/Git/ahk/Scripts/OSRS/"
-^!+K::Run "C:/Users/User/Documents/KeePassX/KeePassX.exe"
-^!+M::Run "C:/Program Files/Mozilla Firefox/firefox.exe"
+^!+L::Run %A_AppData%/Microsoft/Windows/Start Menu/Programs/Windows PowerShell/PowerShell
+^!+H::Run %A_MyDocuments%/Git/ahk/Scripts/Hotkeys/
+^!+A::Run %A_MyDocuments%/Git/ahk/Scripts/OSRS/
+^!+K::Run %A_MyDocuments%/KeePassX/KeePassX
+^!+I::Run firefox
+^!+M::Run firefox -P minimal
 ^!+S::Run Control mmsys.cpl Sounds
 
 ; ================================================================================================================================================== ;
