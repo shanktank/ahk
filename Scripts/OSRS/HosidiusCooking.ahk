@@ -16,25 +16,27 @@ SendMode, Input
 
 ; Camera zoom: 318/1004
 
-Global grillTileBounds    := New TileMarkerBounds(BLUE,   [ -5,  0 ], [ -34, 24 ], 25)
-Global bankTileBounds     := New TileMarkerBounds(PURPLE, [ -8, 10 ], [ -33, 30 ], 25)
+Global cookTileBounds := New TileMarkerBounds(BLUE,   [ -5,  0 ], [ -34, 24 ], 25)
+Global bankTileBounds := New TileMarkerBounds(PURPLE, [ -8, 10 ], [ -33, 30 ], 25)
 
-Global cookingPrompt      := New PixelColorLocation(0xCAB2CF, [  341, 945 ])
-Global lastFishNotCooked  := New PixelColorLocation(0x946A9C, [ 1587, 959 ])
-Global bankOpenCheck      := New PixelColorLocation(0xB17FBB, [  445, 146 ])
+Global cookingPrompt  := New PixelColorLocation(0x494539, [  662, 858 ])
+Global lastSwordRaw   := New PixelColorLocation(0x946A9C, [ 1587, 959 ])
+Global lastSharkRaw   := New PixelColorLocation(0x988E8D, [ 1587, 959 ])
 
-Global withdrawFishBounds := New ClickAreaBounds([ 434, 135 ], [ 462, 168 ])
+lastFishCooked(fishType) {
+	isLastFishRaw := fishType.verifyPixelColor()
+}
 
 main() {
 	Loop {
-		grillTileBounds.moveMouseAndClick()
+		cookTileBounds.moveMouseAndClick()
 		cookingPrompt.waitForPixelToBeColor()
 		inputKeyAndSleep("{Space}")
-		lastFishNotCooked.waitForPixelToBeColor(75000)
+		lastSharkRaw.waitForPixelToBeColor(75000, False)
 		bankTileBounds.moveMouseAndClick()
-		bankOpenCheck.waitForPixelToBeColor()
-		depositAllBounds.moveMouseAndClick(depositAllBounds.generateCoords())
-		moveMouseAndClick(withdrawFishBounds.generateCoords())
+		BankOpenCheck.waitForPixelToBeColor()
+		DepositAll(False)
+		BankSlot1Bounds.moveMouseAndClick()
 		inputKeyAndSleep("{Esc}")
 	}
 }

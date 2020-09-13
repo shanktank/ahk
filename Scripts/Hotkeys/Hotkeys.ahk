@@ -23,7 +23,7 @@ Global WinTenPadding := 8
 		RegPath := "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
         RegRead, HiddenStatus, HKEY_CURRENT_USER, %RegPath%, Hidden
 		RegWrite, REG_DWORD, HKEY_CURRENT_USER, %RegPath%, Hidden, % HiddenStatus == 1 ? 2 : 1
-        Send, {F5}
+        Send {F5}
 	}
     Return
 
@@ -33,7 +33,7 @@ Global WinTenPadding := 8
 		RegPath := "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
         RegRead, SuperHiddenStatus, HKEY_CURRENT_USER, %RegPath%, ShowSuperHidden
 		RegWrite, REG_DWORD, HKEY_CURRENT_USER, %RegPath%, ShowSuperHidden, % SuperHiddenStatus == 0 ? 1 : 0
-        Send, {F5}
+        Send {F5}
     }
     Return
 
@@ -44,7 +44,7 @@ Global WinTenPadding := 8
 		ClipWait
 		Loop, Parse, Clipboard, \n, \r
 			FileSetAttrib, ^H, % A_LoopField
-		Send, {F5}
+		Send {F5}
 	}	
 	Return
 
@@ -70,7 +70,7 @@ Global WinTenPadding := 8
 ^!+H::Run %A_MyDocuments%/Git/ahk/Scripts/Hotkeys/
 ^!+A::Run %A_MyDocuments%/Git/ahk/Scripts/OSRS/
 ^!+K::Run %A_MyDocuments%/KeePassX/KeePassX
-^!+I::Run firefox
+^!+I::Run firefox -P profile
 ^!+M::Run firefox -P minimal
 ^!+S::Run Control mmsys.cpl Sounds
 
@@ -79,14 +79,14 @@ Global WinTenPadding := 8
 ; ================================================================================================================================================== ;
 
 ; Ctrl + Win + Hotkey: Control cursor as specified.
-^#4::
-^#Numpad4::PixelStep(-1, 0)
-^#6::
-^#Numpad6::PixelStep(1, 0)
 ^#2::
-^#Numpad2::PixelStep(0, 1)
+^#Numpad2::PixelStep(+0, +1)
+^#4::
+^#Numpad4::PixelStep(-1, +0)
+^#6::
+^#Numpad6::PixelStep(+1, +0)
 ^#8::
-^#Numpad8::PixelStep(0, -1)
+^#Numpad8::PixelStep(+0, -1)
 ^#5::
 ^#Numpad5::Click Down
 ^#0::
@@ -371,7 +371,7 @@ ReAlignX(newMonNo, curMonWH, direction, winX, winW) {
 }
 
 ReAlignY(curMonNo, newMonNo, curMonWH, direction, winY, winH) {
-	;SysGet, curMon, Monitor, %curMonNo%
+	SysGet, curMon, Monitor, %curMonNo%
 	SysGet, newMon, Monitor, %newMonNo%
 	newMonHeight := GetMonitorWorkArea(newMonNo)[2]
 

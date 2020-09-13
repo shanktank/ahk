@@ -268,11 +268,11 @@ Class TileMarkerBounds Extends UIObject {
 
 
 
-DepositAll() {
+DepositAll(randomMethod := True) {
 	Random, randInt1, 1, 10000
 	Random, randInt2, 1, 10000
 	
-	randInt1 >= 2342 ? DepositAllBounds.moveMouseAndClick() : InvSlot1Bounds.moveMouseAndClick()
+	(randomMethod == True And randInt1 <= 2342) ? InvSlot1Bounds.moveMouseAndClick() : DepositAllBounds.moveMouseAndClick()
 	UIObject.doClick()
 	If(randInt2 >= 4329)
 		UIObject.doClick()
