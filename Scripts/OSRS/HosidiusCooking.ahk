@@ -42,6 +42,8 @@ main() {
 }
 
 F1::main()
+F2::cookTileBounds.moveMouse()
+F3::bankTileBounds.moveMouse()
 
 ^R::Reload
 +^C::ExitApp
