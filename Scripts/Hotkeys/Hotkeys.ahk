@@ -70,7 +70,7 @@ Global WinTenPadding := 8
 ^!+H::Run %A_MyDocuments%/Git/ahk/Scripts/Hotkeys/
 ^!+A::Run %A_MyDocuments%/Git/ahk/Scripts/OSRS/
 ;;^!+K::Run %A_MyDocuments%/KeePassX/KeePassX
-^!+K::Run Z:\\Documents\\Software\\KeePassXC\\KeePassXC.exe
+^!+K::Run Z:/Documents/Software/KeePassXC/KeePassXC.exe
 ^!+I::Run firefox -P profile
 ^!+M::Run firefox -P minimal
 ^!+S::Run Control mmsys.cpl Sounds
