@@ -1,19 +1,36 @@
+#SingleInstance Force
+#EscapeChar \
+#Persistent
+#NoEnv
+#Warn
+
 SetWorkingDir, %A_ScriptDir%
 SetTitleMatchMode, RegEx
 SetKeyDelay, 0, 1, Play
 SendMode, Play
 
-#IfWinActive (RuneLite|OpenOSRS)( - [a-zA-Z0-9]+)?
-#SingleInstance Force
-#Persistent
-#NoEnv
-#Warn
+^!+R::Reload
+Pause::
+	Suspend
+	contents := A_IsSuspended ? "Disabled" : "Enabled"
+	width := GetCenter(contents)
+	ToolTip, %contents%, width, 1
+	Return
 
-; TODO; Try Send()
-; TODO: Try Send {Blind}
-; TODO: Try SetStoreCapslockMode, Off
-; TODO: Try https://www.autohotkey.com/docs/commands/Hotkey.htm
-; TODO: Try https://autohotkey.com/board/topic/81090-applying-same-function-over-a-group-of-hotstrings/
+;; TODO; Try Send()
+;; TODO: Try Send {Blind}
+;; TODO: Try SetStoreCapslockMode, Off
+;; TODO: Try https://www.autohotkey.com/docs/commands/Hotkey.htm
+;; TODO: Try https://autohotkey.com/board/topic/81090-applying-same-function-over-a-group-of-hotstrings/
+
+#IfWinActive (RuneLite|OpenOSRS)( - [a-zA-Z0-9]+)?
+
+GetCenter(contents) {
+	ToolTip, %contents%, 0, 0
+	WinGet, hWnd, ID, AHK_Class tooltips_class32
+	WinGetPos,,, vPosW, vPosH, AHK_ID %hWnd%
+	Return (A_ScreenWidth - vPosW - 278) / 2
+}
 
 Cap(letter) {
 	If(GetKeyState("CapsLock", "T")) {
@@ -27,6 +44,10 @@ Cap(letter) {
 ShiftCap(letter) {
 	Send {ASC 0151}%letter%
 }
+
+Global SidePanelWidth := 278
+
+Pause::PrintScreen
 
 $A::Cap("A")
 $B::Cap("B")
