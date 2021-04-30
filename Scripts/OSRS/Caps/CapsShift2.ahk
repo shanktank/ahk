@@ -4,7 +4,7 @@ SetKeyDelay, 0, 1, Play
 StringCaseSense, On
 SendMode, Play
 
-;#IfWinActive (RuneLite|OpenOSRS)( - [a-zA-Z0-9]+)?
+;;#IfWinActive (RuneLite|OpenOSRS)( - [a-zA-Z0-9]+)?
 #SingleInstance Force
 #Hotstring r c *
 #Persistent

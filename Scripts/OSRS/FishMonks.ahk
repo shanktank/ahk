@@ -14,13 +14,13 @@ SendMode, Input
 
 #IfWinActive ^(RuneLite|OpenOSRS)$
 
-; Entity Hider
-;  Hide Pets
-;  Hide NPCs Names: Arnold Lydspor
-;  Hide Players?
-;  Hide Players 2D?
-; NPC Indicators
-;  Hightlight Style: Hull
+;; Entity Hider
+;;  Hide Pets
+;;  Hide NPCs Names: Arnold Lydspor
+;;  Hide Players?
+;;  Hide Players 2D?
+;; NPC Indicators
+;;  Hightlight Style: Hull
 
 Global fishingSpotColor		:= CYAN
 Global depositHullColor		:= BLUE
@@ -33,20 +33,20 @@ Global depositFishBounds	:= New ClickAreaBounds([  880, 500 ], [  915, 525 ])
 Global shadeTolerance       := 25
 Global screenLowerBounds	:= [ 0, 25 ]
 Global screenUpperBounds	:= [ 1350, 950 ]
-;Global fishingSpot          := New TileMarkerBounds(fishingSpotColor, [ 0, 0 ], [ 0, 0 ], shadeTolerance)
+;;Global fishingSpot          := New TileMarkerBounds(fishingSpotColor, [ 0, 0 ], [ 0, 0 ], shadeTolerance)
 Global fishingSpot          := New TileMarkerBounds(fishingSpotColor, [ 3, 3 ], [ 9, 9 ], shadeTolerance)
-;Global depositSpot          := New TileMarkerBounds(depositHullColor, [ -5, 9 ], [ 0, 9 ], shadeTolerance)
-;Global depositSpot          := New TileMarkerBounds(depositHullColor, [ -5, 4 ], [ -16, 13 ], shadeTolerance)
+;;Global depositSpot          := New TileMarkerBounds(depositHullColor, [ -5, 9 ], [ 0, 9 ], shadeTolerance)
+;;Global depositSpot          := New TileMarkerBounds(depositHullColor, [ -5, 4 ], [ -16, 13 ], shadeTolerance)
 Global depositSpot          := New TileMarkerBounds(depositHullColor, [ 0, 3 ], [ 0, 7 ], shadeTolerance)
 
 main() {
 	Loop {
-		; Periodically check if we're still fishing
+		;; Periodically check if we're still fishing
 		While(verifyPixelColor(fishingCheck.pixelColor, fishingCheck.pixelCoords) == True) {
 			Sleep, generateSleepTime(1750, 3250)
 		}
 
-		; Bank fish if inventory is full
+		;; Bank fish if inventory is full
 		If(verifyPixelColor(invSlot28MonkFish.pixelColor, invSlot28MonkFish.pixelCoords)) {
 			Send {Space}
 			Loop {
@@ -75,7 +75,7 @@ main() {
 			Send {Esc}
 			Sleep, generateSleepTime()
 
-			; repeated shit from below, need to shore up
+			;; repeated shit from below, need to shore up
 			XY := findPixelByColor(PURPLE, screenLowerBounds, screenUpperBounds, shadeTolerance)["xy"]
 			Random, dx, -74, 66
 			Random, dy, -99, 113
@@ -83,7 +83,7 @@ main() {
 			Sleep, generateSleepTime(1323, 2836)
 		}
 
-		; Walk back out of the bank to the purple marker
+		;; Walk back out of the bank to the purple marker
 		If(findPixelByColor(fishingSpotColor, screenLowerBounds, screenUpperBounds, shadeTolerance)["rc"] != 0) {
 			XY := findPixelByColor(PURPLE, screenLowerBounds, screenUpperBounds, shadeTolerance)["xy"]
 			Random, dx, -14, 16
@@ -92,8 +92,8 @@ main() {
 			Sleep, generateSleepTime(3323, 3836)
 		}
 		
-		; Wait until a fishing pool is visible
-		;While(findPixelByColor(fishingSpotColor, screenLowerBounds, screenUpperBounds, shadeTolerance)["rc"] != 0) {
+		;; Wait until a fishing pool is visible
+		;;While(findPixelByColor(fishingSpotColor, screenLowerBounds, screenUpperBounds, shadeTolerance)["rc"] != 0) {
 		While(fishingSpot.proximitySearch(screenLowerBounds, screenUpperBounds)["rc"] != 0) {
 			If(A_Index > 10) {
 				MsgBox % "Couldn't find a fishing spot"
@@ -102,19 +102,19 @@ main() {
 			Sleep, 500
 		}
 
-		; Resume fishing
+		;; Resume fishing
 		Loop {
 			If(A_Index > 10) {
 				MsgBox % "Tons of misclicks or couldn't find a fishing spot"
 				Reload
 			}
-			;XYR := findPixelByColor(fishingSpotColor, screenLowerBounds, screenUpperBounds, shadeTolerance)
+			;;XYR := findPixelByColor(fishingSpotColor, screenLowerBounds, screenUpperBounds, shadeTolerance)
 			XYR := fishingSpot.proximitySearch(screenLowerBounds, screenUpperBounds)
 			If(XYR["rc"] != 0)
 				Continue
-			;Random, dx, -3, 3
-			;Random, dy, -3, 3
-			;If(moveMouseAndClick([ XYR["xy"][1] + dx, XYR["xy"][2] + dy ],,, "Interact") == True) {
+			;;Random, dx, -3, 3
+			;;Random, dy, -3, 3
+			;;If(moveMouseAndClick([ XYR["xy"][1] + dx, XYR["xy"][2] + dy ],,, "Interact") == True) {
 			If(moveMouseAndClick([ XYR["xy"][1], XYR["xy"][2] ],,, "Interact") == True) {
 				Random, offsetX, -119, -231
 				Random, offsetY, -312, 287

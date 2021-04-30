@@ -17,14 +17,14 @@ SendMode, Input
 ;=================================================================================================;
 
 Class ClickBounds {
-	; Elements: North, South, West, East
+	;; Elements: North, South, West, East
 	Static seaweedCoordBounds := [ [  434, 136 ], [  465, 163 ] ]
 	Static sandCoordBounds    := [ [  504, 135 ], [  528, 164 ] ]
 	Static spellCoordBounds   := [ [ 1404, 670 ], [ 1419, 691 ] ]
 	Static bankerCoordBounds  := [ [  830, 131 ], [  918, 389 ] ]
 	Static depositCoordBounds := [ [  903, 776 ], [  938, 815 ] ]
 
-	; Lower and upper bounds for random sleep times
+	;; Lower and upper bounds for random sleep times
 	Static seaweedSleepBounds := [  97, 143 ]
     Static sandSleepBounds    := [ 172, 239 ]
     Static spellSleepBounds   := [ 123, 321 ]
@@ -37,7 +37,7 @@ Class ClickBounds {
     Static bankerSpeedBounds  := [ 417, 501 ]
     Static depositSpeedBounds := [ 275, 369 ]
 
-	; Coords and colors
+	;; Coords and colors
 	Static spellBookColor     := [ 1345, 1010, 0x71261D ]
 	Static spellCastColor     := [ 1410,  675, 0xD00D2F ]
 	Static bankOpenColor      := [  450,  148, 0x096744 ]
@@ -125,19 +125,19 @@ Class ClickBounds {
 
     startCycle() {
 		Loop {
-			; Generate random numbers for our various operations
+			;; Generate random numbers for our various operations
 			coords := This.generateCoords(This.clickQueue)
 			sleeps := This.generateSleeps(This.sleepQueue)
 			speeds := This.generateSleeps(This.speedQueue)
 
-			; Withdraw seaweed and sand buckets
+			;; Withdraw seaweed and sand buckets
 			This.doClick(coords[1], sleeps[1], "T"speeds[1]" OT38 OB40 OL40 OR39 P2-4", 3)
 			This.doClick(coords[2], sleeps[2], "T"speeds[2]" OT5 OB5 OL5 OR5 P2-4")
 
-			; Close bank
+			;; Close bank
 			This.pressAndSleep(99, 149, "Esc")
 
-			; Check if spell book is open
+			;; Check if spell book is open
 			While This.checkColor(This.spellBookColor) == False {
 				This.pressAndSleep(243, 364, "F3")
 				If(A_Index > 5) {
@@ -145,16 +145,16 @@ Class ClickBounds {
 				}
 			}
 
-			; Check if spell can be cast
+			;; Check if spell can be cast
 			If(This.checkColor(This.spellCastColor) == False) {
 				Return
 			}
 
-			; Cast spell then click on banker
+			;; Cast spell then click on banker
 			This.doClick(coords[3], sleeps[3], "T"speeds[3]" OT47 OB44 OL42 OR43 P2-4")
 			This.doClick(coords[4], sleeps[4], "T"speeds[4]" OT41 OB45 OL48 OR50 P2-4")
 
-			; Spam click the banker until the bank is open, and take a short pause before continuing
+			;; Spam click the banker until the bank is open, and take a short pause before continuing
 			While(This.checkColor(This.bankOpenColor) == False) {
 				This.pressAndSleep(169, 232, "Click")
 				If(A_Index > 25) {
@@ -163,7 +163,7 @@ Class ClickBounds {
 			}
 			This.pressAndSleep(124, 219)
 
-			; Deposit all
+			;; Deposit all
 			This.doClick(coords[5], sleeps[5], "t"speeds[5]" OT27 OB24 OL25 OR27 P2-3")
 			Random, 25, 75
 			Click

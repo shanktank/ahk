@@ -12,10 +12,8 @@ SendMode, Play
 
 Cap(letter) {
 	If(GetKeyState("CapsLock", "T")) {
-		;Send {ASC 0151}%letter%
-		
-		;Send {—}%letter%
-		
+		;;Send {ASC 0151}%letter%
+		;;Send {—}%letter%
 		Send {Raw}—
 		Send %letter%
 	} Else {
