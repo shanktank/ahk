@@ -55,29 +55,29 @@ Numpad5::
 		Random, sleep8, 1000, 2000
 		Random, sleep9, 1000, 2000
 		
-		; Click needle
+		;; Click needle
 		Send {Numpad1}
 		sleepClick(sleep1)
-		; Click leather
+		;; Click leather
 		Send {Numpad2}
 		sleepClick(sleep2)
-		; Press 1
+		;; Press 1
 		Sleep, sleep3
 		Send 1
-		; Sleep, sleep4
-		; Click banker
+		;;Sleep, sleep4
+		;; Click banker
 		Send {Numpad3}
 		sleepClick(sleep5)
 		If(BREAKOUT = True) {
 			Return
 		}
-		; Deposit bodies
+		;; Deposit bodies
 		Send {Numpad4}
 		sleepClick(sleep6)
-		; Withdraw leather
+		;; Withdraw leather
 		Send {Numpad5}
 		sleepClick(sleep7)
-		; Press escape
+		;; Press escape
 		Sleep, sleep8
 		Send {Esc}
 	}

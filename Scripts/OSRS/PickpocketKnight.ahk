@@ -14,16 +14,16 @@ SendMode, Input
 
 #IfWinActive ^(RuneLite|OpenOSRS)$
 
-; Config:
-;  Entity Hider and Inventory Viewer active
-;  Menu Entry Swapper set to prioritize "walk here" over everything but pickpocket
-;  Interface pane open to Worn Equipment
-;  Camera zoom: 533/1004
-;  World: 378
-;  First slot: Coin Pouch
-;  Second slot: Coins
-;  Third through eighth slots: Dodgy Necklace
-;  Ninth through last slots: Jug of Wine
+;; Config:
+;;  Entity Hider and Inventory Viewer active
+;;  Menu Entry Swapper set to prioritize "walk here" over everything but pickpocket
+;;  Interface pane open to Worn Equipment
+;;  Camera zoom: 533/1004
+;;  World: 378
+;;  First slot: Coin Pouch
+;;  Second slot: Coins
+;;  Third through eighth slots: Dodgy Necklace
+;;  Ninth through last slots: Jug of Wine
 
 Global knightTabardColor := 0x6B18BF
 Global knightStarColor := 0x97119F
@@ -87,7 +87,7 @@ checkHitpoints() {
 	}
 }
 
-; TODO: Bug: when cash stack gets to like 127k, this operation will click the money stack instead of a necklace
+;; TODO: Bug: when cash stack gets to like 127k, this operation will click the money stack instead of a necklace
 checkNecklace() {
 	If(verifyPixelColor(equippedNecklace[1], equippedNecklace[2]) == False) {
 		Send, {Esc}
@@ -128,7 +128,7 @@ shouldOpenCoinPouches() {
 
 main() {
 	Loop {
-		; Test 1
+		;; Test 1
 		/*
 		If(checkHitpoints() || shouldOpenCoinPouches())
 			Continue
@@ -138,7 +138,7 @@ main() {
 		}
 		*/
 
-		; Test 2
+		;; Test 2
 		/*
 		Send, {F4}
 		Sleep, 250
@@ -159,7 +159,7 @@ main() {
 			Continue
 		}
 
-		; Find the Knight
+		;; Find the Knight
 		/*
 		FindBy := knightStarColor
 		Coords := findPixelByColor(FindBy, [ 570, 250 ], [ 1260, 800 ])
@@ -176,7 +176,7 @@ main() {
 		If(Coords["rc"] != 0)
 			Continue
 
-		; Thieve until he moves
+		;; Thieve until he moves
 		rc := True
 		XY := Coords["xy"]
 		moveMouseAndClick(XY)

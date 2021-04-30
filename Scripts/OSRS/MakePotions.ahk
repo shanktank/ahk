@@ -14,7 +14,7 @@ SendMode, Input
 
 #IfWinActive ^(RuneLite|OpenOSRS)$
 
-;=================================================================================================;
+;;=================================================================================================;;
 
 Global unfinishedPotion			:= [ 0x8AA88B, [  450,  350 ] ]
 Global snapeGrass				:= [ 0x0D874E, [  510,  345 ] ]
@@ -41,16 +41,16 @@ Global unfinishedPotionBounds	:= [ [  435, 330 ], [  460, 360 ] ]
 Global snapeGrassBounds			:= [ [  500, 330 ], [  525, 355 ] ]
 Global amuletBankBounds			:= [ [  565, 330 ], [  585, 355 ] ]
 
-;=================================================================================================;
+;;=================================================================================================;;
 
 openInventoryPane() {
-	;ToolTip % "In openInventoryPane()...", 0, 0
+	;;ToolTip % "In openInventoryPane()...", 0, 0
 	If(verifyPixelColor(inventoryPane[1], inventoryPane[2]) == False)
 		inputKeyAndSleep("{Esc}", generateSleepTime())
 }
 
 openEquipmentPane() {
-	;ToolTip % "In openEquipmentPane()...", 0, 0
+	;;ToolTip % "In openEquipmentPane()...", 0, 0
 	If(verifyPixelColor(equipmentPane[1], equipmentPane[2]) == False)
 		inputKeyAndSleep("{F4}", generateSleepTime())
 }
@@ -65,13 +65,13 @@ checkNecklace() {
 	openEquipmentPane()
 
 	Loop, %totalLoops% {
-		; Return early if finished making potions
+		;; Return early if finished making potions
 		If(verifyPixelColor(slot28ViewerSnapeGrass[1], slot28ViewerSnapeGrass[2]) == False) {
 			ToolTip % "Leaving checkNecklace()...", 0, 0
 			Return False
 		}
 
-		; Withdraw new necklace if needed and restart loop
+		;; Withdraw new necklace if needed and restart loop
 		If(verifyPixelColor(amuletEquipped[1], amuletEquipped[2]) == False) {
 			doBank(generateSleepTime(213, 389), True)
 			ToolTip % "Leaving checkNecklace()...", 0, 0
@@ -86,11 +86,11 @@ doHerblore() {
 	ToolTip % "In doHerblore()...", 0, 0
 
 	ToolTip % "1", 0, 0
-	; Switch to inventory pane
+	;; Switch to inventory pane
 	openInventoryPane()
 
 	ToolTip % "2", 0, 0
-	; If first inventory item isn't unfinished potion, rebank
+	;; If first inventory item isn't unfinished potion, rebank
 	While(verifyPixelColor(slot01Unfinished[1], slot01Unfinished[2]) == False) {
 		If(A_Index > 3) {
 			MsgBox % "Can't seem to withdraw the right shit"
@@ -101,19 +101,19 @@ doHerblore() {
 	}
 
 	ToolTip % "3", 0, 0
-	; Use unfinished potion on snape grass
-	;moveMouseAndClick(generateCoords(invSlot14Bounds[1], invSlot14Bounds[2]))
+	;; Use unfinished potion on snape grass
+	;;moveMouseAndClick(generateCoords(invSlot14Bounds[1], invSlot14Bounds[2]))
 	InvSlot14Bounds.moveMouseAndClick()
-	;moveMouseAndClick(generateCoords(invSlot15Bounds[1], invSlot15Bounds[2]))
+	;;moveMouseAndClick(generateCoords(invSlot15Bounds[1], invSlot15Bounds[2]))
 	InvSlot15Bounds.moveMouseAndClick()
 
 	ToolTip % "4", 0, 0
-	; Wait for heblore prompt to appear, then press space
+	;; Wait for heblore prompt to appear, then press space
 	waitForPixelToBeColor(herbPrompt[1], herbPrompt[2])
 	inputKeyAndSleep("{Space}", generateSleepTime(243, 557))
 
 	ToolTip % "5", 0, 0
-	; Hover banker while waiting for potion mixing to finish
+	;; Hover banker while waiting for potion mixing to finish
 	moveMouse(generateCoords(bankerBounds[1], bankerBounds[2]))
 	
 	ToolTip % "Leaving doHerblore()...", 0, 0
@@ -122,39 +122,39 @@ doHerblore() {
 doBank(sleepFor := 0, getAmulet := False) {
 	ToolTip % "In doBank()...", 0, 0
 
-	; Open bank
+	;; Open bank
 	Click
-	;waitForPixelToBeColor(bankOpenCheck[1], bankOpenCheck[2])
+	;;waitForPixelToBeColor(bankOpenCheck[1], bankOpenCheck[2])
 	BankOpenCheck.waitForPixelToBeColor()
 	Sleep, generateSleepTime(473, 655)
 
-	; Deposit all
-	;moveMouseAndClick(generateCoords(depositAllBounds[1], depositAllBounds[2]))
-	;DepositAllBounds.moveMouseAndClick(, generateSleepTime(172, 316))
+	;; Deposit all
+	;;moveMouseAndClick(generateCoords(depositAllBounds[1], depositAllBounds[2]))
+	;;DepositAllBounds.moveMouseAndClick(, generateSleepTime(172, 316))
 	DepositAll()
 
-	; Withdraw and equip a new amulet
+	;; Withdraw and equip a new amulet
 	If(getAmulet == True) {
 		BankSlot3Bounds.moveMouseAndClick()
 		inputKeyAndSleep("{Shift Down}", generateSleepTime(473, 655))
-		;moveMouseAndClick(generateCoords(amuletBankBounds[1], amuletBankBounds[2]),, generateSleepTime(172, 316))
-		;moveMouseAndClick(generateCoords(invSlot01Bounds[1], invSlot01Bounds[2]),, generateSleepTime(737, 944))
+		;;moveMouseAndClick(generateCoords(amuletBankBounds[1], amuletBankBounds[2]),, generateSleepTime(172, 316))
+		;;moveMouseAndClick(generateCoords(invSlot01Bounds[1], invSlot01Bounds[2]),, generateSleepTime(737, 944))
 		InvSlot1Bounds.moveMouseAndClick(, generateSleepTime(737, 944))
 		While(verifyPixelColor(slot01Amulet[1], slot01Amulet[2]))
 			doClick(generateSleepTime())
 		inputKeyAndSleep("{Shift Up}", generateSleepTime())
 	}
 
-	; Withdraw more reagents
-	;moveMouseAndClick(generateCoords(unfinishedPotionBounds[1], unfinishedPotionBounds[2]))
-	;moveMouseAndClick(generateCoords(snapeGrassBounds[1], snapeGrassBounds[2]))
+	;; Withdraw more reagents
+	;;moveMouseAndClick(generateCoords(unfinishedPotionBounds[1], unfinishedPotionBounds[2]))
+	;;moveMouseAndClick(generateCoords(snapeGrassBounds[1], snapeGrassBounds[2]))
 	BankSlot1Bounds.moveMouseAndClick()
 	BankSlot2Bounds.moveMouseAndClick()
 	waitForPixelToBeColor(slot15SnapeGrass[1], slot15SnapeGrass[2])
 
-	; Close bank
+	;; Close bank
 	Send, {Esc}
-	;waitForPixelToNotBeColor(bankOpenCheck[1], bankOpenCheck[2])
+	;;waitForPixelToNotBeColor(bankOpenCheck[1], bankOpenCheck[2])
 	BankOpenCheck.waitForPixelToBeColor()
 	Sleep, generateSleepTime()
 
@@ -174,12 +174,12 @@ main() {
 	}
 }
 
-;=================================================================================================;
+;;=================================================================================================;;
 
 F1::main()
 F2::traceCoordsBounds(bankerBounds[1], bankerBounds[2])
 
-;=================================================================================================;
+;;=================================================================================================;;
 
 #If
 ^R::Reload

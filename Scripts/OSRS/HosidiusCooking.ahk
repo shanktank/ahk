@@ -14,7 +14,7 @@ SendMode, Input
 
 #IfWinActive ^(RuneLite|OpenOSRS)$
 
-; Camera zoom: 318/1004
+;; Camera zoom: 318/1004
 
 Global cookTileBounds := New TileMarkerBounds(BLUE,   [ -5,  0 ], [ -34, 24 ], 25)
 Global bankTileBounds := New TileMarkerBounds(PURPLE, [ -8, 10 ], [ -33, 30 ], 25)

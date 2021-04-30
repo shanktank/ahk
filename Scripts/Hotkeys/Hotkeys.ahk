@@ -17,8 +17,9 @@ Global WinTenPadding := 8
 ; == My forward slash key is broken ================================================================================================================ ;
 ; ================================================================================================================================================== ;
 
-^\::Send /
-^+\::Send ?
+;^\::Send /
+;^+\::Send ?
+;^+-::Send {ASC 0151}
 
 ; ================================================================================================================================================== ;
 ; == Hotkeys ======================================================================================================================================= ;
@@ -69,18 +70,18 @@ Global WinTenPadding := 8
 ; ================================================================================================================================================== ;
 
 ; Ctrl + Alt + Win + Hotkey: Launch specified program.
-^!+P::Run putty
-^!+U::Run putty -load "super remote"
-^!+J::Run putty -load "super local"
-^!+O::Run debian
-^!+L::Run %A_AppData%/Microsoft/Windows/Start Menu/Programs/Windows PowerShell/PowerShell
+^!+L::Run %A_ProgramsCommon%/Windows PowerShell/x64/PowerShell
 ^!+H::Run %A_MyDocuments%/Git/ahk/Scripts/Hotkeys/
 ^!+A::Run %A_MyDocuments%/Git/ahk/Scripts/OSRS/
-;;^!+K::Run %A_MyDocuments%/KeePassX/KeePassX
-^!+K::Run Z:/Documents/Software/KeePassXC/KeePassXC.exe
+^!+K::Run %A_ProgramFiles%/KeePassXC/KeePassXC
 ^!+I::Run firefox -P profile
 ^!+M::Run firefox -P minimal
-^!+S::Run Control mmsys.cpl Sounds
+^!+U::Run putty -load "super local"
+^!+J::Run putty -load "pi local"
+^!+P::Run putty
+^!+O::Run debian
+^!+Z::Run ms-settings:apps-volume
+^!+S::Run mmsys.cpl
 
 ; ================================================================================================================================================== ;
 ; == Shifters ====================================================================================================================================== ;
@@ -240,7 +241,6 @@ MoveWindow(direction) {
 		If(maximized != 1) {
 			newWinX := (curMonWH[1] - winW) / 2 + curMonLeft
 			newWinY := (curMonWH[2] - winH) / 2 + curMonTop
-
 			WinMove, A,, newWinX, newWinY
 		}
 
@@ -299,7 +299,6 @@ MoveWindow(direction) {
 		If(maximized != 1) {
 			newWinX := ReAlignX(curMonNo, curMonWH, direction, winX, winW)
 			newWinY := ReAlignY(curMonNo, curMonNo, curMonWH, direction, winY, winH)
-
 			WinMove, A,, newWinX, newWinY
 		}
     }

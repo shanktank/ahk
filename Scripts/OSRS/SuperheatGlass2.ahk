@@ -67,28 +67,28 @@ Class Target {
 ;=================================================================================================;
 
 Class ClickBounds {
-	; Elements: North, South, West, East
+	;; Elements: North, South, West, East
 	Static seaweedCoordBounds := [ 283, 298, 818, 843 ]
 	Static sandCoordBounds    := [ 283, 298, 869, 886 ]
 	Static spellCoordBounds   := [ 812, 828, 1607, 1616 ]
 	Static bankerCoordBounds  := [ 425, 552, 664, 687 ]
 	Static depositCoordBounds := [ 816, 843, 883, 910 ]
 
-	; Lower and upper bounds for random sleep times
+	;; Lower and upper bounds for random sleep times
 	Static seaweedSleepBounds := [ 97, 143 ]
     Static sandSleepBounds    := [ 172, 239 ]
     Static spellSleepBounds   := [ 123, 321 ]
     Static bankerSleepBounds  := [ 329, 455 ]
     Static depositSleepBounds := [ 232, 772 ]
 
-	; Lower and upper bounds for mouse movement speed
+	;; Lower and upper bounds for mouse movement speed
 	Static seaweedSpeedBounds := [ 298, 401 ]
     Static sandSpeedBounds    := [ 133, 198 ]
     Static spellSpeedBounds   := [ 365, 418 ]
     Static bankerSpeedBounds  := [ 417, 501 ]
     Static depositSpeedBounds := [ 119, 256 ]
 
-	; Coords and colors
+	;; Coords and colors
 	Static spellBookColor := [ 1417, 1019, 0x75281E ]
 	Static spellCastColor := [ 1611, 817, 0xD00C2E ]
 	;Static bankOpenColor  := [ 710, 510, 0x473D32 ]
@@ -172,43 +172,43 @@ Class ClickBounds {
 
     doCycle() {
 		Loop {
-			; Generate random numbers for our various operations
+			;; Generate random numbers for our various operations
 			coords := This.generateCoords(This.clickQueue)
 			sleeps := This.generateSleeps(This.sleepQueue)
 			speeds := This.generateSleeps(This.speedQueue)
 
-			; Withdraw seaweed and sand buckets
+			;; Withdraw seaweed and sand buckets
 			This.doClick(coords[1], sleeps[1], "T"speeds[1]" OT38 OB40 OL40 OR39 P2-4", 3)
 			This.doClick(coords[2], sleeps[2], "T"speeds[2]" OT5 OB5 OL5 OR5 P2-4", , True)
 
-			; Offset right click menu to withdraw x because shift click works like shit
+			;; Offset right click menu to withdraw x because shift click works like shit
 			This.handleDropdown(coords[2], sleeps[2], speeds[2])
 
-			; Close bank
+			;; Close bank
 			This.pressAndSleep(99, 149, "Esc")
 
-			; Check if spell book is open
+			;; Check if spell book is open
 			While This.checkColor(This.spellBookColor) == False {
 				This.pressAndSleep(243, 364, "F3")
 				If(A_Index > 5)
 					Return
 			}
 
-			; Check if spell can be case
+			;; Check if spell can be case
 			If(This.checkColor(This.spellCastColor) == False)
 				Return
 
-			; Cast Superglass Make then click on banker
+			;; Cast Superglass Make then click on banker
 			This.doClick(coords[3], sleeps[3], "T"speeds[3]" OT47 OB44 OL42 OR43 P2-4")
 			This.doClick(coords[4], sleeps[4], "T"speeds[4]" OT41 OB45 OL48 OR50 P2-4")
 
-			; Spam click the banker until the bank is open, and take a short pause before continuing
+			;; Spam click the banker until the bank is open, and take a short pause before continuing
 			While This.checkColor(This.bankOpenColor) == False {
 				This.pressAndSleep(169, 232, "Click")
 			}
 			This.pressAndSleep(124, 219)
 
-			; Deposit all
+			;; Deposit all
 			This.doClick(coords[5], sleeps[5], "t"speeds[5]" OT27 OB24 OL25 OR27 P2-4", 2)
 		}
     }

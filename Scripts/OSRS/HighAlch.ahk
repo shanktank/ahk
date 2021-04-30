@@ -44,8 +44,8 @@ checkItem() {
 F1::
     BREAKOUT := False
     Loop {
-		;If(checkItem() = False)
-		;	Return
+		;;If(checkItem() = False)
+		;;	Return
 		Random, sleepy, 223, 427
 		If(BREAKOUT = True)
 			Return

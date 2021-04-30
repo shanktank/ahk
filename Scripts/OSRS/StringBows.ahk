@@ -46,7 +46,7 @@ main() {
 ; == Global Variables ======================================================================================================================================== ;
 ; ============================================================================================================================================================ ;
 
-; TODO: Will have to do away with those of these that are now delcared globally in the library
+;; TODO: Will have to do away with those of these that are now delcared globally in the library
 Global invSlot14Color := New PixelColorLocation(0x686161, [ 1467, 809 ])
 Global invSlot28Color := New PixelColorLocation(0x3E3529, [ 1601, 969 ])
 Global bankerBounds := New ClickAreaBounds([ 837, 120 ], [ 939, 464 ])

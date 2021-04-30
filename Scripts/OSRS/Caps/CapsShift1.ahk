@@ -10,7 +10,7 @@ SendMode, Play
 #Warn
 
 Cap(letter) {
-	;Send {ASC 0151}%letter%
+	;;Send {ASC 0151}%letter%
 	Send —%letter%
 }
 
