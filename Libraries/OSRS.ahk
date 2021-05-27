@@ -8,53 +8,55 @@
 CoordMode, ToolTip, Screen
 CoordMode, Mouse, Screen
 CoordMode, Pixel, Screen
-SetTitleMatchMode, RegEx
 SendMode, Input
 
 ; ================================================================================================================================================== ;
 ; -- Globals --------------------------------------------------------------------------------------------------------------------------------------- ;
 ; ================================================================================================================================================== ;
 
-Global RED    := 0xFF0000
-Global BLUE   := 0x0000FF
-Global GREEN  := 0x00FF00
-Global YELLOW := 0xFFFF00
-Global PURPLE := 0xFF00FF
-Global CYAN   := 0x00FFFF
-Global TEAL   := 0x008372
-Global ORANGE := 0xFF9B00
-Global HILITE := 0xE6CC80
+Global RED						:= 0xFF0000
+Global BLUE						:= 0x0000FF
+Global GREEN					:= 0x00FF00
+Global YELLOW					:= 0xFFFF00
+Global PURPLE					:= 0xFF00FF
+Global CYAN						:= 0x00FFFF
+Global TEAL						:= 0x008372
+Global ORANGE					:= 0xFF9B00
+Global HILITE					:= 0xE6CC80
 
-Global ScreenLowerBounds     := [    0,   50 ]
-Global ScreenUpperBounds     := [ 1350,  850 ]
-Global ScreenLowerBoundsBig  := [    0,   25 ]
-Global ScreenUpperBoundsBig  := [ 1640, 1000 ]
-Global ScreenLowerBoundsFull := [    0,   25 ]
-Global ScreenUpperBoundsFull := [ 1640, 1049 ]
+Global ScreenLowerBounds		:= [    0,   50 ]
+Global ScreenUpperBounds		:= [ 1350,  850 ]
+Global ScreenLowerBoundsBig		:= [    0,   25 ]
+Global ScreenUpperBoundsBig		:= [ 1640, 1000 ]
+Global ScreenLowerBoundsFull	:= [    0,   25 ]
+Global ScreenUpperBoundsFull	:= [ 1640, 1049 ]
 
-Global InvSlot1Bounds   := New ClickAreaBounds([ 1408, 660 ], [ 1436, 689 ])
-Global InvSlot2Bounds   := New ClickAreaBounds([ 1465, 663 ], [ 1487, 690 ])
-Global InvSlot3Bounds   := New ClickAreaBounds([ 1518, 662 ], [ 1551, 689 ])
-Global InvSlot14Bounds  := New ClickAreaBounds([ 1465, 805 ], [ 1493, 832 ])
-Global InvSlot15Bounds  := New ClickAreaBounds([ 1518, 805 ], [ 1549, 835 ])
-Global BankSlot1Bounds  := New ClickAreaBounds([  439, 135 ], [  464, 166 ])
-Global BankSlot2Bounds  := New ClickAreaBounds([  498, 137 ], [  529, 169 ])
-Global BankSlot3Bounds	:= New ClickAreaBounds([  566, 138 ], [  590, 165 ])
-Global DepositAllBounds := New ClickAreaBounds([  903, 776 ], [  938, 815 ])
+Global InvSlot1Bounds			:= New ClickAreaBounds([ 1408, 660 ], [ 1436, 689 ])
+Global InvSlot2Bounds			:= New ClickAreaBounds([ 1465, 663 ], [ 1487, 690 ])
+Global InvSlot3Bounds			:= New ClickAreaBounds([ 1518, 662 ], [ 1551, 689 ])
+Global InvSlot14Bounds			:= New ClickAreaBounds([ 1465, 805 ], [ 1493, 832 ])
+Global InvSlot15Bounds			:= New ClickAreaBounds([ 1518, 805 ], [ 1549, 835 ])
+Global BankSlot1Bounds			:= New ClickAreaBounds([  439, 135 ], [  464, 166 ])
+Global BankSlot2Bounds			:= New ClickAreaBounds([  498, 137 ], [  529, 169 ])
+Global BankSlot3Bounds			:= New ClickAreaBounds([  566, 138 ], [  590, 165 ])
+Global DepositAllBounds			:= New ClickAreaBounds([  903, 776 ], [  938, 815 ])
 
-Global OptsOpenCheck  := New PixelColorLocation(0x6B241B, [ 1525, 1015 ])
-Global InvOpenCheck   := New PixelColorLocation(0x75281E, [ 1211, 1009 ])
-Global BankOpenCheck  := New PixelColorLocation(0xC07926, [  410,   50 ])
-Global InvSlot28Empty := New PixelColorLocation(0x3E3529, [ 1593,  967 ])
+Global OptsOpenCheck			:= New PixelColorLocation(0x6B241B, [ 1525, 1015 ])
+Global InvOpenCheck				:= New PixelColorLocation(0x75281E, [ 1211, 1009 ])
+Global BankOpenCheck			:= New PixelColorLocation(0xC27A26, [  410,   48 ])
+Global BankClosedCheck			:= New PixelColorLocation(0x827563, [ 1220, 1013 ])
+Global InvSlot28Empty			:= New PixelColorLocation(0x3E3529, [ 1593,  967 ])
+Global LevelUpGeneric			:= New PixelColorLocation(0x2723EB, [  472,  974 ])
+Global LevelUpHerblore			:= New PixelColorLocation(0x094809, [   74,  922 ])
 
 ; ================================================================================================================================================== ;
 ; -- Data Classes ---------------------------------------------------------------------------------------------------------------------------------- ;
 ; ================================================================================================================================================== ;
 
-; TODO: Standardize multiclickers into classes
+; TODO: Standardize multi-clickers into classes
 ; TODO: Make mouseSpeedDivisor, hoverNext, shadeTolerance global variables
 ; TODO: Rename UIObject to OSRSlib, PixelColorLocation to PixelColorCoords
-; TODO: Make standard "IsUIElementOpen" to reduce repitition
+; TODO: Make standard "IsUIElementOpen" to reduce repetition
 
 Class UIObject {
 	moveMouse(moveCoords, mouseSpeedDivisor := 2.5) {
@@ -123,18 +125,26 @@ Class PixelColorLocation Extends UIObject {
 		This.pixelCoords := pixelCoords
 	}
 
-	verifyPixelColor() {
-		PixelGetColor, pixelColor, This.pixelCoords[1], This.pixelCoords[2], RGB
-		Return pixelColor == This.pixelColor
+	verifyPixelColor(pixelColorCheck := -1) {
+		If(pixelColorCheck == -1) {
+			pixelColorCheck := This.pixelColor
+		}
+	
+		PixelGetColor, pixelColor2, This.pixelCoords[1], This.pixelCoords[2], RGB
+		Return pixelColorCheck == pixelColor2
 	}
 
-	waitForPixelToBeColor(timeout := 5000, checkIf := True, hoverNext := 0) {
+	waitForPixelToBeColor(timeout := 5000, checkIf := True, hoverNext := 0, pixelColorCheck := -1) {
+		If(pixelColorCheck == -1) {
+			pixelColorCheck := This.pixelColor
+		}
+
 		sleepFor := 25
 		sleepNum := timeout / sleepFor
 
 		Loop, %sleepNum% {
 			Sleep, sleepFor
-			If(This.verifyPixelColor() == checkIf) {
+			If(This.verifyPixelColor(pixelColorCheck) == checkIf) {
 				Return True
 			}
 		}
@@ -192,7 +202,6 @@ Class TileMarkerBounds Extends UIObject {
 				Return False
 			If(A_Index == 2)
 				mouseSpeedDivisor := mouseSpeedDivisor - 1
-				;mouseSpeedDivisor := mouseSpeedDivisor / 1.5
 
 			Sleep, generateSleepTime(134, 219)
 			rc := Base.moveMouseAndClick(This.generateCoords(), mouseSpeedDivisor, sleepFor, "Interact")
@@ -280,6 +289,17 @@ DepositAll(randomMethod := True) {
 	Sleep, generateSleepTime(212, 357)
 }
 
+; Turns out this shit is in UIObject already. Change MakePotions to not use it then remove.
+OpenInventory() {
+	If(InvOpenCheck.verifyPixelColor() == False) {
+		UIObject.inputKeyAndSleep("{Esc}", generateSleepTime())
+	}
+}
+
+Error() {
+
+}
+
 
 
 
@@ -349,7 +369,7 @@ findPixelByColorX(pixelColor, lowerBounds := 0, upperBounds := 0, tries := 10, s
 
 	Loop, %tries% {
 		PixelSearch, X, Y, lowerBounds[1], lowerBounds[2], upperBounds[1], upperBounds[2], pixelColor, shadeTolerance, RGB, Fast
-		If(ErrorLeveL == 0 || A_Index == tries) {
+		If(ErrorLevel == 0 || A_Index == tries) {
 			Return { xy : [ X, Y ], rc : ErrorLevel }
 		} Else {
 			Sleep, 100

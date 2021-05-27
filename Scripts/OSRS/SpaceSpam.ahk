@@ -41,10 +41,10 @@ F1::
     Loop {
 		;;If(checkItem() = False)
 		;;	Return
-		Random, sleepy, 223, 427
+		Random, sleepy, 6300, 21300
 		If(BREAKOUT = True)
 			Return
-        Click
+        Send, {SPACE}
         Sleep, sleepy
     }
     Return

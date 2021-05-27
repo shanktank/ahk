@@ -17,7 +17,7 @@ CreateGUI() {
 	SysGet, curMon, Monitor
 
 	winWidth       := 200
-	winHeight      := 85
+	winHeight      := 110
 	winExtraWidth  := 6
 	winExtraHeight := 29
 	winTenPadding  := 2
@@ -26,14 +26,15 @@ CreateGUI() {
 	newWinX        := monWidth - winWidth - winExtraWidth + winTenPadding + curMonLeft
 	newWinY        := monHeight - winHeight - winExtraHeight + winTenPadding + curMonTop
 
-	Gui, Add, Text,     x10  y10,                   Moving coords:
-	Gui, Add, Text, vMC x10  y25,                   Moving color:
-	Gui, Add, Text,     x10  y40,                   Clicked coords:
-	Gui, Add, Text, VCC x10  y60,                   Clicked color:
-	Gui, Add, Text, vXY x123 y10 w70,               0
-	Gui, Add, Text, vC2 x123 y25 w70,               0
-	Gui, Add, Edit, vC3 x123 y40 w70 h18 +Readonly, 0
-	Gui, Add, Edit, vC4 x123 y60 w70 h18 +Readonly, 0
+	Gui, Add, Text, vMC x10  y05, % "Moving color:"
+	Gui, Add, Text,     x10  y25, % "Moving coords:"
+	Gui, Add, Text, VCC x10  y47, % "Clicked color:"
+	Gui, Add, Text,     x10  y67, % "Clicked coords:"
+	Gui, Add, Text, vXY x123 y25 w070, 0
+	Gui, Add, Text, vC2 x123 y05 w070, 0
+	Gui, Add, Edit, vC3 x123 y45 w070 h18 +Readonly, 0
+	Gui, Add, Edit, vC4 x123 y65 w070 h18 +Readonly, 0
+	Gui, Add, Edit, vC5 x010 y85 w183 h18 +Readonly, 0
 	Gui, Show, w%winWidth% h%winHeight% x%newWinX% y%newWinY%, Colors
 	Gui, +AlwaysOnTop
 
@@ -107,9 +108,11 @@ GuiClose:
 ^+LButton::
 	MouseGetPos, MX, MY
 	PixelGetColor, ClickedColor, MX, MY, RGB
-	GuiControl,, C3, %MX%\, %MY%
-    GuiControl,, C4, %ClickedColor%
+	GuiControl,, C3, % ClickedColor
+	GuiControl,, C4, % MX ", " MY
+	GuiControl,, C5, % ClickedColor ", [ " MX ", " MY " ]"
 	GuiControl, +c%ClickedColor%, CC
+	Clipboard := ClickedColor ", [ " MX ", " MY " ]"
 	Return
 
 ^+RButton::

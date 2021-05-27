@@ -16,47 +16,32 @@ SendMode, Input
 
 ;;=================================================================================================;;
 
-Global unfinishedPotion			:= [ 0x8AA88B, [  450,  350 ] ]
-Global snapeGrass				:= [ 0x0D874E, [  510,  345 ] ]
-Global amuletBank				:= [ 0x000000, [    0,    0 ] ]
-Global inventoryPane			:= [ 0x78281F, [ 1210, 1010 ] ]
-Global equipmentPane			:= [ 0x3D3129, [ 1255, 1025 ] ]
-Global amuletEquipped			:= [ 0x72A64D, [ 1500,  740 ] ]
-Global slot01Unfinished			:= [ 0x99B199, [ 1420,  685 ] ]
-Global slot01Amulet				:= [ 0x72A64D, [ 1415,  690 ] ]
-Global slot15SnapeGrass			:= [ 0x010D08, [ 1530,  820 ] ]
-Global slot14Prayer				:= [ 0x49D2A2, [ 1475,  830 ] ]
-Global slot14ViewerPrayer3		:= [ 0x32C796, [ 1495,  470 ] ]
-Global slot14ViewerPrayer4		:= [ 0x30BE8F, [ 1495,  470 ] ]
-Global slot28ViewerSnapeGrass	:= [ 0x0D874E, [ 1603,  608 ] ]
-Global bankOpenCheck			:= [ 0xC07926, [  410,   50 ] ]
-Global herbPrompt				:= [ 0x5CE5B1, [  340,  970 ] ]
+Global iritPot_P				:= New PixelColorLocation(0xA8A8AF, [  449, 157 ])
+Global ranarrPot_P				:= New PixelColorLocation(0x8AA88B, [  450, 350 ])
+Global eyeOfNewt_P				:= New PixelColorLocation(0xD0CACA, [  511, 150 ])
+Global snapeGrass				:= New PixelColorLocation(0x0D874E, [  510, 345 ])
+Global verifyItems_P			:= New PixelColorLocation(0xD8D3D3, [ 1530, 821 ])
+Global makeSupAtkPrompt_P		:= New PixelColorLocation(0x5C5DE1, [  335, 961 ])
+Global makePrayerPrompt_P		:= New PixelColorLocation(0x5CE5B1, [  340, 970 ])
+Global slot01Amulet				:= New PixelColorLocation(0x72A64D, [ 1415, 690 ])
+Global slotViewer28SnapeGrass	:= New PixelColorLocation(0x0D874E, [ 1603, 608 ])
 
-Global invSlot01Bounds			:= [ [ 1405, 660 ], [ 1435, 690 ] ]
-;Global invSlot14Bounds			:= [ [ 1465, 805 ], [ 1490, 835 ] ]
-;Global invSlot15Bounds			:= [ [ 1515, 800 ], [ 1555, 835 ] ]
-Global bankerBounds				:= [ [  841, 193 ], [  920, 425 ] ]
-;Global depositAllBounds		:= [ [  905, 780 ], [  940, 815 ] ]
-Global unfinishedPotionBounds	:= [ [  435, 330 ], [  460, 360 ] ]
-Global snapeGrassBounds			:= [ [  500, 330 ], [  525, 355 ] ]
-Global amuletBankBounds			:= [ [  565, 330 ], [  585, 355 ] ]
+Global eyeOfNewt_T				:= New TileMarkerBounds([ 503, 158 ], [ 521, 137 ])
+Global iritPot_T				:= New TileMarkerBounds([ 439, 165 ], [ 460, 131 ])
+
+Global bankerBounds_B			:= New ClickAreaBounds([ 840, 338 ], [ 904, 197 ])
 
 ;;=================================================================================================;;
 
-openInventoryPane() {
-	;;ToolTip % "In openInventoryPane()...", 0, 0
-	If(verifyPixelColor(inventoryPane[1], inventoryPane[2]) == False)
-		inputKeyAndSleep("{Esc}", generateSleepTime())
-}
+; ToDO:
+;  Functions checkAmulet and getAmulet copied as placeholders and require reworks.
+;  Functions doHerblore and doBank require modifications to handle arbitrary potions.
+;  Functionality to detect amulet depleted should/needs to be reintroduced.
 
-openEquipmentPane() {
-	;;ToolTip % "In openEquipmentPane()...", 0, 0
-	If(verifyPixelColor(equipmentPane[1], equipmentPane[2]) == False)
-		inputKeyAndSleep("{F4}", generateSleepTime())
-}
-
-checkNecklace() {
-	ToolTip % "In checkNecklace()...", 0, 0
+; ToDO: Placeholder. Rework.
+checkAmulet() {
+	/*
+	ToolTip % "In checkAmulet()...", 0, 0
 
 	checkTimeout := 20000
 	sleepTime    := 100
@@ -66,32 +51,44 @@ checkNecklace() {
 
 	Loop, %totalLoops% {
 		;; Return early if finished making potions
-		If(verifyPixelColor(slot28ViewerSnapeGrass[1], slot28ViewerSnapeGrass[2]) == False) {
-			ToolTip % "Leaving checkNecklace()...", 0, 0
+		If(verifyPixelColor(slotViewer28SnapeGrass[1], slotViewer28SnapeGrass[2]) == False) {
+			ToolTip % "Leaving checkAmulet()...", 0, 0
 			Return False
 		}
 
 		;; Withdraw new necklace if needed and restart loop
 		If(verifyPixelColor(amuletEquipped[1], amuletEquipped[2]) == False) {
 			doBank(generateSleepTime(213, 389), True)
-			ToolTip % "Leaving checkNecklace()...", 0, 0
+			ToolTip % "Leaving checkAmulet()...", 0, 0
 			Return True
 		}
 
 		Sleep, %sleepTime%
 	}
+	
+	ToolTip % "Leaving checkAmulet()...", 0, 0
+	*/
 }
 
+; ToDO: Placeholder. Rework.
+getAmulet() {
+	/*
+	If(getAmulet == True) {
+		BankSlot3Bounds.moveMouseAndClick()
+		inputKeyAndSleep("{Shift Down}", generateSleepTime(473, 655))
+		InvSlot1Bounds.moveMouseAndClick(, generateSleepTime(737, 944))
+		While(verifyPixelColor(slot01Amulet[1], slot01Amulet[2]))
+			doClick(generateSleepTime())
+		inputKeyAndSleep("{Shift Up}", generateSleepTime())
+	}
+	*/
+}
+
+; ToDO: Requires modification to handle arbitrary potions.
 doHerblore() {
-	ToolTip % "In doHerblore()...", 0, 0
+	OpenInventory()
 
-	ToolTip % "1", 0, 0
-	;; Switch to inventory pane
-	openInventoryPane()
-
-	ToolTip % "2", 0, 0
-	;; If first inventory item isn't unfinished potion, rebank
-	While(verifyPixelColor(slot01Unfinished[1], slot01Unfinished[2]) == False) {
+	While(verifyItems_P.waitForPixelToBeColor(2000) == False) {
 		If(A_Index > 3) {
 			MsgBox % "Can't seem to withdraw the right shit"
 			Reload
@@ -99,85 +96,66 @@ doHerblore() {
 			doBank()
 		}
 	}
-
-	ToolTip % "3", 0, 0
-	;; Use unfinished potion on snape grass
-	;;moveMouseAndClick(generateCoords(invSlot14Bounds[1], invSlot14Bounds[2]))
-	InvSlot14Bounds.moveMouseAndClick()
-	;;moveMouseAndClick(generateCoords(invSlot15Bounds[1], invSlot15Bounds[2]))
-	InvSlot15Bounds.moveMouseAndClick()
-
-	ToolTip % "4", 0, 0
-	;; Wait for heblore prompt to appear, then press space
-	waitForPixelToBeColor(herbPrompt[1], herbPrompt[2])
-	inputKeyAndSleep("{Space}", generateSleepTime(243, 557))
-
-	ToolTip % "5", 0, 0
-	;; Hover banker while waiting for potion mixing to finish
-	moveMouse(generateCoords(bankerBounds[1], bankerBounds[2]))
 	
-	ToolTip % "Leaving doHerblore()...", 0, 0
+	InvSlot14Bounds.moveMouseAndClick()
+	InvSlot15Bounds.moveMouseAndClick()
+	
+	If(makeSupAtkPrompt_P.waitForPixelToBeColor() == False) {
+		MsgBox % "???"
+		Reload
+	}
+	UIObject.inputKeyAndSleep("{Space}", generateSleepTime(243, 557))
+	
+	bankerBounds_B.moveMouse()
+	While(InvSlot28Empty.verifyPixelColor() == False) {
+		If(A_Index > 250) {
+			Break
+		} Else {
+			Sleep, 100
+		}
+	}
+	doBank()
 }
 
-doBank(sleepFor := 0, getAmulet := False) {
-	ToolTip % "In doBank()...", 0, 0
-
-	;; Open bank
-	Click
-	;;waitForPixelToBeColor(bankOpenCheck[1], bankOpenCheck[2])
+; ToDO: Requires modification to handle arbitrary potions.
+doBank(sleepFor := 0) {
+	bankerBounds_B.moveMouseAndClick()
 	BankOpenCheck.waitForPixelToBeColor()
 	Sleep, generateSleepTime(473, 655)
 
-	;; Deposit all
-	;;moveMouseAndClick(generateCoords(depositAllBounds[1], depositAllBounds[2]))
-	;;DepositAllBounds.moveMouseAndClick(, generateSleepTime(172, 316))
-	DepositAll()
+	DepositAll(False)
 
-	;; Withdraw and equip a new amulet
-	If(getAmulet == True) {
-		BankSlot3Bounds.moveMouseAndClick()
-		inputKeyAndSleep("{Shift Down}", generateSleepTime(473, 655))
-		;;moveMouseAndClick(generateCoords(amuletBankBounds[1], amuletBankBounds[2]),, generateSleepTime(172, 316))
-		;;moveMouseAndClick(generateCoords(invSlot01Bounds[1], invSlot01Bounds[2]),, generateSleepTime(737, 944))
-		InvSlot1Bounds.moveMouseAndClick(, generateSleepTime(737, 944))
-		While(verifyPixelColor(slot01Amulet[1], slot01Amulet[2]))
-			doClick(generateSleepTime())
-		inputKeyAndSleep("{Shift Up}", generateSleepTime())
+	;getAmulet()
+
+	If(BankSlot1Bounds.verifyPixelColor() == False Or BankSlot2Bounds.verifyPixelColor() == False) {
+		MsgBox % "Done!"
+		Reload
 	}
 
-	;; Withdraw more reagents
-	;;moveMouseAndClick(generateCoords(unfinishedPotionBounds[1], unfinishedPotionBounds[2]))
-	;;moveMouseAndClick(generateCoords(snapeGrassBounds[1], snapeGrassBounds[2]))
 	BankSlot1Bounds.moveMouseAndClick()
 	BankSlot2Bounds.moveMouseAndClick()
-	waitForPixelToBeColor(slot15SnapeGrass[1], slot15SnapeGrass[2])
+	If(PixelColorLocation.waitForPixelToBeColor(, False,, 0x2F2B2B) == False) {
+		MsgBox % "Remaining reagents not divisible by 14. Terminating."
+		Reload
+	}
 
-	;; Close bank
 	Send, {Esc}
-	;;waitForPixelToNotBeColor(bankOpenCheck[1], bankOpenCheck[2])
-	BankOpenCheck.waitForPixelToBeColor()
+	BankClosedCheck.waitForPixelToBeColor(, False)
 	Sleep, generateSleepTime()
 
-	openInventoryPane()
-
 	Sleep, sleepFor
-	
-	ToolTip % "Leaving doBank()...", 0, 0
 }
 
 main() {
 	Loop {
 		doHerblore()
-		If(checkNecklace())
-			Continue
-		doBank()
 	}
 }
 
 ;;=================================================================================================;;
 
 F1::main()
-F2::traceCoordsBounds(bankerBounds[1], bankerBounds[2])
+F2::traceCoordsBounds(bankerBounds_B[1], bankerBounds_B[2])
 
 ;;=================================================================================================;;
 

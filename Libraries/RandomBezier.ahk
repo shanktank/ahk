@@ -1,3 +1,5 @@
+Global CURSOR_SPEED_DIVISOR := 2.5
+
 RandomBezier(Xf, Yf, O="") {
     Time := RegExMatch(O, "i)T(\d+)", M) && (M1 > 0) ? M1 : 200
     RO := InStr(O, "RO", 0), RD := InStr(O, "RD", 0)
