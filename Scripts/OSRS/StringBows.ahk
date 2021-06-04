@@ -29,10 +29,10 @@ main() {
 		stringPrompt.waitForPixelToBeColor()
 		UIObject.inputKeyAndSleep("{Space}")
 		UIObject.moveMouse(bankerBounds.generateCoords())
-		invSlot14Color.waitForPixelToBeColor(20000)
+		invSlot28Color.waitForPixelToBeColor(20000)
 		;bankerBounds.moveMouseAndClick()
 		Click
-		bankOpenCheck.waitForPixelToBeColor()
+		BankOpenCheck.waitForPixelToBeColor()
 		Random, num, 1, 100
 		If(num >= 38) {
 			DepositAllBounds.moveMouseAndClick()
@@ -46,13 +46,13 @@ main() {
 ; == Global Variables ======================================================================================================================================== ;
 ; ============================================================================================================================================================ ;
 
-;; TODO: Will have to do away with those of these that are now delcared globally in the library
-Global invSlot14Color := New PixelColorLocation(0x686161, [ 1467, 809 ])
-Global invSlot28Color := New PixelColorLocation(0x3E3529, [ 1601, 969 ])
-Global bankerBounds := New ClickAreaBounds([ 837, 120 ], [ 939, 464 ])
-Global bankOpenCheck := New PixelColorLocation(0x8D8D98, [ 496, 91 ])
-Global bankSlot1Color := New PixelColorLocation(0x8F7D11, [ 452, 148 ])
-Global stringPrompt := New PixelColorLocation(0x80700D, [ 329, 920 ])
+;; TODO: Will have to do away with those of these that are now declared globally in the library
+Global bankerBounds   := New ClickAreaBounds([ 837, 120 ], [ 939, 464 ])
+;Global bankOpenCheck  := New PixelColorLocation(0x8D8D98, [  496,  91 ])
+Global invSlot14Color := New PixelColorLocation(0x175E57, [ 1475, 763 ])
+Global invSlot28Color := New PixelColorLocation(0x3E3529, [ 1600, 971 ])
+Global bankSlot1Color := New PixelColorLocation(0x1C7067, [  451, 145 ])
+Global stringPrompt   := New PixelColorLocation(0x12514B, [  333, 922 ])
 
 ; ============================================================================================================================================================ ;
 ; == Hotkeys ================================================================================================================================================= ;

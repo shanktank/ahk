@@ -511,10 +511,12 @@ inputKeyAndSleep(inputKey, sleepFor := 0) {
 ; -- Debugging and Testing Tools ------------------------------------------------------------------------------------------------------------------- ;
 ; ================================================================================================================================================== ;
 
-traceCoordsBounds(lb, ub) {
-	Corners := [ [ lb[1], lb[2] ], [ ub[1], lb[2] ], [ ub[1], ub[2] ], [ lb[1], ub[2] ], [ lb[1], lb[2] ] ]
+traceCoordsBounds(bounds) {
+	Local lb1 := bounds.lowerBounds[1], Local lb2 := bounds.lowerBounds[2], Local ub1 := bounds.upperBounds[1], Local ub2 := bounds.upperBounds[2]
+	Local Corners := [ [ lb1, lb2 ], [ ub1, lb2 ], [ ub1, ub2 ], [ lb1, ub2 ], [ lb1, lb2 ] ]
 
 	For _, Element In Corners {
+		;MsgBox % Element[1][1] ", " Element[2][1]
 		MouseMove, Element[1], Element[2]
 		Sleep, 500
 	}

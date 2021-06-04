@@ -1,1 +1,0 @@
-﻿schtasks /run /TN "Elevated Hotkeys"
