@@ -41,6 +41,7 @@ Global BankSlot2Bounds			:= New ClickAreaBounds([  498, 137 ], [  529, 169 ])
 Global BankSlot3Bounds			:= New ClickAreaBounds([  566, 138 ], [  590, 165 ])
 Global DepositAllBounds			:= New ClickAreaBounds([  903, 776 ], [  938, 815 ])
 
+Global LowHealthCheck			:= New PixelColorLocation(0x8A0703, [ 1404,  114 ])
 Global OptsOpenCheck			:= New PixelColorLocation(0x6B241B, [ 1525, 1015 ])
 Global InvOpenCheck				:= New PixelColorLocation(0x75281E, [ 1211, 1009 ])
 Global BankOpenCheck			:= New PixelColorLocation(0xC27A26, [  410,   48 ])
@@ -113,6 +114,25 @@ Class UIObject {
 				Reload
 			}
 		}
+	}
+}
+
+Class PixelScanArea Extends UIObject {
+	Static pixelColor		:= 0x000000
+	Static lowerBounds		:= [ 0, 0 ]
+	Static upperBounds		:= [ 0, 0 ]
+	Static shadeTolerance	:= 0
+
+	__New(pixelColor, lowerBounds, upperBounds) {
+		This.pixelColor  := pixelColor
+		This.lowerBounds := lowerBounds
+		This.upperBounds := upperBounds
+	}
+	
+	scanAreaForPixelColor() {
+		PixelSearch, X, Y, This.lowerBounds[1], This.lowerBounds[2], This.upperBounds[1], This.upperBounds[2], This.pixelColor, This.shadeTolerance, Fast RGB
+		Return { xy : [ X, Y ], rc : ErrorLevel }
+		;Return ErrorLevel
 	}
 }
 
