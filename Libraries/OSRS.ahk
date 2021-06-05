@@ -43,7 +43,8 @@ Global DepositAllBounds			:= New ClickAreaBounds([  903, 776 ], [  938, 815 ])
 
 Global OptsOpenCheck			:= New PixelColorLocation(0x6B241B, [ 1525, 1015 ])
 Global InvOpenCheck				:= New PixelColorLocation(0x75281E, [ 1211, 1009 ])
-Global BankOpenCheck			:= New PixelColorLocation(0xC27A26, [  410,   48 ])
+Global BankOpenCheck			:= New PixelColorLocation(0xFC9620, [  406,   57 ])
+Global BankOpenCheck2			:= New PixelColorLocation(0x000000, [  977,   48 ])
 Global BankClosedCheck			:= New PixelColorLocation(0x827563, [ 1220, 1013 ])
 Global InvSlot28Empty			:= New PixelColorLocation(0x3E3529, [ 1593,  967 ])
 Global LevelUpGeneric			:= New PixelColorLocation(0x2723EB, [  472,  974 ])
@@ -117,24 +118,28 @@ Class UIObject {
 }
 
 Class PixelColorLocation Extends UIObject {
-	Static pixelColor  := 0x000000
-	Static pixelCoords := [ 0, 0 ]
+	Static pixelColor		:= 0x000000
+	Static pixelCoords		:= [ 0, 0 ]
+	Static shadeTolerance	:= 0
 
-	__New(pixelColor, pixelCoords) {
-		This.pixelColor  := pixelColor
-		This.pixelCoords := pixelCoords
+	__New(pixelColor, pixelCoords, shadeTolerance := 0) {
+		This.pixelColor 	:= pixelColor
+		This.pixelCoords 	:= pixelCoords
+		This.shadeTolerance	:= shadeTolerance
 	}
 
-	verifyPixelColor(pixelColorCheck := -1) {
+	verifyPixelColor(pixelColorCheck := -1, shadeTolerance := 0) {
 		If(pixelColorCheck == -1) {
 			pixelColorCheck := This.pixelColor
 		}
-	
-		PixelGetColor, pixelColor2, This.pixelCoords[1], This.pixelCoords[2], RGB
-		Return pixelColorCheck == pixelColor2
+		
+		;PixelGetColor, pixelColor2, This.pixelCoords[1], This.pixelCoords[2], RGB
+		PixelSearch, __, __, This.pixelCoords[1] - 1, This.pixelCoords[2] - 1, This.pixelCoords[1] + 1, This.pixelCoords[2] + 1, This.pixelColor, This.shadeTolerance, RGB, Fast
+		;Return pixelColorCheck == pixelColor2
+		Return ErrorLevel == 0
 	}
 
-	waitForPixelToBeColor(timeout := 5000, checkIf := True, hoverNext := 0, pixelColorCheck := -1) {
+	waitForPixelToBeColor(timeout := 5000, checkIf := True, hoverNext := 0, pixelColorCheck := -1, shadeTolerance := 0) {
 		If(pixelColorCheck == -1) {
 			pixelColorCheck := This.pixelColor
 		}

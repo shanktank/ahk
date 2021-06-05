@@ -16,15 +16,17 @@ SendMode, Input
 
 ;;=================================================================================================;;
 
-Global battlestaff_P			:= New PixelColorLocation(0x967111, [ 446,  152 ])
-Global airOrb_P					:= New PixelColorLocation(0xC6C6CE, [ 509,  153 ])
+Global battlestaff_P			:= New PixelColorLocation(0x967111, [  446, 152 ])
+Global battlestaff_P2			:= New PixelColorLocation(0x8E6B10, [  447, 149 ])
+Global airOrb_P					:= New PixelColorLocation(0xC6C6CE, [  509, 153 ])
 Global verifyItems_P			:= New PixelColorLocation(0xD1D1D7, [ 1584, 969 ])
-Global makeAirStaff_P			:= New PixelColorLocation(0xE1E1E4, [ 366,  923 ])
+Global makeAirStaff_P1			:= New PixelColorLocation(0xE1E1E4, [  366, 923 ])
+Global makeAirStaff_P2			:= New PixelColorLocation(0xE3E3E5, [  366, 923 ])
 
 Global battlestaff_T			:= New TileMarkerBounds(0x473D30, [ 1477, 820 ])
 Global airOrb_T					:= New TileMarkerBounds(0xCECED5, [ 1529, 826 ])
 
-Global bankerBounds_B			:= New ClickAreaBounds([ 840, 338 ], [ 904, 197 ])
+Global bankerBounds_B			:= New ClickAreaBounds([ 725, 281 ], [ 822, 90 ])
 
 ;;=================================================================================================;;
 
@@ -44,7 +46,7 @@ doCrafting() {
 	InvSlot14Bounds.moveMouseAndClick()
 	InvSlot15Bounds.moveMouseAndClick()
 
-	If(makeAirStaff_P.waitForPixelToBeColor() == False) {
+	If(makeAirStaff_P2.waitForPixelToBeColor() == False) {
 		MsgBox % "Crafting operation failed."
 		Reload
 	}
@@ -61,7 +63,6 @@ doCrafting() {
 	doBank()
 }
 
-; ToDO: Requires modification to handle arbitrary potions.
 doBank(sleepFor := 0) {
 	bankerBounds_B.moveMouseAndClick()
 	BankOpenCheck.waitForPixelToBeColor()
@@ -69,17 +70,17 @@ doBank(sleepFor := 0) {
 
 	DepositAll(False)
 
-	If(battlestaff_P.verifyPixelColor() == False Or airOrb_P.verifyPixelColor() == False) {
+	If(battlestaff_P2.verifyPixelColor() == False) { ;; Or airOrb_P.verifyPixelColor() == False) {
 		MsgBox % "Done!"
 		Reload
 	}
 	
 	BankSlot1Bounds.moveMouseAndClick()
 	BankSlot2Bounds.moveMouseAndClick()
-	If(PixelColorLocation.waitForPixelToBeColor(, False,, 0x2F2B2B) == False) {
-		MsgBox % "Remaining reagents not divisible by 14. Terminating."
-		Reload
-	}
+	;If(PixelColorLocation.waitForPixelToBeColor(, False,, 0x2F2B2B) == False) {
+	;	MsgBox % "Remaining reagents not divisible by 14. Terminating."
+	;	Reload
+	;}
 
 	Send, {Esc}
 	BankClosedCheck.waitForPixelToBeColor(, False)
