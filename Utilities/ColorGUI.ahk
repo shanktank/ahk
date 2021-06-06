@@ -17,7 +17,7 @@ CreateGUI() {
 	SysGet, curMon, Monitor
 
 	winWidth       := 200
-	winHeight      := 110
+	winHeight      := 130
 	winExtraWidth  := 6
 	winExtraHeight := 29
 	winTenPadding  := 2
@@ -25,16 +25,17 @@ CreateGUI() {
 	monHeight      := tmpMonBottom - tmpMonTop
 	newWinX        := monWidth - winWidth - winExtraWidth + winTenPadding + curMonLeft
 	newWinY        := monHeight - winHeight - winExtraHeight + winTenPadding + curMonTop
-
-	Gui, Add, Text, vMC x10  y05, % "Moving color:"
-	Gui, Add, Text,     x10  y25, % "Moving coords:"
-	Gui, Add, Text, VCC x10  y47, % "Clicked color:"
-	Gui, Add, Text,     x10  y67, % "Clicked coords:"
-	Gui, Add, Text, vXY x123 y25 w070, 0
-	Gui, Add, Text, vC2 x123 y05 w070, 0
-	Gui, Add, Edit, vC3 x123 y45 w070 h18 +Readonly, 0
-	Gui, Add, Edit, vC4 x123 y65 w070 h18 +Readonly, 0
-	Gui, Add, Edit, vC5 x010 y85 w183 h18 +Readonly, 0
+	
+	Gui, Add, Text,   vMC x010 y005, % "Moving color:"
+	Gui, Add, Text,       x010 y025, % "Moving coords:"
+	Gui, Add, Text,   VCC x010 y047, % "Clicked color:"
+	Gui, Add, Text,       x010 y067, % "Clicked coords:"
+	Gui, Add, Text,   vXY x123 y025 w070, 0
+	Gui, Add, Text,   vC2 x123 y005 w070, 0
+	Gui, Add, Edit,   vC3 x123 y045 w070 h18 +Readonly, 0
+	Gui, Add, Edit,   vC4 x123 y065 w070 h18 +Readonly, 0
+	Gui, Add, Edit,   vC5 x010 y085 w183 h18 +Readonly, 0
+	Gui, Add, Button,     x010 y105 w183 h20 gJumpToCoords, % "Jump to coords"
 	Gui, Show, w%winWidth% h%winHeight% x%newWinX% y%newWinY%, Colors
 	Gui, +AlwaysOnTop
 
@@ -42,6 +43,7 @@ CreateGUI() {
 }
 
 WatchCursor() {
+	Global
 	MouseGetPos, X, Y
 	PixelGetColor, MovingColor, %X%, %Y%, RGB
 	GuiControl,, XY, %X%\, %Y%
@@ -92,6 +94,16 @@ CreateGUI()
 SetTimer, WatchCursor, 25
 Return
 
+JumpToCoords:
+{
+	InputBox, jumpTo, % "Enter formatted color and coordinates:"
+	Data := StrSplit(jumpTo, ",", "[]"A_Space)
+	PixelGetColor, PixelColor, Data[2], Data[3]
+	MouseMove, Data[2], Data[3], 10
+}
+Return
+GuiControlGet, OutputVar,, Edit1
+
 GuiClose:
 	ExitApp
 
@@ -124,5 +136,8 @@ GuiClose:
 ^+!LButton::
 	TraverseArea()
 	Return
+
+!1::
+	
 
 +^R::Reload

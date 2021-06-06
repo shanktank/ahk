@@ -19,9 +19,9 @@ Return
 
 CheckHitpoints:
 If(LowHealthCheck.verifyPixelColor() == True) {
-	ToolTip % "High health", 0, 0
+	ToolTip % "High health", 250, 0
 } Else {
-	ToolTip % "Low health", 0, 0
+	ToolTip % "Low health", 250, 0
 }
 Return
 

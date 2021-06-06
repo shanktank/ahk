@@ -35,7 +35,7 @@ Return
 F1::
 	Loop {
 		;PixelSearch, X5, Y5, 1294, 379, 1350, 84, 0xDCE0D0, 10, Fast RGB
-		PixelSearch, X5, Y5, 1334, 350, 1350, 84, 0xDCE0D0, 10, Fast RGB
+		PixelSearch, X5, Y5, 1334, 350, 1350, 84, 0xDCE0D0, 10, RGB
 		If(ErrorLevel == 0) {
 			;MsgBox % "ErrorLevel: " ErrorLevel ", XY: " X5 ", " Y5
 			ToolTip % "XP GAIN DETECTED", 0, 0
