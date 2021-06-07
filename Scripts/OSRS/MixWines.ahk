@@ -27,7 +27,7 @@ main() {
 		UIObject.moveMouse(bankerBounds.generateCoords())
 		InvSlot28Empty.waitForPixelToBeColor(20000)
 		UIObject.doClick()
-		BankOpenCheck.waitForPixelToBeColor()
+		BankOpenCheck2.waitForPixelToBeColor()
 		DepositAll()
 		BankSlot1Bounds.moveMouseAndClick()
 		BankSlot2Bounds.moveMouseAndClick()
@@ -44,9 +44,9 @@ main() {
 
 ;Global makeWinePrompt := New PixelColorLocation(0xA5423C, [ 347, 948 ])
 Global makeWinePrompt := New PixelColorLocation(0xA5423C, [ 347, 933 ])
-Global bankerBounds   := New ClickAreaBounds([ 842, 176 ], [ 908, 361 ])
-Global invSlot14Check := New PixelColorLocation(0x7476CA, [ 1479, 811 ])
-Global invSlot15Check := New PixelColorLocation(0x780D5A, [ 1538, 824 ])
+Global bankerBounds   := New ClickAreaBounds([ 812, 384 ], [ 922, 126 ])
+Global invSlot14Check := New PixelColorLocation(0x7C7ED1, [ 1479, 811 ])
+Global invSlot15Check := New PixelColorLocation(0x790D5B, [ 1537, 824 ])
 
 ;; ============================================================================================================================================================ ;;
 ;; == Hotkeys ================================================================================================================================================= ;;
