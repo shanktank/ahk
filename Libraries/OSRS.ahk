@@ -22,6 +22,7 @@ Global PURPLE					:= 0xFF00FF
 Global CYAN						:= 0x00FFFF
 Global TEAL						:= 0x008372
 Global ORANGE					:= 0xFF9B00
+Global ORANGE					:= 0xBC6916
 Global HILITE					:= 0xE6CC80
 
 Global ScreenLowerBounds		:= [    0,   50 ]
@@ -47,7 +48,7 @@ Global HighHealthCheck			:= New PixelColorLocation(0x9C0704, [ 1413,   97 ])
 Global OptsOpenCheck			:= New PixelColorLocation(0x6B241B, [ 1525, 1015 ])
 Global InvOpenCheck				:= New PixelColorLocation(0x75281E, [ 1211, 1009 ])
 Global BankOpenCheck			:= New PixelColorLocation(0xFC9620, [  406,   57 ])
-Global BankOpenCheck2			:= New PixelColorLocation(0x000000, [  977,   48 ])
+Global BankOpenCheck2			:= New PixelColorLocation(0x000001, [  977,   48 ], 5)
 Global BankClosedCheck			:= New PixelColorLocation(0x827563, [ 1220, 1013 ])
 Global InvSlot28Empty			:= New PixelColorLocation(0x3E3529, [ 1593,  967 ])
 Global LevelUpGeneric			:= New PixelColorLocation(0x2723EB, [  472,  974 ])
@@ -77,9 +78,9 @@ Class UIObject {
 	doClick(sleepFor := 0, actionType := "Neither", mouseButton := "Left") {
 		Sleep, generateSleepTime(52, 163)
 		MouseClick, %mouseButton%
-		rc := verifyClick(actionType)
+		clickRC := verifyClick(actionType)
 		Sleep, sleepFor
-		Return rc
+		Return clickRC
 	}
 
 	moveMouseAndClick(clickCoords, mouseSpeedDivisor := 2.5, sleepFor := 0, actionType := "Neither", rightClick := False) {
@@ -133,7 +134,7 @@ Class PixelScanArea Extends UIObject {
 	}
 	
 	scanAreaForPixelColor() {
-		PixelSearch, X, Y, This.lowerBounds[1], This.lowerBounds[2], This.upperBounds[1], This.upperBounds[2], This.pixelColor, This.shadeTolerance, RGB
+		PixelSearch, X, Y, This.lowerBounds[1], This.lowerBounds[2], This.upperBounds[1], This.upperBounds[2], This.pixelColor, This.shadeTolerance, Fast RGB
 		Return { xy : [ X, Y ], rc : ErrorLevel }
 		;Return ErrorLevel
 	}
@@ -156,7 +157,7 @@ Class PixelColorLocation Extends UIObject {
 		}
 		
 		;PixelGetColor, pixelColor2, This.pixelCoords[1], This.pixelCoords[2], RGB
-		PixelSearch, __, __, This.pixelCoords[1] - 1, This.pixelCoords[2] - 1, This.pixelCoords[1] + 1, This.pixelCoords[2] + 1, This.pixelColor, This.shadeTolerance, RGB
+		PixelSearch, __, __, This.pixelCoords[1] - 1, This.pixelCoords[2] - 1, This.pixelCoords[1] + 1, This.pixelCoords[2] + 1, This.pixelColor, This.shadeTolerance, Fast RGB
 		;Return pixelColorCheck == pixelColor2
 		Return ErrorLevel == 0
 	}
@@ -222,16 +223,16 @@ Class TileMarkerBounds Extends UIObject {
 	}
 	
 	moveMouseAndClick(mouseSpeedDivisor := 2.5, sleepFor := 10) {
-		rc := False
+		OpRC := False
 		
-		While(rc == False) {
+		While(OpRC == False) {
 			If(A_Index > 10)
 				Return False
 			If(A_Index == 2)
 				mouseSpeedDivisor := mouseSpeedDivisor - 1
 
 			Sleep, generateSleepTime(134, 219)
-			rc := Base.moveMouseAndClick(This.generateCoords(), mouseSpeedDivisor, sleepFor, "Interact")
+			OpRC := Base.moveMouseAndClick(This.generateCoords(), mouseSpeedDivisor, sleepFor, "Interact")
 		}
 
 		Return True
@@ -244,9 +245,9 @@ Class TileMarkerBounds Extends UIObject {
 			upperBounds := ScreenUpperBounds
 
 		Loop, 5 {
-			PixelSearch, X, Y, lowerBounds[1], lowerBounds[2], upperBounds[1], upperBounds[2], This.pixelColor, This.shadeTolerance, RGB
+			PixelSearch, localX, localY, lowerBounds[1], lowerBounds[2], upperBounds[1], upperBounds[2], This.pixelColor, This.shadeTolerance, RGB
 			If(ErrorLevel == 0) {
-				Return { xy : [ X, Y ], rc : ErrorLevel } ; just do break instead?
+				Return { xy : [ localX, localY ], rc : ErrorLevel } ; just do break instead?
 			} Else {
 				Sleep, 100
 			}
@@ -287,16 +288,16 @@ Class TileMarkerBounds Extends UIObject {
 		If(upperBounds == -1)
 			upperBounds := ScreenUpperBounds
 	
-		XY := This.findPixelByColor(lowerBounds, upperBounds)
+		LocalXY := This.findPixelByColor(lowerBounds, upperBounds)
 
-		If(XY["rc"] != 0) {
+		If(LocalXY["rc"] != 0) {
 			SetFormat, IntegerFast, Hex
 			MsgBox % "Could not find pixel (" This.pixelColor ")"
 			Reload
 		}
 		
-		Random, X, XY["xy"][1] + This.minOffset[1], XY["xy"][1] + This.maxOffset[1]
-		Random, Y, XY["xy"][2] + This.minOffset[2], XY["xy"][2] + This.maxOffset[2]
+		Random, X, LocalXY["xy"][1] + This.minOffset[1], LocalXY["xy"][1] + This.maxOffset[1]
+		Random, Y, LocalXY["xy"][2] + This.minOffset[2], LocalXY["xy"][2] + This.maxOffset[2]
 
 		Return [ X, Y ]
 	}
@@ -304,7 +305,7 @@ Class TileMarkerBounds Extends UIObject {
 
 
 
-DepositAll(randomMethod := True) {
+DepositAll(randomMethod := False) {
 	Random, randInt1, 1, 10000
 	Random, randInt2, 1, 10000
 	
@@ -413,9 +414,9 @@ findPixelByColorWaveSearch(pixelColor, lowerBounds := -1, upperBounds := -1, sha
 	ErrorLevel := -1
 	While(ErrorLevel != 0) {
 		If(A_Index > 25)
-			Return { xy : [ X, Y ], rc : ErrorLevel }
+			Return { xy : [ coordX, coordY ], rc : ErrorLevel }
 		waveLength += 25
-		PixelSearch, X, Y, startingPointX - waveLength, startingPointY - waveLength, startingPointX + waveLength, startingPointY + waveLength, pixelColor, shadeTolerance, RGB
+		PixelSearch, coordX, coordY, startingPointX - waveLength, startingPointY - waveLength, startingPointX + waveLength, startingPointY + waveLength, pixelColor, shadeTolerance, RGB
 		Sleep, 100
 	}
 
@@ -487,7 +488,7 @@ generateCoords(lowerBounds, upperBounds) {
 }
 
 generateCoordsWithOffsets(lowerBounds, upperBounds, offsetRangeX, offsetRangeY) {
-	XY := generateCoords(lowerBounds, upperBounds)
+	Global XY := generateCoords(lowerBounds, upperBounds)
 	Random, OX, offsetRangeX[1], offsetRangeX[2]
 	Random, OY, offsetRangeY[1], offsetRangeY[2]
 	Return [ XY[1] + OX, XY[2] + OY ]
@@ -505,13 +506,13 @@ moveMouse(moveCoords, mouseSpeedDivisor := 2.5) {
 doClick(sleepFor := 0, actionType := "Neither", mouseButton := "Left") {
 	Sleep, generateSleepTime(52, 163)
 	MouseClick, %mouseButton%
-	rc := verifyClick(actionType)
-	If(rc == True) {
+	clickRC := verifyClick(actionType)
+	If(clickRC == True) {
 		If(sleepFor == 0)
 			sleepFor := generateSleepTime()
 		Sleep, sleepFor
 	}
-	Return rc
+	Return clickRC
 }
 
 moveMouseAndClick(clickCoords, mouseSpeedDivisor := 2.5, sleepFor := 0, actionType := "Neither", rightClick := False) {
