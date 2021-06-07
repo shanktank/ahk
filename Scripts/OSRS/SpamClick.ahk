@@ -27,10 +27,13 @@ Return
 F1::
     BREAKOUT := False
     Loop {
-		Random, sleepy, 642, 1013
+		Random, sleepy, 642000, 101300
 		If(BREAKOUT = True)
 			Return
-        Click
+        ;Click
+		Send, {Left}
+		Sleep, 53
+		Send, {Right}
         Sleep, sleepy
     }
     Return
