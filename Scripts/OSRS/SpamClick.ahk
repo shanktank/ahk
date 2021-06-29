@@ -15,25 +15,24 @@ SetTimer, CheckCursor, 100
 Return
 
 CheckCursor:
-MouseGetPos, cx, cy
-If(cx != sx or cy != sy) {
-	If(cx > (sx+1) or cx < (sx-1) or cy > (sy+1) or cy < (sy-1)) {
-		MouseGetPos, sx, sy
-		BREAKOUT := True
+	MouseGetPos, cx, cy
+	If(cx != sx Or cy != sy) {
+		If(cx > sx + 1 Or cx < sx - 1 Or cy > sy + 1 Or cy < sy - 1) {
+			BREAKOUT := True
+		}
 	}
-}
-Return
+	Return
 
 F1::
     BREAKOUT := False
     Loop {
-		Random, sleepy, 642000, 101300
-		If(BREAKOUT = True)
+		If(BREAKOUT = True) {
 			Return
-        ;Click
-		Send, {Left}
-		Sleep, 53
-		Send, {Right}
+		}
+		
+        Click
+		
+		Random, sleepy, 642, 854
         Sleep, sleepy
     }
     Return

@@ -41,10 +41,18 @@ F1::
     Loop {
 		;;If(checkItem() = False)
 		;;	Return
-		Random, sleepy, 6300, 21300
+		;;Send, {SPACE}
+		Send, {Left Down}
+		Random, s1, 213, 483
+		Sleep, s1
+		Send, {Left Up}
+		Send, {Right Down}
+		Random, s2, 224, 443
+		Sleep, s2
+		Send, {Right Up}
 		If(BREAKOUT = True)
 			Return
-        Send, {SPACE}
+		Random, sleepy, 6300, 21300
         Sleep, sleepy
     }
     Return
