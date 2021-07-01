@@ -10,10 +10,12 @@ SendMode Input
 
 #IfWinActive OpenOSRS
 
+
 Global SleepLowerBound := 423000
 Global SleepUpperBound := 873000
 Global StartTime := A_TickCount
 Global SleepTime := 0
+
 
 CountDown() {
 	Local RawTime := (StartTime - A_TickCount + SleepTime) / 1000
@@ -21,6 +23,7 @@ CountDown() {
 	Local Seconds := Mod(RawTime, 60)
 	ToolTip % "Next jitter in " Format("{:d}", Minutes) ":" Format("{:02d}", Seconds), 0, 0
 }
+
 
 F1::
 	SetTimer, CountDown, 1000
@@ -47,6 +50,7 @@ F1::
     }
 	
     Return
+
 
 #If
 ^R::Reload
