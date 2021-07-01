@@ -1,4 +1,4 @@
-﻿#SingleInstance FORCE
+#SingleInstance FORCE
 #Persistent
 #NoEnv
 #Warn
@@ -19,7 +19,7 @@ CountDown() {
 	Local RawTime := (StartTime - A_TickCount + SleepTime) / 1000
 	Local Minutes := RawTime / 60
 	Local Seconds := Mod(RawTime, 60)
-	ToolTip % "Next jitter in " Format("{:d}", Minutes) ":" Format("{:02d}", Seconds) , 0, 0
+	ToolTip % "Next jitter in " Format("{:d}", Minutes) ":" Format("{:02d}", Seconds), 0, 0
 }
 
 F1::
