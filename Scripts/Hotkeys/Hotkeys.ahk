@@ -23,6 +23,7 @@ Global WinTenPadding := 8
 		RegPath := "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
         RegRead, HiddenStatus, HKEY_CURRENT_USER, %RegPath%, Hidden
 		RegWrite, REG_DWORD, HKEY_CURRENT_USER, %RegPath%, Hidden, % HiddenStatus == 1 ? 2 : 1
+		Sleep, 125
         Send {F5}
 	}
     Return
@@ -33,7 +34,8 @@ Global WinTenPadding := 8
 		RegPath := "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
         RegRead, SuperHiddenStatus, HKEY_CURRENT_USER, %RegPath%, ShowSuperHidden
 		RegWrite, REG_DWORD, HKEY_CURRENT_USER, %RegPath%, ShowSuperHidden, % SuperHiddenStatus == 0 ? 1 : 0
-        Send {F5}
+        Sleep, 125
+		Send, {F5}
     }
     Return
 
@@ -44,6 +46,7 @@ Global WinTenPadding := 8
 		ClipWait
 		Loop, Parse, Clipboard, \n, \r
 			FileSetAttrib, ^H, % A_LoopField
+		Sleep, 125
 		Send {F5}
 	}	
 	Return
@@ -68,8 +71,8 @@ Global WinTenPadding := 8
 ^!+K::Run %A_ProgramFiles%/KeePassXC/KeePassXC
 ^!+I::Run firefox -P profile
 ^!+M::Run firefox -P minimal
-^!+U::Run putty -load "super local"
-^!+J::Run putty -load "pi local"
+^!+U::Run putty -load "super remote"
+^!+J::Run putty -load "pi remote"
 ^!+P::Run putty
 ^!+O::Run debian
 ^!+Z::Run ms-settings:apps-volume
