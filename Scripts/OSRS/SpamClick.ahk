@@ -17,7 +17,7 @@ Return
 CheckCursor:
 	MouseGetPos, cx, cy
 	If(cx != sx Or cy != sy) {
-		If(cx > sx + 1 Or cx < sx - 1 Or cy > sy + 1 Or cy < sy - 1) {
+		If(cx > (sx+1) Or cx < (sx-1) Or (cy > sy+1) Or (cy < sy-1)) {
 			BREAKOUT := True
 		}
 	}
@@ -25,10 +25,10 @@ CheckCursor:
 
 F1::
     BREAKOUT := False
-    Loop {
-		If(BREAKOUT = True) {
-			Return
-		}
+    
+	Loop {
+		If(BREAKOUT = True)
+			Reload
 		
         Click
 		

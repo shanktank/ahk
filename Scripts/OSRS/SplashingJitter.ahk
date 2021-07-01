@@ -13,7 +13,9 @@ F1::
 		Send, {Left Down}
 		Sleep, 42, 65
 		Send, {Left Up}
+		
 		Sleep, 50, 104
+		
 		Send, {Right Down}
 		Sleep, 40, 59
 		Send, {Right Up}
