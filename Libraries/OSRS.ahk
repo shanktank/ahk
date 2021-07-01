@@ -245,7 +245,7 @@ Class TileMarkerBounds Extends UIObject {
 			upperBounds := ScreenUpperBounds
 
 		Loop, 5 {
-			PixelSearch, localX, localY, lowerBounds[1], lowerBounds[2], upperBounds[1], upperBounds[2], This.pixelColor, This.shadeTolerance, RGB
+			PixelSearch, localX, localY, lowerBounds[1], lowerBounds[2], upperBounds[1], upperBounds[2], This.pixelColor, This.shadeTolerance, Fast RGB
 			If(ErrorLevel == 0) {
 				Return { xy : [ localX, localY ], rc : ErrorLevel } ; just do break instead?
 			} Else {
@@ -273,7 +273,7 @@ Class TileMarkerBounds Extends UIObject {
 				Return { xy : [ 0, 0 ], rc : ErrorLevel }
 			}
 
-			PixelSearch, X, Y, centerXY[1] - proximity[1], centerXY[2] - proximity[2], centerXY[1] + proximity[1], centerXY[2] + proximity[2], This.pixelColor, This.shadeTolerance, RGB
+			PixelSearch, X, Y, centerXY[1] - proximity[1], centerXY[2] - proximity[2], centerXY[1] + proximity[1], centerXY[2] + proximity[2], This.pixelColor, This.shadeTolerance, Fast RGB
 			If(ErrorLevel == 0) {
 				Return { xy : [ X, Y ], rc : ErrorLevel }
 			} Else {
@@ -346,7 +346,7 @@ Error() {
 ; ================================================================================================================================================== ;
 
 verifyPixelColor(pixelColor, xy) {
-	PixelGetColor, pc, xy[1], xy[2], RGB
+	PixelGetColor, pc, xy[1], xy[2], Fast RGB
 	Return pc == pixelColor
 }
 
@@ -384,7 +384,7 @@ findPixelByColor(pixelColor, lowerBounds := -1, upperBounds := -1, shadeToleranc
 	If(upperBounds == -1)
 		upperBounds := ScreenUpperBounds
 
-	PixelSearch, X, Y, lowerBounds[1], lowerBounds[2], upperBounds[1], upperBounds[2], pixelColor, shadeTolerance, RGB
+	PixelSearch, X, Y, lowerBounds[1], lowerBounds[2], upperBounds[1], upperBounds[2], pixelColor, shadeTolerance, Fast RGB
 
 	Return { xy : [ X, Y ], rc : ErrorLevel }
 }
@@ -396,7 +396,7 @@ findPixelByColorX(pixelColor, lowerBounds := 0, upperBounds := 0, tries := 10, s
 		upperBounds := ScreenUpperBounds
 
 	Loop, %tries% {
-		PixelSearch, X, Y, lowerBounds[1], lowerBounds[2], upperBounds[1], upperBounds[2], pixelColor, shadeTolerance, RGB
+		PixelSearch, X, Y, lowerBounds[1], lowerBounds[2], upperBounds[1], upperBounds[2], pixelColor, shadeTolerance, Fast RGB
 		If(ErrorLevel == 0 || A_Index == tries) {
 			Return { xy : [ X, Y ], rc : ErrorLevel }
 		} Else {
@@ -416,7 +416,7 @@ findPixelByColorWaveSearch(pixelColor, lowerBounds := -1, upperBounds := -1, sha
 		If(A_Index > 25)
 			Return { xy : [ coordX, coordY ], rc : ErrorLevel }
 		waveLength += 25
-		PixelSearch, coordX, coordY, startingPointX - waveLength, startingPointY - waveLength, startingPointX + waveLength, startingPointY + waveLength, pixelColor, shadeTolerance, RGB
+		PixelSearch, coordX, coordY, startingPointX - waveLength, startingPointY - waveLength, startingPointX + waveLength, startingPointY + waveLength, pixelColor, shadeTolerance, Fast RGB
 		Sleep, 100
 	}
 
@@ -440,7 +440,7 @@ proximitySearch(pixelColor, lowerBounds := -1, upperBounds := -1, shadeTolerance
 			Return { xy : [ 0, 0 ], rc : ErrorLevel }
 		}
 
-		PixelSearch, X, Y, centerXY[1] - proximity[1], centerXY[2] - proximity[2], centerXY[1] + proximity[1], centerXY[2] + proximity[2], pixelColor, shadeTolerance, RGB
+		PixelSearch, X, Y, centerXY[1] - proximity[1], centerXY[2] - proximity[2], centerXY[1] + proximity[1], centerXY[2] + proximity[2], pixelColor, shadeTolerance, Fast RGB
 		If(ErrorLevel == 0) {
 			Return { xy : [ X, Y ], rc : ErrorLevel }
 		} Else {
