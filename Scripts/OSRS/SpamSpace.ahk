@@ -24,26 +24,12 @@ If(cx != sx or cy != sy) {
 }
 Return
 
-/*
-checkItem() {
-	PixelGetColor, PixelColor, %itemX%, %itemY%, RGB
-	If(PixelColor = alchC or PixelColor = itemC1 or PixelColor = itemC2 or PixelColor = itemC3 or PixelColor = itemC4) {
-		Return True
-	} Else {
-		Return False
-	}
-	
-}
-*/
-
 F1::
     BREAKOUT := False
     Loop {
-		;;If(checkItem() = False)
-		;;	Return
-		Random, sleepy, 6300, 21300
 		If(BREAKOUT = True)
 			Return
+		Random, sleepy, 6300, 21300
         Send, {SPACE}
         Sleep, sleepy
     }

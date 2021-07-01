@@ -27,7 +27,7 @@ Return
 F1::
     BREAKOUT := False
     Loop {
-		Random, sleepy, 642, 1013
+		Random, sleepy, 749, 1129
 		If(BREAKOUT = True)
 			Return
         Click
