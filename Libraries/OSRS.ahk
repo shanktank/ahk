@@ -6,6 +6,7 @@
 #NoEnv
 #Warn
 
+SetWorkingDir %A_ScriptDir%
 CoordMode, ToolTip, Screen
 CoordMode, Mouse, Screen
 CoordMode, Pixel, Screen
@@ -205,9 +206,9 @@ Class ClickAreaBounds Extends UIObject {
 	}
 
 	generateCoords() {
-		Random, X, This.lowerBounds[1], This.upperBounds[1]
-		Random, Y, This.lowerBounds[2], This.upperBounds[2]
-		Return [ X, Y ]
+		;Random, X, This.lowerBounds[1], This.upperBounds[1]
+		;Random, Y, This.lowerBounds[2], This.upperBounds[2]
+		Return [ Rand(This.lowerBounds[1], This.upperBounds[1]), Rand(This.lowerBounds[2], This.upperBounds[2]) ]
 	}
 }
 
@@ -312,12 +313,12 @@ Class TileMarkerBounds Extends UIObject {
 
 
 DepositAll(randomMethod := False) {
-	Random, randInt1, 1, 10000
-	Random, randInt2, 1, 10000
+	;Random, randInt1, 1, 10000
+	;Random, randInt2, 1, 10000
 	
-	(randomMethod == True And randInt1 <= 2342) ? InvSlot1Bounds.moveMouseAndClick() : DepositAllBounds.moveMouseAndClick()
+	(randomMethod == True And Rand(1, 10000) <= 2342) ? InvSlot1Bounds.moveMouseAndClick() : DepositAllBounds.moveMouseAndClick()
 	UIObject.doClick()
-	If(randInt2 >= 4329)
+	If(Rand(1, 10000) >= 4329)
 		UIObject.doClick()
 	
 	Sleep, generateSleepTime(212, 357)
@@ -483,21 +484,21 @@ verifyClick(actionType := "Interact") {
 ; ================================================================================================================================================== ;
 
 generateSleepTime(lowerBound := 109, upperBound := 214) {
-	Random, sleepFor, %lowerBound%, %upperBound%
-	Return sleepFor
+	;Random, sleepFor, %lowerBound%, %upperBound%
+	Return Rand(lowerBound, upperBound)
 }
 
 generateCoords(lowerBounds, upperBounds) {
-	Random, X, lowerBounds[1], upperBounds[1]
-	Random, Y, lowerBounds[2], upperBounds[2]
-	Return [ X, Y ]
+	;Random, X, lowerBounds[1], upperBounds[1]
+	;Random, Y, lowerBounds[2], upperBounds[2]
+	Return [ Rand(lowerBounds[1], upperBounds[1]), Rand(lowerBounds[2], upperBounds[2]) ]
 }
 
 generateCoordsWithOffsets(lowerBounds, upperBounds, offsetRangeX, offsetRangeY) {
 	Global XY := generateCoords(lowerBounds, upperBounds)
-	Random, OX, offsetRangeX[1], offsetRangeX[2]
-	Random, OY, offsetRangeY[1], offsetRangeY[2]
-	Return [ XY[1] + OX, XY[2] + OY ]
+	;Random, OX, offsetRangeX[1], offsetRangeX[2]
+	;Random, OY, offsetRangeY[1], offsetRangeY[2]
+	Return [ XY[1] + Rand(offsetRangeX[1], offsetRangeX[2]), XY[2] + Rand(offsetRangeY[1], offsetRangeY[2]) ]
 }
 
 ; ================================================================================================================================================== ;

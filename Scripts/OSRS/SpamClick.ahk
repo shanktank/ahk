@@ -1,4 +1,6 @@
-#SingleInstance FORCE
+#Include %A_MyDocuments%/Git/ahk/Libraries/Math.ahk
+
+#SingleInstance Force
 #Persistent
 #NoEnv
 #Warn
@@ -8,39 +10,20 @@ CoordMode, Mouse, Screen
 CoordMode, Pixel, Screen
 SendMode Input
 
-Global BREAKOUT := False
-
-MouseGetPos, sx, sy
-SetTimer, CheckCursor, 100
-Return
-
-CheckCursor:
-	MouseGetPos, cx, cy
-	If(cx != sx Or cy != sy) {
-		If(cx > (sx+1) Or cx < (sx-1) Or (cy > sy+1) Or (cy < sy-1)) {
-			BREAKOUT := True
-		}
-	}
-	Return
-
 F1::
-    BREAKOUT := False
-<<<<<<< HEAD
-    Loop {
-		Random, sleepy, 749, 1129
-=======
-    
+	MouseGetPos, X1, Y1
+	SetTimer, CheckCursor, 100
 	Loop {
->>>>>>> 13a8e9861ad0a2afb0406b42ff763579554b1bf7
-		If(BREAKOUT = True)
-			Reload
-		
         Click
-		
-		Random, sleepy, 642, 854
-        Sleep, sleepy
+		Sleep, Rand(642, 854)
     }
     Return
+
+CheckCursor:
+MouseGetPos, X2, Y2
+If(X1 != X2 Or Y1 != Y2)
+	Reload
+Return
 
 ^R::Reload
 +^C::ExitApp

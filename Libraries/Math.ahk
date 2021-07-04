@@ -1,17 +1,4 @@
-#SingleInstance Force
-#EscapeChar \
-#Persistent
-#NoEnv
-#Warn
-
-CoordMode, ToolTip, Screen
-CoordMode, Mouse, Screen
-CoordMode, Pixel, Screen
-SendMode, Input
-
-; Random number generator
-Rand(L=0.0, U=1) {
-   IfEqual, L,, Random,, % R := U = 1 ? Rand(0, 0xFFFFFFFF) : U
-   Else Random, R, L, U
-   Return R
+Rand(LowerBound=0.0, UpperBound=1) {
+   Random, RandomValue, LowerBound, UpperBound
+   Return RandomValue
 }

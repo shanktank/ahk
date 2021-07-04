@@ -1,4 +1,4 @@
-#SingleInstance FORCE
+#SingleInstance Force
 #Persistent
 #NoEnv
 #Warn
@@ -13,15 +13,14 @@ CursorMovement() {
 	MouseGetPos, X1, Y1
 	
 	CheckCursor:
-		MouseGetPos, X2, Y2
-		If(X1 != X2 Or Y1 != Y2) {
-			Reload
-		} Else {
-			Click
-		}
+	MouseGetPos, X2, Y2
+	If(X1 != X2 Or Y1 != Y2) {
+		Reload
+	} Else {
+		Click
+	}
 	
 	SetTimer, CheckCursor, 100
-	
 	Return
 }
 
