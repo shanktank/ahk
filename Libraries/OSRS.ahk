@@ -1,4 +1,5 @@
 ﻿#Include %A_MyDocuments%/Git/ahk/Libraries/RandomBezier.ahk
+#Include %A_MyDocuments%/Git/ahk/Libraries/Math.ahk
 
 #SingleInstance Force
 #Persistent
@@ -65,14 +66,19 @@ Global LevelUpHerblore			:= New PixelColorLocation(0x094809, [   74,  922 ])
 
 Class UIObject {
 	moveMouse(moveCoords, mouseSpeedDivisor := 2.5) {
-		mouseSpeed := DecideSpeed(CalculateDistance(moveCoords), mouseSpeedDivisor)
+		Local mouseSpeed := DecideSpeed(CalculateDistance(moveCoords), mouseSpeedDivisor)
 		RandomBezier(moveCoords[1], moveCoords[2], "T"(mouseSpeed)" OT38 OB40 OL40 OR39 P2-3")
 	}
 	
 	moveMouse2(invokingObject, mouseSpeedDivisor := 2.5) {
-		moveCoords := invokingObject.generateCoords()
-		mouseSpeed := DecideSpeed(CalculateDistance(moveCoords), mouseSpeedDivisor)
+		Local moveCoords := invokingObject.generateCoords()
+		Local mouseSpeed := DecideSpeed(CalculateDistance(moveCoords), mouseSpeedDivisor)
 		RandomBezier(moveCoords[1], moveCoords[2], "T"(mouseSpeed)" OT38 OB40 OL40 OR39 P2-3")
+	}
+	
+	moveMouseRelative(deltaX, deltaY, mouseSpeedDivisor := 2.5) {
+		MouseGetPos, X, Y
+		This.moveMouse([ X + deltaX, Y + deltaY ], mouseSpeedDivisor)
 	}
 
 	doClick(sleepFor := 0, actionType := "Neither", mouseButton := "Left") {

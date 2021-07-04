@@ -1,4 +1,5 @@
 #SingleInstance Force
+#EscapeChar \
 #Persistent
 #NoEnv
 #Warn
