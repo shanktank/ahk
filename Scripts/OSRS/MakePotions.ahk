@@ -86,7 +86,7 @@ getAmulet() {
 
 ; ToDO: Requires modification to handle arbitrary potions.
 doHerblore() {
-	OpenInventory()
+	UIObject.OpenInventory()
 
 	While(verifyItems_P.waitForPixelToBeColor(2000) == False) {
 		If(A_Index > 3) {
