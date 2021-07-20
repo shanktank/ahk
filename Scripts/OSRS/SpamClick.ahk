@@ -1,6 +1,5 @@
 #Include %A_MyDocuments%/Git/ahk/Libraries/OSRS.ahk
-
-#SingleInstance FORCE
+#SingleInstance Force
 #Persistent
 #NoEnv
 #Warn
@@ -11,16 +10,17 @@ CoordMode, Pixel, Screen
 SendMode Input
 
 F1::
-	Sleep, 5000
-	UIObject.moveMouse([ 825, 308 ])
+	MouseGetPos, X1, Y1
 
 	Loop {
-		Click	
-		Random, sleepy, 642, 854
-		Sleep, sleepy
-	}
-	
-	Return
+		MouseGetPos, X2, Y2
+		If(X1 != X2 Or Y1 != Y2)
+			Reload
+
+		UIObject.doClick(Rand(617, 774)
+    }
+
+    Return
 
 ^R::Reload
 +^C::ExitApp

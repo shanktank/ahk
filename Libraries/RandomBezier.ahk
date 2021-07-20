@@ -4,27 +4,33 @@ RandomBezier(Xf, Yf, O="") {
     Time := RegExMatch(O, "i)T(\d+)", M) && (M1 > 0) ? M1 : 200
     RO := InStr(O, "RO", 0), RD := InStr(O, "RD", 0)
     N := !RegExMatch(O, "i)P(\d+)(-(\d+))?", M) || (M1 < 2) ? 2 : (M1 > 19) ? 19 : M1
-    If((M := (M3 != "") ? ((M3 < 2) ? 2 : ((M3 > 19 ) ? 19 : M3)) : ((M1 == "") ? 5 : "")) != "")
+    If((M := (M3 != "") ? ((M3 < 2) ? 2 : ((M3 > 19 ) ? 19 : M3)) : ((M1 == "") ? 5 : "")) != "") {
         Random, N, %N%, %M%
+	}
     OfT := RegExMatch(O, "i)OT(-?\d+)", M) ? M1 : 100, OfB := RegExMatch(O, "i)OB(-?\d+)", M) ? M1 : 100
     OfL := RegExMatch(O, "i)OL(-?\d+)", M) ? M1 : 100, OfR := RegExMatch(O, "i)OR(-?\d+)", M) ? M1 : 100
     
 	MouseGetPos, X0, Y0
 	MouseGetPos, XM, YM
     
-	If(RO)
+	If(RO) {
         X0 += XM, Y0 += YM
-    If(RD)
+	}
+    If(RD) {
         Xf += XM, Yf += YM
+	}
 	
-    If(X0 < Xf)
+    If(X0 < Xf) {
         sX := X0 - OfL, bX := Xf + OfR
-    Else
+    } Else {
         sX := Xf - OfL, bX := X0 + OfR
-	If(Y0 < Yf)
+	}
+	
+	If(Y0 < Yf) {
         sY := Y0 - OfT, bY := Yf + OfB
-    Else
+    } Else {
         sY := Yf - OfT, bY := Y0 + OfB
+	}
 	
     Loop, % (--N) - 1 {
         Random, X%A_Index%, %sX%, %bX%
