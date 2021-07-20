@@ -1,6 +1,6 @@
 ﻿#Include %A_MyDocuments%/Git/ahk/Libraries/OSRS.ahk
 
-#SingleInstance FORCE
+#SingleInstance Force
 #Persistent
 #NoEnv
 #Warn
@@ -14,6 +14,7 @@ SendMode, Input
 
 #IfWinActive ^(RuneLite|OpenOSRS)$
 
+
 ;; Entity Hider
 ;;  Hide Pets
 ;;  Hide NPCs Names: Arnold Lydspor
@@ -22,22 +23,24 @@ SendMode, Input
 ;; NPC Indicators
 ;;  Hightlight Style: Hull
 
-Global fishingSpotColor		:= CYAN
-Global depositHullColor		:= BLUE
-Global invSlot28MonkFish	:= New PixelColorLocation(0x8A644E, [ 1585, 965 ])
-Global fishingCheck			:= New PixelColorLocation(0x00F500, [   67,  68 ])
-Global depositScreenCheck	:= New PixelColorLocation(0x771C1A, [  630, 560 ])
-Global invSlot01Bounds		:= New ClickAreaBounds([ 1465, 665 ], [ 1495, 690 ])
-Global depositFishBounds	:= New ClickAreaBounds([  880, 500 ], [  915, 525 ])
 
 Global shadeTolerance       := 25
 Global screenLowerBounds	:= [ 0, 25 ]
 Global screenUpperBounds	:= [ 1350, 950 ]
-;;Global fishingSpot          := New TileMarkerBounds(fishingSpotColor, [ 0, 0 ], [ 0, 0 ], shadeTolerance)
+
+Global fishingSpotColor		:= CYAN
+Global depositHullColor		:= BLUE
+
+Global invSlot28MonkFish	:= New PixelColorLocation(0x8A644E, [ 1585, 965 ])
+Global fishingCheck			:= New PixelColorLocation(0x00F500, [   67,  68 ])
+Global depositScreenCheck	:= New PixelColorLocation(0x771C1A, [  630, 560 ])
+
+Global invSlot01Bounds		:= New ClickAreaBounds([ 1465, 665 ], [ 1495, 690 ])
+Global depositFishBounds	:= New ClickAreaBounds([  880, 500 ], [  915, 525 ])
+
 Global fishingSpot          := New TileMarkerBounds(fishingSpotColor, [ 3, 3 ], [ 9, 9 ], shadeTolerance)
-;;Global depositSpot          := New TileMarkerBounds(depositHullColor, [ -5, 9 ], [ 0, 9 ], shadeTolerance)
-;;Global depositSpot          := New TileMarkerBounds(depositHullColor, [ -5, 4 ], [ -16, 13 ], shadeTolerance)
 Global depositSpot          := New TileMarkerBounds(depositHullColor, [ 0, 3 ], [ 0, 7 ], shadeTolerance)
+
 
 main() {
 	Loop {
@@ -48,7 +51,7 @@ main() {
 
 		;; Bank fish if inventory is full
 		If(verifyPixelColor(invSlot28MonkFish.pixelColor, invSlot28MonkFish.pixelCoords)) {
-			Send {Space}
+			Send, {Space}
 			Loop {
 				/*
 				XY := findPixelByColor(depositHullColor, screenLowerBounds, screenUpperBounds, shadeTolerance)["xy"]
@@ -72,7 +75,7 @@ main() {
 			waitForPixelToBeColor(depositScreenCheck.pixelColor, depositScreenCheck.pixelCoords, 10000)
 			moveMouseAndClick(generateCoords(depositFishBounds.lowerBounds, depositFishBounds.upperBounds))
 			Sleep, generateSleepTime(243, 413)
-			Send {Esc}
+			Send, {Esc}
 			Sleep, generateSleepTime()
 
 			;; repeated shit from below, need to shore up
@@ -126,9 +129,11 @@ main() {
 	}
 }
 
+
 F1::main()
 F2::moveMouse(findPixelByColor(BLUE, screenLowerBounds, screenUpperBounds, shadeTolerance)["xy"])
 F3::moveMouse(fishingSpot.proximitySearch(screenLowerBounds, screenUpperBounds)["xy"])
+
 
 #If
 ^R::Reload
