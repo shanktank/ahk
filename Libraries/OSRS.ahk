@@ -68,6 +68,14 @@ Global LevelUpHerblore			:= New PixelColorLocation(0x094809, [   74,  922 ])
 ; TODO: Make standard "IsUIElementOpen" to reduce repetition
 
 Class UIObject {
+	doClick(sleepFor := 0, actionType := "Neither", mouseButton := "Left") {
+		Sleep, generateSleepTime(52, 163)
+		MouseClick, %mouseButton%
+		clickRC := verifyClick(actionType)
+		Sleep, sleepFor
+		Return clickRC
+	}
+	
 	moveMouse(moveCoords, mouseSpeedDivisor := 2.5) {
 		Local mouseSpeed := DecideSpeed(CalculateDistance(moveCoords), mouseSpeedDivisor)
 		RandomBezier(moveCoords[1], moveCoords[2], "T"(mouseSpeed)" OT38 OB40 OL40 OR39 P2-3")
@@ -79,17 +87,10 @@ Class UIObject {
 		RandomBezier(moveCoords[1], moveCoords[2], "T"(mouseSpeed)" OT38 OB40 OL40 OR39 P2-3")
 	}
 	
-	moveMouseRelative(deltaX, deltaY, mouseSpeedDivisor := 2.5) {
+	moveMouseRelative(deltaX, deltaY, mouseSpeedDivisor := 2.5, sleepFor := 1) {
 		MouseGetPos, X, Y
 		This.moveMouse([ X + deltaX, Y + deltaY ], mouseSpeedDivisor)
-	}
-
-	doClick(sleepFor := 0, actionType := "Neither", mouseButton := "Left") {
-		Sleep, generateSleepTime(52, 163)
-		MouseClick, %mouseButton%
-		clickRC := verifyClick(actionType)
 		Sleep, sleepFor
-		Return clickRC
 	}
 
 	moveMouseAndClick(clickCoords, mouseSpeedDivisor := 2.5, sleepFor := 0, actionType := "Neither", rightClick := False) {
@@ -109,11 +110,46 @@ Class UIObject {
 		Sleep, sleepFor
 	}
 
+	verifyHoveringAction() {
+		MouseGetPos, X, Y
+		Return verifyPixelColor(0x433A32, [ X, Y + 35 ])
+	}
+
+	verifyClick(actionType := "Interact") {
+		If(actionType == "Neither" And CLICK_TYPE == "Neither")
+			Return True
+
+		MouseGetPos, X, Y
+		pixelColor := actionType == "Walk" Or CLICK_TYPE == "Walk" ? 0xFFFF00 : 0xFF0000
+
+		Loop, 20 {
+			;verifyPixelColor(pixelColor, [ X, Y ]) == True ? Return True : Sleep, 5 ;; ToDO: Try this out
+			If(verifyPixelColor(pixelColor, [ X, Y ]))
+				Return True
+			Sleep, 5
+		}
+
+		Return False
+	}
+
+	;; ToDO: Start using this; possibly change first two parameters for a PixelColorLocation object
+	verifyGuiItemIsOpen(pixelColor, coordBounds, guiName, inputKey) {
+		Local guiItem := New PixelColorLocation(pixelColor, coordBounds)
+		
+		If(guiItem.verifyPixelColor() == False) {
+			Base.inputKeyAndSleep(inputKey)
+			If(guiItem.verifyPixelColor() == False) {
+				MsgBox % "Can't detect " guiName " panel?"
+				Reload
+			}
+		}
+	}
+
 	verifyInvIsOpen() {
 		If(InvOpenCheck.verifyPixelColor() == False) {
 			Base.inputKeyAndSleep("{Esc}")
 			If(InvOpenCheck.verifyPixelColor() == False) {
-				MsgBox % "Can't detect inventory?"
+				MsgBox % "Can't detect inventory panel?"
 				Reload
 			}
 		}
@@ -122,11 +158,15 @@ Class UIObject {
 	verifyOptsIsOpen() {
 		If(OptsOpenCheck.verifyPixelColor() == False) {
 			Base.inputKeyAndSleep("F5")
-			If(InvOpenCheck.verifyPixelColor() == False) {
-				MsgBox % "Can't detect inventory?"
+			If(InvOpenCheck.verifyPixelColor() == False) { ;; TODO: Doing InvOpenCheck here? Doesn't seem right...
+				MsgBox % "Can't detect options panel?"
 				Reload
 			}
 		}
+	}
+	
+	generateSleepTime(lowerBound := 74, upperBound := 128) {
+		Return Rand(lowerBound, upperBound)
 	}
 }
 
@@ -145,7 +185,6 @@ Class PixelScanArea Extends UIObject {
 	scanAreaForPixelColor() {
 		PixelSearch, X, Y, This.lowerBounds[1], This.lowerBounds[2], This.upperBounds[1], This.upperBounds[2], This.pixelColor, This.shadeTolerance, Fast RGB
 		Return { xy : [ X, Y ], rc : ErrorLevel }
-		;Return ErrorLevel
 	}
 }
 
@@ -260,26 +299,29 @@ Class TileMarkerBounds Extends UIObject {
 			}
 		}
 
-		Return { xy : [ X, Y ], rc : ErrorLevel }
+		Return { xy : [ localX, localY ], rc : ErrorLevel }
 	}
 
+	;; ToDO: Refactor? Seems a bit unwieldy and counter-intuitive
 	proximitySearch(lowerBounds := -1, upperBounds := -1) {
 		If(lowerBounds == -1)
 			lowerBounds := ScreenLowerBounds
 		If(upperBounds == -1)
 			upperBounds := ScreenUpperBounds
 
-		centerXY := [ 830, 535 ]
-		maxXY := [ 1640, 1050 ]
 		increments := [ 20, 10 ]
+		centerXY   := [ 830, 535 ]
+		maxXY      := [ 1640, 1050 ]
 		
 		Loop {
 			proximity := [ increments[1] * A_Index, increments[2] * A_Index ]
 
+			;; If new proximity is over maximum boundaries, return error
 			If(centerXY[1] + proximity[1] > maxXY[1] Or centerXY[2] + proximity[2] > maxXY[2]) {
-				Return { xy : [ 0, 0 ], rc : ErrorLevel }
+				Return { xy : [ -1, -1 ], rc : ErrorLevel }
 			}
 
+			;; If pixel coordinates are found, return results
 			PixelSearch, X, Y, centerXY[1] - proximity[1], centerXY[2] - proximity[2], centerXY[1] + proximity[1], centerXY[2] + proximity[2], This.pixelColor, This.shadeTolerance, Fast RGB
 			If(ErrorLevel == 0) {
 				Return { xy : [ X, Y ], rc : ErrorLevel }
@@ -313,10 +355,7 @@ Class TileMarkerBounds Extends UIObject {
 
 
 DepositAll(randomMethod := False) {
-	;Random, randInt1, 1, 10000
-	;Random, randInt2, 1, 10000
-	
-	(randomMethod == True And Rand(1, 10000) <= 2342) ? InvSlot1Bounds.moveMouseAndClick() : DepositAllBounds.moveMouseAndClick()
+	(randomMethod == True And Rand(1, 10000) <= 2342) ? InvSlot1Bounds.moveMouseAndClick() : DepositAllBounds.moveMouseAndClick() ; Are those initial parentheses needed?
 	UIObject.doClick()
 	If(Rand(1, 10000) >= 4329)
 		UIObject.doClick()
@@ -324,17 +363,10 @@ DepositAll(randomMethod := False) {
 	Sleep, generateSleepTime(212, 357)
 }
 
-; Turns out this shit is in UIObject already. Change MakePotions to not use it then remove.
-OpenInventory() {
-	If(InvOpenCheck.verifyPixelColor() == False) {
-		UIObject.inputKeyAndSleep("{Esc}", generateSleepTime())
-	}
+Error(err := 0) {
+	MsgBox % err
+	Reload
 }
-
-Error() {
-
-}
-
 
 
 
@@ -343,8 +375,6 @@ Error() {
 ; -- Legacy Code ----------------------------------------------------------------------------------------------------------------------------------- ;
 ; -------------------------------------------------------------------------------------------------------------------------------------------------- ;
 ; ================================================================================================================================================== ;
-
-
 
 
 
@@ -371,6 +401,7 @@ waitForPixelToBeColor(pixelColor, xy, timeout := 5000, hoverNext := 0) {
 	Return False
 }
 
+/*
 waitForPixelToNotBeColor(pixelColor, xy, timeout := 5000, hoverNext := 0) {
 	sleepFor := 25
 	sleepNum := timeout / sleepFor
@@ -384,6 +415,7 @@ waitForPixelToNotBeColor(pixelColor, xy, timeout := 5000, hoverNext := 0) {
 
 	Return False
 }
+*/
 
 findPixelByColor(pixelColor, lowerBounds := -1, upperBounds := -1, shadeTolerance := 10) {
 	If(lowerBounds == -1)
@@ -396,6 +428,7 @@ findPixelByColor(pixelColor, lowerBounds := -1, upperBounds := -1, shadeToleranc
 	Return { xy : [ X, Y ], rc : ErrorLevel }
 }
 
+/*
 findPixelByColorX(pixelColor, lowerBounds := 0, upperBounds := 0, tries := 10, shadeTolerance := 10) {
 	If(lowerBounds == 0)
 		lowerBounds := ScreenLowerBounds
@@ -411,7 +444,9 @@ findPixelByColorX(pixelColor, lowerBounds := 0, upperBounds := 0, tries := 10, s
 		}
 	}
 }
+*/
 
+/*
 findPixelByColorWaveSearch(pixelColor, lowerBounds := -1, upperBounds := -1, shadeTolerance := 10) {
 	startingPointX := 960
 	startingPointY := 540
@@ -429,7 +464,9 @@ findPixelByColorWaveSearch(pixelColor, lowerBounds := -1, upperBounds := -1, sha
 
 	Return { xy : [ X, Y ], rc : ErrorLevel }
 }
+*/
 
+/*
 proximitySearch(pixelColor, lowerBounds := -1, upperBounds := -1, shadeTolerance := 10) {
 	If(lowerBounds == -1)
 		lowerBounds := ScreenLowerBounds
@@ -455,49 +492,22 @@ proximitySearch(pixelColor, lowerBounds := -1, upperBounds := -1, shadeTolerance
 		}
 	}
 }
-
-checkIfHoveringAction() {
-	MouseGetPos, X, Y
-	Return verifyPixelColor(0x433A32, [ X, Y + 35 ])
-}
-
-verifyClick(actionType := "Interact") {
-	If(actionType == "Neither" And CLICK_TYPE == "Neither") {
-		Return True
-	}
-
-	MouseGetPos, X, Y
-	pixelColor := actionType == "Walk" Or CLICK_TYPE == "Walk" ? 0xFFFF00 : 0xFF0000
-
-	Loop, 20 {
-		If(verifyPixelColor(pixelColor, [ X, Y ])) {
-			Return True
-		}
-		Sleep, 5
-	}
-
-	Return False
-}
+*/
 
 ; ================================================================================================================================================== ;
 ; -- Random Value Generators ----------------------------------------------------------------------------------------------------------------------- ;
 ; ================================================================================================================================================== ;
 
 generateSleepTime(lowerBound := 109, upperBound := 214) {
-	;Random, sleepFor, %lowerBound%, %upperBound%
 	Return Rand(lowerBound, upperBound)
 }
 
 generateCoords(lowerBounds, upperBounds) {
-	;Random, X, lowerBounds[1], upperBounds[1]
-	;Random, Y, lowerBounds[2], upperBounds[2]
 	Return [ Rand(lowerBounds[1], upperBounds[1]), Rand(lowerBounds[2], upperBounds[2]) ]
 }
 
 generateCoordsWithOffsets(lowerBounds, upperBounds, offsetRangeX, offsetRangeY) {
 	Global XY := generateCoords(lowerBounds, upperBounds)
-	;Random, OX, offsetRangeX[1], offsetRangeX[2]
-	;Random, OY, offsetRangeY[1], offsetRangeY[2]
 	Return [ XY[1] + Rand(offsetRangeX[1], offsetRangeX[2]), XY[2] + Rand(offsetRangeY[1], offsetRangeY[2]) ]
 }
 
