@@ -16,6 +16,8 @@ SendMode, Input
 ; -- Globals --------------------------------------------------------------------------------------------------------------------------------------- ;
 ; ================================================================================================================================================== ;
 
+Global CLICK_TYPE				:= "Neither"
+
 Global RED						:= 0xFF0000
 Global BLUE						:= 0x0000FF
 Global GREEN					:= 0x00FF00
@@ -206,8 +208,6 @@ Class ClickAreaBounds Extends UIObject {
 	}
 
 	generateCoords() {
-		;Random, X, This.lowerBounds[1], This.upperBounds[1]
-		;Random, Y, This.lowerBounds[2], This.upperBounds[2]
 		Return [ Rand(This.lowerBounds[1], This.upperBounds[1]), Rand(This.lowerBounds[2], This.upperBounds[2]) ]
 	}
 }
@@ -462,12 +462,12 @@ checkIfHoveringAction() {
 }
 
 verifyClick(actionType := "Interact") {
-	If(actionType == "Neither") {
+	If(actionType == "Neither" And CLICK_TYPE == "Neither") {
 		Return True
 	}
 
 	MouseGetPos, X, Y
-	pixelColor := actionType == "Walk" ? 0xFFFF00 : 0xFF0000
+	pixelColor := actionType == "Walk" Or CLICK_TYPE == "Walk" ? 0xFFFF00 : 0xFF0000
 
 	Loop, 20 {
 		If(verifyPixelColor(pixelColor, [ X, Y ])) {
