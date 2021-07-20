@@ -1,6 +1,6 @@
 ﻿#Include %A_MyDocuments%/Git/ahk/Libraries/OSRS.ahk
 
-#SingleInstance FORCE
+#SingleInstance Force
 #Persistent
 #NoEnv
 #Warn
@@ -14,6 +14,7 @@ SendMode, Input
 
 #IfWinActive ^(RuneLite|OpenOSRS)$
 
+
 ;; Config:
 ;;  Entity Hider and Inventory Viewer active
 ;;  Menu Entry Swapper set to prioritize "walk here" over everything but pickpocket
@@ -25,34 +26,36 @@ SendMode, Input
 ;;  Third through eighth slots: Dodgy Necklace
 ;;  Ninth through last slots: Jug of Wine
 
-Global knightTabardColor := 0x6B18BF
-Global knightStarColor := 0x97119F
-Global miniSearchArea := 40
 
-Global coinPouch := [ 0x58513C, [ 1440, 320 ] ]
-Global coinPouchInv := [ 0x58513C, [ 1420, 680 ] ]
-Global coinPouchCheck := [ 0xF3F207, 1428, 302 ]
-Global goldStack := [ 0xC7A218, [ 1495, 320 ] ]
-Global healthCheck := [ 0x5B0301, [ 1414, 122 ] ]
+Global knightTabardColor		:= 0x6B18BF
+Global knightStarColor			:= 0x97119F
+Global miniSearchArea			:= 40
 
-Global coinPouchBounds := [ [ 1410, 665 ], [ 1430, 685 ] ]
+Global coinPouch				:= [ 0x58513C, [ 1440, 320 ] ]
+Global coinPouchInv				:= [ 0x58513C, [ 1420, 680 ] ]
+Global coinPouchCheck			:= [ 0xF3F207, 1428, 302 ]
+Global goldStack				:= [ 0xC7A218, [ 1495, 320 ] ]
+Global healthCheck				:= [ 0x5B0301, [ 1414, 122 ] ]
 
-Global wineColor := 0xA7433C
-Global invFoodBounds := [ [ 1405, 750 ], [ 1615, 985 ] ]
-Global wineDrinkPlayRoom := [ [ -8, 8 ], [ 0, 20 ] ]
+Global coinPouchBounds			:= [ [ 1410, 665 ], [ 1430, 685 ] ]
 
-Global necklaceColor := 0xC2C1A1
-Global invNecklaceBounds := [ [ 1400, 655 ], [ 1615, 745 ] ]
+Global wineColor				:= 0xA7433C
+Global invFoodBounds			:= [ [ 1405, 750 ], [ 1615, 985 ] ]
+Global wineDrinkPlayRoom		:= [ [ -8, 8 ], [ 0, 20 ] ]
 
-Global stunCheck := [ 0xECB900, [ 132, 69 ] ]
+Global necklaceColor			:= 0xC2C1A1
+Global invNecklaceBounds		:= [ [ 1400, 655 ], [ 1615, 745 ] ]
 
-Global invViewerCoinPouchesFull := [ 0xC1BD0B, [ 1429, 301 ] ]
-Global invViewerCoinPouches := [ 0x58513C, [ 1440, 325 ] ]
+Global stunCheck				:= [ 0xECB900, [ 132, 69 ] ]
 
-Global freshNecklace := [ 0xC3C1BD [ 1580, 712 ] ]
-Global equippedNecklace := [ 0xC7C1B6, [ 1495, 735 ] ]
+Global invViewerCoinPouchesFull	:= [ 0xC1BD0B, [ 1429, 301 ] ]
+Global invViewerCoinPouches		:= [ 0x58513C, [ 1440, 325 ] ]
 
-Global inventoryOpen := [ 0x35110E, [ 1240, 1010 ] ]
+Global freshNecklace			:= [ 0xC3C1BD [ 1580, 712 ] ]
+Global equippedNecklace			:= [ 0xC7C1B6, [ 1495, 735 ] ]
+
+Global inventoryOpen			:= [ 0x35110E, [ 1240, 1010 ] ]
+
 
 getKnightCoords(ByRef FindBy, ByRef Coords) {
 	FindBy := knightStarColor
@@ -212,7 +215,9 @@ main() {
 	}
 }
 
+
 F1::main()
+
 
 #If
 ^R::Reload
