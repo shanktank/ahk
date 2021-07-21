@@ -10,8 +10,8 @@ SetWorkingDir %A_ScriptDir%
 ; == Global Variables ============================================================================================================================== ;
 ; ================================================================================================================================================== ;
 
-Global Null =
-Global WinTenPadding := 8
+Global NULL
+Global WIN_TEN_PADDING := 8
 
 ; ================================================================================================================================================== ;
 ; == General Hotkeys =============================================================================================================================== ;
@@ -71,12 +71,12 @@ Global WinTenPadding := 8
 ^!+K::Run %A_ProgramFiles%/KeePassXC/KeePassXC
 ^!+I::Run firefox -P profile
 ^!+M::Run firefox -P minimal
-^!+U::Run putty -load "super remote"
-^!+J::Run putty -load "pi remote"
+^!+U::Run putty -load "super local"
+^!+J::Run putty -load "pi local"
 ^!+P::Run putty
 ^!+O::Run debian
-^!+Z::Run ms-settings:apps-volume
 ^!+S::Run mmsys.cpl
+^!+Z::Run ms-settings:apps-volume
 
 ; ================================================================================================================================================== ;
 ; == Cursor Shifters =============================================================================================================================== ;
@@ -194,32 +194,32 @@ CornerWindow(location) {
         SysGet, curMon, Monitor, %curMonNo%
 
 		If(location == "TopLeft") {
-            newWinX := curMonLeft - WinTenPadding
+            newWinX := curMonLeft - WIN_TEN_PADDING
             newWinY := curMonTop
-            If(winX == 0 - WinTenPadding && winY == 0) {
-                newWinX += 100 - WinTenPadding
+            If(winX == 0 - WIN_TEN_PADDING && winY == 0) {
+                newWinX += 100 - WIN_TEN_PADDING
                 newWinY += 100
             }
         } Else If(location == "TopRight") {
-            newWinX := curMonWH[1] - winW + curMonLeft + WinTenPadding
+            newWinX := curMonWH[1] - winW + curMonLeft + WIN_TEN_PADDING
             newWinY := curMonTop
-            If(winX == curMonWH[1] - winW + WinTenPadding && winY == 0) {
-                newWinX -= 100 + WinTenPadding
+            If(winX == curMonWH[1] - winW + WIN_TEN_PADDING && winY == 0) {
+                newWinX -= 100 + WIN_TEN_PADDING
                 newWinY += 100
             }
         } Else If(location == "BottomLeft") {
-            newWinX := curMonLeft - WinTenPadding
-            newWinY := curMonWH[2] - winH + curMonTop + WinTenPadding
-            If(winX == 0 - WinTenPadding && winY == curMonWH[2] - winH + WinTenPadding) {
-                newWinX += 100 - WinTenPadding
-                newWinY -= 100 + WinTenPadding
+            newWinX := curMonLeft - WIN_TEN_PADDING
+            newWinY := curMonWH[2] - winH + curMonTop + WIN_TEN_PADDING
+            If(winX == 0 - WIN_TEN_PADDING && winY == curMonWH[2] - winH + WIN_TEN_PADDING) {
+                newWinX += 100 - WIN_TEN_PADDING
+                newWinY -= 100 + WIN_TEN_PADDING
             }
         } Else If(location == "BottomRight") {
-            newWinX := curMonWH[1] - winW + curMonLeft + WinTenPadding
-            newWinY := curMonWH[2] - winH + curMonTop + WinTenPadding
-            If(winX == curMonWH[1] - winW + WinTenPadding && winY == curMonWH[2] - winH + WinTenPadding) {
-                newWinX -= 100 + WinTenPadding
-                newWinY -= 100 + WinTenPadding
+            newWinX := curMonWH[1] - winW + curMonLeft + WIN_TEN_PADDING
+            newWinY := curMonWH[2] - winH + curMonTop + WIN_TEN_PADDING
+            If(winX == curMonWH[1] - winW + WIN_TEN_PADDING && winY == curMonWH[2] - winH + WIN_TEN_PADDING) {
+                newWinX -= 100 + WIN_TEN_PADDING
+                newWinY -= 100 + WIN_TEN_PADDING
             }
         }
 
@@ -290,7 +290,7 @@ MoveWindow(direction) {
             newBaseY := curBaseY + curMonWH[2]
         }
 
-		newMonNo := GetMonitorNumber(newBaseX, newBaseY, Null, Null, monCount)
+		newMonNo := GetMonitorNumber(newBaseX, newBaseY, NULL, NULL, monCount)
         newWinX  := ReAlignX(newMonNo, curMonWH, direction, winX, winW)
         newWinY  := ReAlignY(curMonNo, newMonNo, curMonWH, direction, winY, winH)
 
@@ -356,19 +356,19 @@ ReAlignX(newMonNo, curMonWH, direction, winX, winW) {
 
 	If(direction == "Right") {
 		If(winX + winW + curMonWH[1] > newMonRight) {
-			newWinX := newMonRight - winW + WinTenPadding
+			newWinX := newMonRight - winW + WIN_TEN_PADDING
 		} Else If(winX + curMonWH[1] < newMonLeft) {
-			newWinX := newMonLeft + WinTenPadding
+			newWinX := newMonLeft + WIN_TEN_PADDING
 		} Else {
-			newWinX := winX + newMonWidth + WinTenPadding
+			newWinX := winX + newMonWidth + WIN_TEN_PADDING
 		}
 	} Else If(direction == "Left") {
 		If(winX - curMonWH[1] < newMonLeft) {
-			newWinX := newMonLeft - WinTenPadding
+			newWinX := newMonLeft - WIN_TEN_PADDING
 		} Else If(winX + winW - curMonWH[1] > newMonRight) {
-			newWinX := newMonRight - winW - WinTenPadding
+			newWinX := newMonRight - winW - WIN_TEN_PADDING
 		} Else {
-			newWinX := winX - newMonWidth - WinTenPadding
+			newWinX := winX - newMonWidth - WIN_TEN_PADDING
 		}
 	} Else If(direction == "Up" Or direction == "Down") {
 		If(winX < newMonLeft) {
@@ -405,7 +405,7 @@ ReAlignY(curMonNo, newMonNo, curMonWH, direction, winY, winH) {
 			newWinY := winY - newMonHeight
 		}
 	} Else If(Direction == "Down") {
-		bottomPadding := curMonBottom - curMonTop - newMonHeight - WinTenPadding
+		bottomPadding := curMonBottom - curMonTop - newMonHeight - WIN_TEN_PADDING
 		If(winY + winH + curMonWH[2] > newMonBottom) {
 			newWinY := newMonBottom - winH - bottomPadding
 		} Else If(winY + curMonWH[2] < newMonTop) {
