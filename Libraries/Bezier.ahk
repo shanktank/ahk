@@ -72,5 +72,11 @@ CalculateDistance(XY) {
 DecideSpeed(distance, divisor) {
 	Random, variation, 0.86, 1.24
 	
-	Return distance / divisor * variation
+	;speed := distance / 2 * variation
+	speed := distance / divisor * variation
+	If(speed < 200)
+		speed += 200
+	
+	;Return distance / divisor * variation
+	Return speed
 }
