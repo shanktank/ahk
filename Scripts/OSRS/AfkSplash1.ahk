@@ -20,79 +20,47 @@ SendMode, Input
 
 Global SleepLowerBound := 423000
 Global SleepUpperBound := 873000
-Global SleepTime       := 1000
-Global StartTime       := A_TickCount
+
+Global StartTime := A_TickCount
+Global SleepTime := 1000
 
 
 Info() {
-	Local NextTime := (StartTime - A_TickCount + SleepTime) / 1000
-	Local Minutes  := Format("{:d}", NextTime / 60)
-	Local Seconds  := Format("{:02d}", Mod(NextTime, 60))
-	
-	ToolTip % "Next action in " Minutes ":" Seconds, 0, 0
-	
-	;Return NextTime * 1000 ;; ?
-}
-
-GenerateSleep() {
-	Return Rand(SleepLowerBound, SleepUpperBound) / 4
+	NextTime := StartTime - A_TickCount + SleepTime
+	ToolTip % "Next action in " Format("{:d}", NextTime / 60000) ":" Format("{:02d}", Mod(NextTime, 60000) / 1000), 0, 0
 }
 
 Jitter() {
-	StartTime := A_TickCount
-	
-	;Send, {Left Down}
-	;Sleep, Rand(142, 265)
-	;Send, {Left Up}
-	;Sleep, Rand(39, 63)
-	;Send, {Right Down}
-	;Sleep, Rand(169, 259)
-	;Send, {Right Up}
 	UIObject.inputKeyAndSleep("{Left Down}", Rand(142, 265))
 	UIObject.inputKeyAndSleep("{Left Up}", Rand(39, 63))
-	UIObject.inputKeyAndSleep("{Right Down}", Rand(39, 63))
-	UIObject.inputKeyAndSleep("{Right Up}", generateSleep())
-	
-	Sleep, GenerateSleep()
+	UIObject.inputKeyAndSleep("{Right Down}", Rand(139, 263))
+	Send, {Right Up}
 }
 
 Words() {
-	StartTime := A_TickCount
-	
-	;Send % (Rand(1.0, 100.0) > 73.73) ? "asdf" : "adsf"
-	;Sleep, Rand(313, 429)
 	UIObject.inputKeyAndSleep(((Rand(1.0, 100.0) > 73.73) ? "asdf" : "adsf"), Rand(313, 429))
-	;Send, {Control Down}d{Control Up}
-	;Sleep, GenerateSleep()
-	UIObject.inputKeyAndSleep("{Control Down}d{Control Up}", GenerateSleep())
+	Send, {Control Down}d{Control Up}
 }
 
 Jiggle() {
-	StartTime := A_TickCount
-	
 	Send, {MButton Down}
-	UIObject.moveMouseRelative(Rand(-6, 7), Rand(-5, 8))
-	Sleep, Rand(53, 78)
+	UIObject.moveMouseRelative(Rand(-6, 7), Rand(-5, 8),, Rand(53, 78))
 	Send, {MButton Up}
-	
-	Sleep, GenerateSleep()
 }
 
 RightClick() {
-	StartTime := A_TickCount
-	
 	Click, Right
 	UIObject.moveMouseRelative(Rand(-27, 35), Rand(-99, -124), 2, Rand(32, 114))
 	UIObject.moveMouseRelative(Rand(-33, 42), Rand(92, 129), 2, Rand(67, 121))
-	
-	Sleep, GenerateSleep()
 }
 
 
 AfkSplash() {
-	SetTimer, Info, 250
+	SetTimer, Info, 1000
 
     Loop {
+		StartTime := A_TickCount
+		
 		Switch Rand(1, 4) {
 			Case 1: Jitter()
 			Case 2: Words()
@@ -100,22 +68,9 @@ AfkSplash() {
 			Case 4: RightClick()
 		}
 		
-		/*
-		Action := Rand(1, 4)
-		
-		If(Action == 1) { 
-			Jitter()
-		} Else If(Action == 2) {
-			Words()
-		} Else If(Action == 3) {
-			Jiggle()
-		} Else {
-			RightClick()
-		}
-		*/
+		SleepTime := Rand(SleepLowerBound, SleepUpperBound) / 4
+		Sleep, SleepTime
     }
-	
-    Return
 }
 
 
