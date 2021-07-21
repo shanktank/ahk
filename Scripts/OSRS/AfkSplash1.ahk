@@ -91,7 +91,7 @@ AfkSplash() {
 	SetTimer, Info, 250
 
     Loop {
-		Switch(Rand(1, 4)) {
+		Switch Rand(1, 4) {
 			Case 1: Jitter()
 			Case 2: Words()
 			Case 3: Jiggle()
