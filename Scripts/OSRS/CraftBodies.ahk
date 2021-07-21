@@ -87,3 +87,6 @@ Numpad5::
 PrintScreen::
 	BREAKOUT := True
 	Return
+
+^R::Reload
++^C::ExitApp
