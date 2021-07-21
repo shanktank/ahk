@@ -22,7 +22,7 @@ Global SleepLowerBound := 423000
 Global SleepUpperBound := 873000
 
 Global StartTime := A_TickCount
-Global SleepTime := 1000
+Global SleepTime := 0
 
 
 Info() {
@@ -50,8 +50,8 @@ Jiggle() {
 
 RightClick() {
 	Click, Right
-	UIObject.moveMouseRelative(Rand(-27, 35), Rand(-99, -124), 2, Rand(32, 114))
-	UIObject.moveMouseRelative(Rand(-33, 42), Rand(92, 129), 2, Rand(67, 121))
+	UIObject.moveMouseRelative(Rand(-27, 35), Rand(-99, -124), 2, Rand(132, 214))
+	UIObject.moveMouseRelative(Rand(-33, 42), Rand(92, 129), 2)
 }
 
 
@@ -68,7 +68,9 @@ AfkSplash() {
 			Case 4: RightClick()
 		}
 		
-		SleepTime := Rand(SleepLowerBound, SleepUpperBound) / 4
+		SleepTime := Rand(SleepLowerBound, SleepUpperBound) / 2
+		Info()
+		
 		Sleep, SleepTime
     }
 }
