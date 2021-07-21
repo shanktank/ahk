@@ -1,4 +1,4 @@
-﻿#Include %A_MyDocuments%/Git/ahk/Libraries/RandomBezier.ahk
+﻿#Include %A_MyDocuments%/Git/ahk/Libraries/Bezier.ahk
 #Include %A_MyDocuments%/Git/ahk/Libraries/Math.ahk
 
 #SingleInstance Force
@@ -62,6 +62,7 @@ Global LevelUpHerblore			:= New PixelColorLocation(0x094809, [   74,  922 ])
 ; -- Data Classes ---------------------------------------------------------------------------------------------------------------------------------- ;
 ; ================================================================================================================================================== ;
 
+; TODO: Make use of assume/force-local/global/static; also, take note of super-global variables
 ; TODO: Standardize multi-clickers into classes
 ; TODO: Make mouseSpeedDivisor, hoverNext, shadeTolerance global variables
 ; TODO: Rename UIObject to OSRSlib, PixelColorLocation to PixelColorCoords
@@ -71,19 +72,19 @@ Class UIObject {
 	doClick(sleepFor := 0, actionType := "Neither", mouseButton := "Left") {
 		Sleep, generateSleepTime(52, 163)
 		MouseClick, %mouseButton%
-		clickRC := verifyClick(actionType)
+		clickRC := This.verifyClick(actionType)
 		Sleep, sleepFor
 		Return clickRC
 	}
 	
 	moveMouse(moveCoords, mouseSpeedDivisor := 2.5) {
-		Local mouseSpeed := DecideSpeed(CalculateDistance(moveCoords), mouseSpeedDivisor)
+		mouseSpeed := DecideSpeed(CalculateDistance(moveCoords), mouseSpeedDivisor)
 		RandomBezier(moveCoords[1], moveCoords[2], "T"(mouseSpeed)" OT38 OB40 OL40 OR39 P2-3")
 	}
 	
 	moveMouse2(invokingObject, mouseSpeedDivisor := 2.5) {
-		Local moveCoords := invokingObject.generateCoords()
-		Local mouseSpeed := DecideSpeed(CalculateDistance(moveCoords), mouseSpeedDivisor)
+		moveCoords := invokingObject.generateCoords()
+		mouseSpeed := DecideSpeed(CalculateDistance(moveCoords), mouseSpeedDivisor)
 		RandomBezier(moveCoords[1], moveCoords[2], "T"(mouseSpeed)" OT38 OB40 OL40 OR39 P2-3")
 	}
 	
@@ -134,7 +135,7 @@ Class UIObject {
 
 	;; ToDO: Start using this; possibly change first two parameters for a PixelColorLocation object
 	verifyGuiItemIsOpen(pixelColor, coordBounds, guiName, inputKey) {
-		Local guiItem := New PixelColorLocation(pixelColor, coordBounds)
+		guiItem := New PixelColorLocation(pixelColor, coordBounds)
 		
 		If(guiItem.verifyPixelColor() == False) {
 			Base.inputKeyAndSleep(inputKey)
@@ -269,16 +270,16 @@ Class TileMarkerBounds Extends UIObject {
 	}
 	
 	moveMouseAndClick(mouseSpeedDivisor := 2.5, sleepFor := 10) {
-		OpRC := False
+		RC := False
 		
-		While(OpRC == False) {
+		While(RC == False) {
 			If(A_Index > 10)
 				Return False
 			If(A_Index == 2)
 				mouseSpeedDivisor := mouseSpeedDivisor - 1
 
 			Sleep, generateSleepTime(134, 219)
-			OpRC := Base.moveMouseAndClick(This.generateCoords(), mouseSpeedDivisor, sleepFor, "Interact")
+			RC := Base.moveMouseAndClick(This.generateCoords(), mouseSpeedDivisor, sleepFor, "Interact")
 		}
 
 		Return True
@@ -291,15 +292,15 @@ Class TileMarkerBounds Extends UIObject {
 			upperBounds := ScreenUpperBounds
 
 		Loop, 5 {
-			PixelSearch, localX, localY, lowerBounds[1], lowerBounds[2], upperBounds[1], upperBounds[2], This.pixelColor, This.shadeTolerance, Fast RGB
+			PixelSearch, X, Y, lowerBounds[1], lowerBounds[2], upperBounds[1], upperBounds[2], This.pixelColor, This.shadeTolerance, Fast RGB
 			If(ErrorLevel == 0) {
-				Return { xy : [ localX, localY ], rc : ErrorLevel } ; just do break instead?
+				Return { xy : [ X, Y ], rc : ErrorLevel } ; just do break instead?
 			} Else {
 				Sleep, 100
 			}
 		}
 
-		Return { xy : [ localX, localY ], rc : ErrorLevel }
+		Return { xy : [ X, Y ], rc : ErrorLevel }
 	}
 
 	;; ToDO: Refactor? Seems a bit unwieldy and counter-intuitive
@@ -314,6 +315,7 @@ Class TileMarkerBounds Extends UIObject {
 		maxXY      := [ 1640, 1050 ]
 		
 		Loop {
+			;; Proximity will scale up with each loop
 			proximity := [ increments[1] * A_Index, increments[2] * A_Index ]
 
 			;; If new proximity is over maximum boundaries, return error
@@ -337,16 +339,16 @@ Class TileMarkerBounds Extends UIObject {
 		If(upperBounds == -1)
 			upperBounds := ScreenUpperBounds
 	
-		LocalXY := This.findPixelByColor(lowerBounds, upperBounds)
+		xy := This.findPixelByColor(lowerBounds, upperBounds)
 
-		If(LocalXY["rc"] != 0) {
+		If(xy["rc"] != 0) {
 			SetFormat, IntegerFast, Hex
 			MsgBox % "Could not find pixel (" This.pixelColor ")"
 			Reload
 		}
 		
-		Random, X, LocalXY["xy"][1] + This.minOffset[1], LocalXY["xy"][1] + This.maxOffset[1]
-		Random, Y, LocalXY["xy"][2] + This.minOffset[2], LocalXY["xy"][2] + This.maxOffset[2]
+		Random, X, xy["xy"][1] + This.minOffset[1], xy["xy"][1] + This.maxOffset[1]
+		Random, Y, xy["xy"][2] + This.minOffset[2], xy["xy"][2] + This.maxOffset[2]
 
 		Return [ X, Y ]
 	}
@@ -355,7 +357,7 @@ Class TileMarkerBounds Extends UIObject {
 
 
 DepositAll(randomMethod := False) {
-	(randomMethod == True And Rand(1, 10000) <= 2342) ? InvSlot1Bounds.moveMouseAndClick() : DepositAllBounds.moveMouseAndClick() ; Are those initial parentheses needed?
+	randomMethod == True And Rand(1, 10000) <= 2342 ? InvSlot1Bounds.moveMouseAndClick() : DepositAllBounds.moveMouseAndClick()
 	UIObject.doClick()
 	If(Rand(1, 10000) >= 4329)
 		UIObject.doClick()
@@ -363,7 +365,7 @@ DepositAll(randomMethod := False) {
 	Sleep, generateSleepTime(212, 357)
 }
 
-Error(err := 0) {
+Error(err := "Error") {
 	MsgBox % err
 	Reload
 }
@@ -506,10 +508,12 @@ generateCoords(lowerBounds, upperBounds) {
 	Return [ Rand(lowerBounds[1], upperBounds[1]), Rand(lowerBounds[2], upperBounds[2]) ]
 }
 
+/*
 generateCoordsWithOffsets(lowerBounds, upperBounds, offsetRangeX, offsetRangeY) {
 	Global XY := generateCoords(lowerBounds, upperBounds)
 	Return [ XY[1] + Rand(offsetRangeX[1], offsetRangeX[2]), XY[2] + Rand(offsetRangeY[1], offsetRangeY[2]) ]
 }
+*/
 
 ; ================================================================================================================================================== ;
 ; -- Input Operations ------------------------------------------------------------------------------------------------------------------------------ ;
@@ -522,20 +526,25 @@ moveMouse(moveCoords, mouseSpeedDivisor := 2.5) {
 
 doClick(sleepFor := 0, actionType := "Neither", mouseButton := "Left") {
 	Sleep, generateSleepTime(52, 163)
+	
 	MouseClick, %mouseButton%
-	clickRC := verifyClick(actionType)
+	clickRC := UIObject.verifyClick(actionType)
 	If(clickRC == True) {
 		If(sleepFor == 0)
 			sleepFor := generateSleepTime()
+			
 		Sleep, sleepFor
 	}
+	
 	Return clickRC
 }
 
 moveMouseAndClick(clickCoords, mouseSpeedDivisor := 2.5, sleepFor := 0, actionType := "Neither", rightClick := False) {
 	If(sleepFor == 0)
 		sleepFor := generateSleepTime()
+
 	moveMouse(clickCoords, mouseSpeedDivisor)
+	
 	Return doClick(sleepFor, actionType, rightClick)
 }
 
@@ -557,8 +566,8 @@ inputKeyAndSleep(inputKey, sleepFor := 0) {
 ; ================================================================================================================================================== ;
 
 traceCoordsBounds(bounds) {
-	Local lb1 := bounds.lowerBounds[1], Local lb2 := bounds.lowerBounds[2], Local ub1 := bounds.upperBounds[1], Local ub2 := bounds.upperBounds[2]
-	Local Corners := [ [ lb1, lb2 ], [ ub1, lb2 ], [ ub1, ub2 ], [ lb1, ub2 ], [ lb1, lb2 ] ]
+	lb1 := bounds.lowerBounds[1], lb2 := bounds.lowerBounds[2], ub1 := bounds.upperBounds[1], ub2 := bounds.upperBounds[2]
+	Corners := [ [ lb1, lb2 ], [ ub1, lb2 ], [ ub1, ub2 ], [ lb1, ub2 ], [ lb1, lb2 ] ]
 
 	For _, Element In Corners {
 		;MsgBox % Element[1][1] ", " Element[2][1]
