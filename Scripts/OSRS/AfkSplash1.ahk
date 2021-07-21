@@ -26,10 +26,12 @@ Global StartTime       := A_TickCount
 
 Info() {
 	Local NextTime := (StartTime - A_TickCount + SleepTime) / 1000
+	Local Minutes  := Format("{:d}", NextTime / 60)
+	Local Seconds  := Format("{:02d}", Mod(NextTime, 60))
 	
-	ToolTip % "Next action in " Format("{:d}", NextTime / 60) ":" Format("{:02d}", Mod(NextTime, 60)), 0, 0
+	ToolTip % "Next action in " Minutes ":" Seconds, 0, 0
 	
-	Return NextTime * 1000 ;; ?
+	;Return NextTime * 1000 ;; ?
 }
 
 GenerateSleep() {
