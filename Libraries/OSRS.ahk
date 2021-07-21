@@ -94,9 +94,12 @@ Class UIObject {
 		Sleep, sleepFor
 	}
 
-	moveMouseAndClick(clickCoords, mouseSpeedDivisor := 2.5, sleepFor := 0, actionType := "Neither", rightClick := False) {
+	moveMouseAndClick(clickCoords, mouseSpeedDivisor := 2.5, sleepFor := 0, actionType := "", rightClick := False) {
 		If(sleepFor == 0)
-			sleepFor := generateSleepTime(274, 342)
+			sleepFor := generateSleepTime(274, 342) ;; ??? not using this apparently lmao
+		
+		If(actionType == "")
+			actionType := CLICK_TYPE
 
 		This.moveMouse(clickCoords, mouseSpeedDivisor)
 		Return This.doClick(sleepFor, actionType, rightClick)
