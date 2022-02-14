@@ -72,7 +72,7 @@ Global WIN_TEN_PADDING := 8
 ^!+I::Run firefox -P profile
 ^!+M::Run firefox -P minimal
 ^!+U::Run putty -load "super local"
-^!+J::Run putty -load "pi local"
+^!+J::Run putty -load "super remote"
 ^!+P::Run putty
 ^!+O::Run debian
 ^!+S::Run mmsys.cpl
