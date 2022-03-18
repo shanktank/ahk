@@ -51,7 +51,7 @@ Global WIN_TEN_PADDING := 8
 	}	
 	Return
 
-; Ctrl + Alt + Shift + N: Toggle hidden status of selected files.
+; Ctrl + Alt + Shift + B: Toggle hidden status of selected files.
 ^!+B::
 	If(WinActive("AHK_Class CabinetWClass")) {
 		Send ^c
@@ -84,9 +84,9 @@ Global WIN_TEN_PADDING := 8
 ^!+I::Run firefox -P profile
 ^!+M::Run firefox -P minimal
 ^!+U::Run putty -load "super local"
-^!+J::Run putty -load "pi local"
+^!+J::Run putty -load "super remote"
 ^!+P::Run putty
-^!+O::Run debian
+^!+O::Run ubuntu
 ^!+S::Run mmsys.cpl
 ^!+Z::Run ms-settings:apps-volume
 
