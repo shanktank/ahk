@@ -31,8 +31,8 @@ Global HILITE					:= 0xE6CC80
 
 Global ScreenLowerBounds		:= [    0,   50 ]
 Global ScreenUpperBounds		:= [ 1350,  850 ]
-Global ScreenLowerBoundsBig		:= [    0,   25 ]
-Global ScreenUpperBoundsBig		:= [ 1640, 1000 ]
+Global ScreenLowerBoundsBig	:= [    0,   25 ]
+Global ScreenUpperBoundsBig	:= [ 1640, 1000 ]
 Global ScreenLowerBoundsFull	:= [    0,   25 ]
 Global ScreenUpperBoundsFull	:= [ 1640, 1049 ]
 
@@ -44,13 +44,13 @@ Global InvSlot15Bounds			:= New ClickAreaBounds([ 1518, 805 ], [ 1549, 835 ])
 Global BankSlot1Bounds			:= New ClickAreaBounds([  439, 135 ], [  464, 166 ])
 Global BankSlot2Bounds			:= New ClickAreaBounds([  498, 137 ], [  529, 169 ])
 Global BankSlot3Bounds			:= New ClickAreaBounds([  566, 138 ], [  590, 165 ])
-Global DepositAllBounds			:= New ClickAreaBounds([  903, 776 ], [  938, 815 ])
+Global DepositAllBounds		:= New ClickAreaBounds([  903, 776 ], [  938, 815 ])
 
 Global LowHealthCheck			:= New PixelColorLocation(0x8A0703, [ 1404,  114 ])
 Global MidHealthCheck			:= New PixelColorLocation(0x9C0704, [ 1400,  109 ])
 Global HighHealthCheck			:= New PixelColorLocation(0x9C0704, [ 1413,   97 ])
 Global OptsOpenCheck			:= New PixelColorLocation(0x6B241B, [ 1525, 1015 ])
-Global InvOpenCheck				:= New PixelColorLocation(0x75281E, [ 1211, 1009 ])
+Global InvOpenCheck			:= New PixelColorLocation(0x75281E, [ 1211, 1009 ])
 Global BankOpenCheck			:= New PixelColorLocation(0xFC9620, [  406,   57 ])
 Global BankOpenCheck2			:= New PixelColorLocation(0x000001, [  977,   48 ], 5)
 Global BankClosedCheck			:= New PixelColorLocation(0x827563, [ 1220, 1013 ])

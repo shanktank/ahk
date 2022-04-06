@@ -17,7 +17,7 @@ F1::
 		If(X1 != X2 Or Y1 != Y2)
 			Reload
 
-		UIObject.doClick(Rand(617, 774))
+		UIObject.doClick(Rand(213, 343))
     }
 
     Return
