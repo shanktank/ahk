@@ -8,7 +8,8 @@ SetWorkingDir, %A_ScriptDir%
 CoordMode, Mouse, Screen
 CoordMode, Pixel, Screen
 CoordMode, ToolTip, Screen
-SendMode Input
+;SendMode Input
+
 
 CreateGUI() {
 	Global
@@ -35,7 +36,8 @@ CreateGUI() {
 	Gui, Add, Edit,   vC3 x123 y045 w070 h18 +Readonly, 0
 	Gui, Add, Edit,   vC4 x123 y065 w070 h18 +Readonly, 0
 	Gui, Add, Edit,   vC5 x010 y085 w183 h18 +Readonly, 0
-	Gui, Add, Button,     x010 y105 w183 h20 gJumpToCoords, % "Jump to coords"
+	Gui, Add, Button,     x010 y105 w091 h20 gJumpToCoords, % "Jump to coords"
+	Gui, Add, Button,     x101 y105 w091 h20 gRunTestCases, % "Run test cases"
 	Gui, Show, w%winWidth% h%winHeight% x%newWinX% y%newWinY%, Colors
 	Gui, +AlwaysOnTop
 
@@ -86,6 +88,41 @@ TraverseArea() {
 	ToolTip % "Done", 0, 0
 }
 
+RunTestCases() {
+	Local
+	
+	AutoTrim, Off
+	
+	results := ""
+	Loop {
+		FileReadLine, Line, testcases.txt, %A_Index%
+		If ErrorLevel
+			Break
+		
+		jumpTo := StrSplit(RegExReplace(Trim(StrReplace(Line, ",", " "),"[] "), "\\s{2,}", " "), " ")
+		results := results Format("{:02}", A_Index) " - 1: '" jumpTo[1] "'  2: '" jumpTo[2] "'  3: '" jumpTo[3] "'  4: '" jumpTo[4] "'\n"
+	}
+
+	MsgBox % RTrim(results, "\n")
+}
+
+JumpToCoords() {
+	Local
+	
+	;InputBox, jumpTo, % "Color and Coordinates Prompt"
+	InputBox, jumpTo, % "Coordinates Prompt"
+	
+	jumpTo := StrSplit(RegExReplace(Trim(StrReplace(jumpTo, ",", " "),"[] "), "\\s{2,}", " "), " ")
+	
+	;PixelGetColor, PixelColor, jumpTo[2], jumpTo[3] ;; ?
+	
+	;MouseMove, jumpTo[2], jumpTo[3], 5
+	MouseMove, jumpTo[1], jumpTo[2], 5
+	
+	;GuiControlGet, OutputVar,, Edit1 ;; ?
+}
+
+
 Global LowerXY := [ 0, 0 ]
 Global UpperXY := [ 0, 0 ]
 
@@ -94,18 +131,10 @@ CreateGUI()
 SetTimer, WatchCursor, 25
 Return
 
-JumpToCoords:
-{
-	InputBox, jumpTo, % "Enter formatted color and coordinates:"
-	Data := StrSplit(jumpTo, ",", "[]"A_Space)
-	PixelGetColor, PixelColor, Data[2], Data[3]
-	MouseMove, Data[2], Data[3], 10
-}
-Return
-GuiControlGet, OutputVar,, Edit1
 
 GuiClose:
 	ExitApp
+
 
 ^LButton::
 	MouseGetPos, LX, LY
