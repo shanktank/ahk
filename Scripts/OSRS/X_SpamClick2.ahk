@@ -19,7 +19,7 @@ F1::
 		If(X1 != X2 Or Y1 != Y2)
 			Reload
 
-		sleepTime := Rand(237, 389)
+		sleepTime := Rand(213, 343)
 		sleepTimes.Push(sleepTime)
 		FileAppend % sleepTime "`, ", sleeptimes.txt
 		ToolTip % "Click in " sleepTime " ms", 0, 0
