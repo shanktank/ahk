@@ -81,8 +81,8 @@ Global WIN_TEN_PADDING := 8
 ^!+H::Run %A_MyDocuments%/Git/ahk/Scripts/Hotkeys/
 ^!+A::Run %A_MyDocuments%/Git/ahk/Scripts/OSRS/
 ^!+K::Run %A_ProgramFiles%/KeePassXC/KeePassXC
-^!+I::Run firefox -P profile
-^!+M::Run firefox -P minimal
+^!+I::Run firefox.exe -P
+^!+M::Run firefox.exe
 ^!+U::Run putty -load "super local"
 ^!+J::Run putty -load "super remote"
 ^!+P::Run putty
