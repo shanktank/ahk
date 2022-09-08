@@ -58,17 +58,16 @@ dropAll() {
 }
 
 main() {
-	Loop {
+	;Loop {
 		While(InvSlot28Empty.verifyPixelColor()) {
 			If(woodcuttingCheck.verifyPixelColor() == False) {
 				doChop()
-				Sleep, 3000
+				Sleep, generateSleepTime(2541, 3654)
 			}
 		}
-		MsgBox % "Full!"
 		Reload
 		;doDrop()
-	}
+	;}
 }
 
 ;; ============================================================================================================================================================ ;;
