@@ -33,7 +33,7 @@ Main() {
 		sleeps.push(Rand(sleepb[1], sleepb[2]))
 		sleeps.push(Rand(sleepc[1], sleepc[2]))
 		sleeps.push(Rand(sleepd[1], sleepd[2]))
-		sleeps.push(Rand(sleepe[1], sleepe[2]))
+		sleeps.push(Rand([ 538, 436 ]), Rand([ 555, 417 ]))
 		sleeps.push(Rand(sleepf[1], sleepf[2]))
 		sleeps.push(Rand(sleepg[1], sleepg[2]))
 		
@@ -95,9 +95,9 @@ Global CLICK_TYPE := "Interact"
 ;Global pointf := New ClickAreaBounds([  760, 826 ], [  833, 795 ])
 ;Global pointg := New ClickAreaBounds([  808, 688 ], [  824, 668 ])
 
-Global pointa := New ClickAreaBounds([ 1569, 444 ], [ 1582, 410 ]) ;; Log
-Global pointb := New ClickAreaBounds([  822, 289 ], [  894, 277 ]) ;; Net
-Global pointc := New ClickAreaBounds([  825, 486 ], [  830, 445 ]) ;; Branch
+;Global pointa := New ClickAreaBounds([ 1569, 444 ], [ 1582, 410 ]) ;; Log
+;Global pointb := New ClickAreaBounds([  822, 289 ], [  894, 277 ]) ;; Net
+Global pointc := New ClickAreaBounds([  997, 686 ], [  1080, 714 ]) ;; Branch
 Global pointd := New ClickAreaBounds([  513, 533 ], [  557, 526 ]) ;; Rope
 Global pointe := New ClickAreaBounds([  627, 486 ], [  661, 479 ]) ;; Branch
 Global pointf := New ClickAreaBounds([  747, 913 ], [  820, 900 ]) ;; Net
