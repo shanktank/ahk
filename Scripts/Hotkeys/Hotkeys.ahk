@@ -18,50 +18,16 @@ Global WIN_TEN_PADDING := 8
 ; ================================================================================================================================================== ;
 
 ; Ctrl + H: Toggle show hidden files
-^H::
-	If(WinActive("AHK_Class CabinetWClass")) {
-		RegPath := "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
-        RegRead, HiddenStatus, HKEY_CURRENT_USER, %RegPath%, Hidden
-		RegWrite, REG_DWORD, HKEY_CURRENT_USER, %RegPath%, Hidden, % HiddenStatus == 1 ? 2 : 1
-		Sleep, 125
-        Send {F5}
-	}
-    Return
+^H::ToggleHideFiles("HiddenStatus", "Hidden", [ 1, 2, 1 ])
 
 ; Ctrl + Shift + H: Toggle show system files
-^+H::
-    If(WinActive("AHK_Class CabinetWClass")) {
-		RegPath := "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
-        RegRead, SuperHiddenStatus, HKEY_CURRENT_USER, %RegPath%, ShowSuperHidden
-		RegWrite, REG_DWORD, HKEY_CURRENT_USER, %RegPath%, ShowSuperHidden, % SuperHiddenStatus == 0 ? 1 : 0
-        Sleep, 125
-		Send, {F5}
-    }
-    Return
+^+H::ToggleHideFiles("SuperHiddenStatus", "ShowSuperHidden", [ 0, 1, 0 ])
 
-; Ctrl + Alt + Shift + N: Toggle hidden status of selected files.
-^!+N::
-	If(WinActive("AHK_Class CabinetWClass")) {
-		Send ^c
-		ClipWait
-		Loop, Parse, Clipboard, \n, \r
-			FileSetAttrib, ^H, % A_LoopField
-		Sleep, 125
-		Send {F5}
-	}	
-	Return
+; Ctrl + Shift + N: Toggle hidden status of selected files.
+^+N::ToggleFileAttribute("H")
 
-; Ctrl + Alt + Shift + B: Toggle hidden status of selected files.
-^!+B::
-	If(WinActive("AHK_Class CabinetWClass")) {
-		Send ^c
-		ClipWait
-		Loop, Parse, Clipboard, \n, \r
-			FileSetAttrib, ^S, % A_LoopField
-		Sleep, 125
-		Send {F5}
-	}	
-	Return
+; Ctrl + Alt + Shift + N: Mark or unmark selected files as system files.
+^!+N::ToggleFileAttribute("S")
 
 ; ================================================================================================================================================== ;
 ; == Media Controls ================================================================================================================================ ;
@@ -86,7 +52,7 @@ Global WIN_TEN_PADDING := 8
 ^!+U::Run putty -load "pyral - local"
 ^!+J::Run putty -load "pyral - remote"
 ^!+P::Run putty
-^!+O::Run ubuntu
+^!+O::Run debian
 ^!+S::Run mmsys.cpl
 ^!+Z::Run ms-settings:apps-volume
 
@@ -152,6 +118,27 @@ Global WIN_TEN_PADDING := 8
 ; ================================================================================================================================================== ;
 ; == Functions ===================================================================================================================================== ;
 ; ================================================================================================================================================== ;
+
+ToggleFileAttribute(attribute) {
+	If(WinActive("AHK_Class CabinetWClass")) {
+		Send ^c
+		ClipWait
+		Loop, Parse, Clipboard, \n, \r
+			FileSetAttrib, ^%attribute%, % A_LoopField
+		Sleep, 125
+		Send {F5}
+	}
+}
+
+ToggleHideFiles(hideType, action, values) {
+	If(WinActive("AHK_Class CabinetWClass")) {
+		RegPath := "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced"
+        RegRead, %hideType%, HKEY_CURRENT_USER, %RegPath%, %action%
+		RegWrite, REG_DWORD, HKEY_CURRENT_USER, %RegPath%, %action%, % %hideType% == values[1] ? values[2] : values[3]
+		Sleep, 125
+        Send {F5}
+	}
+}
 
 ; Move cursor by one pixel in direction specified.
 PixelStep(dx := 0, dy := 0) {
