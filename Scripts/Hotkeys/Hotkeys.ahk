@@ -83,8 +83,8 @@ Global WIN_TEN_PADDING := 8
 ^!+K::Run %A_ProgramFiles%/KeePassXC/KeePassXC
 ^!+I::Run firefox.exe -P
 ^!+M::Run firefox.exe
-^!+U::Run putty -load "super local"
-^!+J::Run putty -load "super remote"
+^!+U::Run putty -load "super remote"
+^!+J::Run putty -load "super local"
 ^!+P::Run putty
 ^!+O::Run ubuntu
 ^!+S::Run mmsys.cpl
