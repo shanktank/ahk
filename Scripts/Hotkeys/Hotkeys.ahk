@@ -37,6 +37,7 @@ Global WIN_TEN_PADDING := 8
 ^!+Left::Send {Media_Prev}
 ^!+Right::Send {Media_Next}
 ^!+Space::Send {Media_Play_Pause}
+^!+M::Send {Volume_Mute}
 
 ; ================================================================================================================================================== ;
 ; == Program Launchers ============================================================================================================================= ;
@@ -48,7 +49,6 @@ Global WIN_TEN_PADDING := 8
 ^!+A::Run %A_MyDocuments%/Git/ahk/Scripts/OSRS/
 ^!+K::Run %A_ProgramFiles%/KeePassXC/KeePassXC
 ^!+I::Run firefox.exe -P
-^!+M::Run firefox.exe
 ^!+U::Run putty -load "pyral - local"
 ^!+J::Run putty -load "pyral - remote"
 ^!+P::Run putty
