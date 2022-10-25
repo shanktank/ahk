@@ -49,8 +49,8 @@ Global WIN_TEN_PADDING := 8
 ^!+A::Run %A_MyDocuments%/Git/ahk/Scripts/OSRS/
 ^!+K::Run %A_ProgramFiles%/KeePassXC/KeePassXC
 ^!+I::Run firefox.exe -P
-^!+U::Run putty -load "pyral - local"
-^!+J::Run putty -load "pyral - remote"
+^!+U::Run putty -load "super remote"
+^!+J::Run putty -load "super local"
 ^!+P::Run putty
 ^!+O::Run debian
 ^!+S::Run mmsys.cpl
