@@ -49,10 +49,11 @@ Global WIN_TEN_PADDING := 8
 ^!+A::Run %A_MyDocuments%/Git/ahk/Scripts/OSRS/
 ^!+K::Run %A_ProgramFiles%/KeePassXC/KeePassXC
 ^!+I::Run firefox.exe -P
-^!+U::Run putty -load "super remote"
-^!+J::Run putty -load "super local"
+^!+U::Run putty -load "pyral - remote"
+^!+J::Run putty -load "pyral - local"
 ^!+P::Run putty
-^!+O::Run debian
+;^!+O::Run wsl -d debian
+^!+O::Run wsl -d Ubuntu-20.04
 ^!+S::Run mmsys.cpl
 ^!+Z::Run ms-settings:apps-volume
 
