@@ -22,7 +22,7 @@ SendMode, Input
 FileEncoding, UTF-8
 
 Main() {
-	Local inputFile := FileOpen("input2.txt", "r")
+	Local inputFile := FileOpen("venture-bros_grand-galactic-inquisitor.txt", "r")
 
 	While(inputFile.Position < inputFile.Length) {
 		TextLine := inputFile.ReadLine()
